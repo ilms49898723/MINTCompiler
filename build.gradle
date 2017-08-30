@@ -1,0 +1,30 @@
+group 'com.github.ilms49898723'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'antlr'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.guava:guava:20.0'
+    compile 'commons-cli:commons-cli:1.4'
+    testCompile 'junit:junit:4.12'
+    antlr 'org.antlr:antlr4:4.7'
+}
+
+run {
+    standardInput = System.in
+}
+
+generateGrammarSource {
+    arguments += ["-visitor", "-package", "com.github.ilms49898723.fluigi .antlr"]
+}
