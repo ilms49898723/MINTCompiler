@@ -28,3 +28,5 @@ run {
 generateGrammarSource {
     arguments += ["-visitor", "-package", "com.github.ilms49898723.fluigi .antlr"]
 }
+
+mainClassName='com.github.ilms49898723.fluigi.Main'
