@@ -1,4 +1,4 @@
-grammar ufgrammar;
+grammar UFGrammar;
 
 ufgrammar:
     netlist
