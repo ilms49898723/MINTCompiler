@@ -7,13 +7,16 @@ public class ArgumentParser {
 
     public ArgumentParser(String[] args) {
         Options options = new Options();
-        Option ufInput = new Option("m", true, "MINT description file");
+        Option ufInput = new Option("m", "MINT description file");
         Option paramInput = new Option("i", true, "parameter file");
         Option layoutOutput = new Option("o", true, "output filename");
+        ufInput.setArgName("FILE");
         ufInput.setRequired(true);
         ufInput.setArgs(1);
-        paramInput.setRequired(true);
+        paramInput.setArgName("FILE");
+        paramInput.setRequired(false);
         paramInput.setArgs(1);
+        layoutOutput.setArgName("FILE");
         layoutOutput.setRequired(true);
         layoutOutput.setArgs(1);
         options.addOption(ufInput);
@@ -25,7 +28,7 @@ public class ArgumentParser {
             mCommandLine = commandLineParser.parse(options, args);
         } catch (ParseException e) {
             System.err.println(e.getMessage());
-            helpFormatter.printHelp("Fluigi", options);
+            helpFormatter.printHelp("Fluigi", options, true);
             System.exit(1);
         }
     }
