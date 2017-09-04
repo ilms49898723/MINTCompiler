@@ -17,6 +17,7 @@ repositories {
 dependencies {
     compile 'com.google.guava:guava:20.0'
     compile 'commons-cli:commons-cli:1.4'
+    compile 'org.jfree:jfreesvg:3.2'
     testCompile 'junit:junit:4.12'
     antlr 'org.antlr:antlr4:4.7'
 }
