@@ -1,5 +1,6 @@
 package com.github.ilms49898723.fluigi.processor;
 
+import com.github.ilms49898723.fluigi.device.DeviceProcessor;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 
 public class MainProcessor {
@@ -7,6 +8,7 @@ public class MainProcessor {
     private String mParamFilename;
     private String mOutputFilename;
     private Parameters mParameters;
+    private DeviceProcessor mDeviceProcessor;
 
     public MainProcessor(String inputFilename, String paramFilename, String outputFilename) {
         mInputFilename = inputFilename;
@@ -16,6 +18,7 @@ public class MainProcessor {
 
     public void start() {
         parseParameter();
+        parseMint();
     }
 
     private void parseParameter() {
@@ -24,5 +27,10 @@ public class MainProcessor {
         } else {
             mParameters = new Parameters();
         }
+    }
+
+    private void parseMint() {
+        mDeviceProcessor = new DeviceProcessor(mInputFilename);
+        mDeviceProcessor.start();
     }
 }
