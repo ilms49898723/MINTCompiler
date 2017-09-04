@@ -1,6 +1,6 @@
-grammar UFGrammar;
+grammar UF;
 
-ufgrammar:
+uf:
     netlist
     ;
 
