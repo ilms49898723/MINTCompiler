@@ -1,6 +1,10 @@
 grammar Parameter;
 
 parameter:
+    (assign)*
+    ;
+
+assign:
     ID '=' VALUE
     ;
 

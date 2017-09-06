@@ -17,7 +17,7 @@ public class ParameterProcessor extends ParameterBaseListener {
     }
 
     @Override
-    public void exitParameter(ParameterParser.ParameterContext ctx) {
+    public void exitAssign(ParameterParser.AssignContext ctx) {
         String value = ctx.VALUE().getText();
         switch (ctx.ID().getText()) {
             case "minResolution":
