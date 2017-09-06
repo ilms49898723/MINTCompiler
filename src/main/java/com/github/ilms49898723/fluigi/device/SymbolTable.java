@@ -11,4 +11,13 @@ public class SymbolTable {
     public SymbolTable() {
         mSymbols = new HashMap<>();
     }
+
+    public boolean put(String identifier, BaseComponent component) {
+        if (mSymbols.containsKey(identifier)) {
+            return false;
+        } else {
+            mSymbols.put(identifier, component);
+            return true;
+        }
+    }
 }
