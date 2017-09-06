@@ -67,4 +67,48 @@ public abstract class BaseComponent {
     }
 
     public abstract void draw();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BaseComponent that = (BaseComponent) o;
+
+        if (getIdentifier() != null ? !getIdentifier().equals(that.getIdentifier()) : that.getIdentifier() != null) {
+            return false;
+        }
+        if (getType() != that.getType()) {
+            return false;
+        }
+        if (getLayer() != that.getLayer()) {
+            return false;
+        }
+        if (getWidth() != null ? !getWidth().equals(that.getWidth()) : that.getWidth() != null) {
+            return false;
+        }
+        if (getHeight() != null ? !getHeight().equals(that.getHeight()) : that.getHeight() != null) {
+            return false;
+        }
+        if (getPosition() != null ? !getPosition().equals(that.getPosition()) : that.getPosition() != null) {
+            return false;
+        }
+        return mPorts != null ? mPorts.equals(that.mPorts) : that.mPorts == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getIdentifier() != null ? getIdentifier().hashCode() : 0;
+        result = 31 * result + (getType() != null ? getType().hashCode() : 0);
+        result = 31 * result + (getLayer() != null ? getLayer().hashCode() : 0);
+        result = 31 * result + (getWidth() != null ? getWidth().hashCode() : 0);
+        result = 31 * result + (getHeight() != null ? getHeight().hashCode() : 0);
+        result = 31 * result + (getPosition() != null ? getPosition().hashCode() : 0);
+        result = 31 * result + (mPorts != null ? mPorts.hashCode() : 0);
+        return result;
+    }
 }
