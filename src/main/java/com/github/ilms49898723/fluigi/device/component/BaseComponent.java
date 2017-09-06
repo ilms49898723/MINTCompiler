@@ -66,8 +66,6 @@ public abstract class BaseComponent {
         mPosition = new Point2D(mPosition.getX(), y);
     }
 
-    public abstract void draw();
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
