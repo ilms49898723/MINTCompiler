@@ -20,4 +20,8 @@ public class SymbolTable {
             return true;
         }
     }
+
+    public BaseComponent get(String identifier) {
+        return mSymbols.getOrDefault(identifier, null);
+    }
 }

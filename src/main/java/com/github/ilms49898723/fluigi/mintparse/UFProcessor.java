@@ -2,9 +2,10 @@ package com.github.ilms49898723.fluigi.mintparse;
 
 import com.github.ilms49898723.fluigi.antlr.UFBaseListener;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
-import com.github.ilms49898723.fluigi.device.SymbolTable;
 import com.github.ilms49898723.fluigi.device.component.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.component.Port;
+import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
+import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
@@ -17,13 +18,15 @@ public class UFProcessor extends UFBaseListener {
     private String mDeviceName;
     private Parameters mParameters;
     private SymbolTable mSymbolTable;
+    private DeviceGraph mDeviceGraph;
     private ComponentLayer mCurrentLayer;
 
-    public UFProcessor(String filename, Parameters parameters, SymbolTable symbolTable) {
+    public UFProcessor(String filename, Parameters parameters, SymbolTable symbolTable, DeviceGraph deviceGraph) {
         mValid = true;
         mFilename = filename;
         mParameters = parameters;
         mSymbolTable = symbolTable;
+        mDeviceGraph = deviceGraph;
         mCurrentLayer = ComponentLayer.UNDEFINED;
     }
 
@@ -70,7 +73,9 @@ public class UFProcessor extends UFBaseListener {
                 ErrorHandler.printError(mFilename, terminalNode, ErrorMessages.E_DUPLICATED_IDENTIFIER);
                 setInvalid();
             }
-
+            for (int i = 1; i <= 4; ++i) {
+                mDeviceGraph.addVertex(portIdentifier, i);
+            }
         }
     }
 

@@ -66,6 +66,10 @@ public abstract class BaseComponent {
         mPosition = new Point2D(mPosition.getX(), y);
     }
 
+    public void addPort(int id, Point2D port) {
+        mPorts.put(id, port);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
