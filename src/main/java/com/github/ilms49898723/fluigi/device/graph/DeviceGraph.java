@@ -22,10 +22,17 @@ public class DeviceGraph {
 
     public boolean addEdge(String fromId, int fromPort, String toId, int toPort) {
         DefaultEdge edge = mDeviceGraph.addEdge(new DeviceComponent(fromId, fromPort), new DeviceComponent(toId, toPort));
+        mEdges.add(edge);
         return (edge != null);
     }
 
     public List<DefaultEdge> getAllEdges() {
         return mEdges;
+    }
+
+    public void dump() {
+        for (DefaultEdge edge : mEdges) {
+            System.out.println(edge);
+        }
     }
 }

@@ -24,4 +24,8 @@ public class SymbolTable {
     public BaseComponent get(String identifier) {
         return mSymbols.getOrDefault(identifier, null);
     }
+
+    public boolean containsKey(String identifier) {
+        return mSymbols.containsKey(identifier);
+    }
 }

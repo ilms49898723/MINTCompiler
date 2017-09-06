@@ -1,5 +1,7 @@
 package com.github.ilms49898723.fluigi.device.component;
 
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
 
 import java.util.HashMap;
@@ -68,6 +70,10 @@ public abstract class BaseComponent {
 
     public void addPort(int id, Point2D port) {
         mPorts.put(id, port);
+    }
+
+    public boolean hasPort(int id) {
+        return mPorts.containsKey(id);
     }
 
     @Override

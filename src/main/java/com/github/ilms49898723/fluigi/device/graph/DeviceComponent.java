@@ -40,4 +40,9 @@ public class DeviceComponent {
         result = 31 * result + getPortNumber();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return mIdentifier + ":" + mPortNumber;
+    }
 }

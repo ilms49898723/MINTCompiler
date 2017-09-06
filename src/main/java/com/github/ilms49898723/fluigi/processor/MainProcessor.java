@@ -8,7 +8,6 @@ public class MainProcessor {
     private String mParamFilename;
     private String mOutputFilename;
     private Parameters mParameters;
-    private DeviceProcessor mDeviceProcessor;
 
     public MainProcessor(String inputFilename, String paramFilename, String outputFilename) {
         mInputFilename = inputFilename;
@@ -30,7 +29,7 @@ public class MainProcessor {
     }
 
     private void parseMint() {
-        mDeviceProcessor = new DeviceProcessor(mInputFilename);
-        mDeviceProcessor.start();
+        DeviceProcessor deviceProcessor = new DeviceProcessor(mInputFilename, mParameters);
+        deviceProcessor.start();
     }
 }
