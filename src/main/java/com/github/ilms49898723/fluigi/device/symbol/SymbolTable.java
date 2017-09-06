@@ -4,6 +4,7 @@ import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class SymbolTable {
     private Map<String, BaseComponent> mSymbols;
@@ -27,5 +28,9 @@ public class SymbolTable {
 
     public boolean containsKey(String identifier) {
         return mSymbols.containsKey(identifier);
+    }
+
+    public Set<String> keySet() {
+        return mSymbols.keySet();
     }
 }

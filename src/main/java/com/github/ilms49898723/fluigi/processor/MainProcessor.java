@@ -29,7 +29,7 @@ public class MainProcessor {
     }
 
     private void parseMint() {
-        DeviceProcessor deviceProcessor = new DeviceProcessor(mInputFilename, mParameters);
+        DeviceProcessor deviceProcessor = new DeviceProcessor(mInputFilename, mOutputFilename, mParameters);
         deviceProcessor.start();
     }
 }

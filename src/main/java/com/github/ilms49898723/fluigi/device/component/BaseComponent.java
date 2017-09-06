@@ -3,7 +3,9 @@ package com.github.ilms49898723.fluigi.device.component;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,6 +77,10 @@ public abstract class BaseComponent {
     public boolean hasPort(int id) {
         return mPorts.containsKey(id);
     }
+
+    public abstract void drawPng(Graphics2D png);
+
+    public abstract void drawSvg(SVGGraphics2D svg);
 
     @Override
     public boolean equals(Object o) {
