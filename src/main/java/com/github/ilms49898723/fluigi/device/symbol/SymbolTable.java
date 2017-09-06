@@ -1,4 +1,4 @@
-package com.github.ilms49898723.fluigi.device;
+package com.github.ilms49898723.fluigi.device.symbol;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 
