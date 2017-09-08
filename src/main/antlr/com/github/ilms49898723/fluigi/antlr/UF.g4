@@ -131,12 +131,11 @@ cellTrapStatParams
     ;
 
 cellTrapStatParam
-    :   chamberWidthParam
+    :   numChambersParam
+    |   chamberWidthParam
     |   chamberLengthParam
-    |   channelWidthParam
-    |   numChambersParam
     |   chamberSpacingParam
-    |   chamberLengthParam
+    |   channelWidthParam
     ;
 
 cellTrapBankStat

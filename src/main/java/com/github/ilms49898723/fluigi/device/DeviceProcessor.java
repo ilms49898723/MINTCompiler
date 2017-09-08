@@ -9,6 +9,8 @@ import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.DummyPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
+import com.github.ilms49898723.fluigi.routing.BaseRouter;
+import com.github.ilms49898723.fluigi.routing.DummyRouter;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -42,11 +44,10 @@ public class DeviceProcessor {
         if (!mProcessor.isValid()) {
             System.exit(1);
         }
-        mDeviceGraph.dump();
         BasePlacer placer = new DummyPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.start();
-        // routing
-        // design rule check
+        BaseRouter router = new DummyRouter(mSymbolTable, mDeviceGraph, mParameters);
+        router.start();
         outputPng();
         outputSvg();
     }

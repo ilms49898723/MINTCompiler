@@ -2,11 +2,8 @@ package com.github.ilms49898723.fluigi.mintparse;
 
 import com.github.ilms49898723.fluigi.antlr.UFBaseListener;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
-import com.github.ilms49898723.fluigi.device.component.BaseComponent;
-import com.github.ilms49898723.fluigi.device.component.Channel;
-import com.github.ilms49898723.fluigi.device.component.Node;
+import com.github.ilms49898723.fluigi.device.component.*;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
-import com.github.ilms49898723.fluigi.device.component.Port;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
@@ -111,6 +108,7 @@ public class UFProcessor extends UFBaseListener {
         Channel channel = new Channel(channelId, mCurrentLayer);
         if (!mSymbolTable.put(channelId, channel)) {
             ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+            setInvalid();
         }
         String sourceId = ctx.component1.getText();
         String targetId = ctx.component2.getText();
@@ -132,6 +130,89 @@ public class UFProcessor extends UFBaseListener {
             for (int i = 1; i <= 4; ++i) {
                 mDeviceGraph.addVertex(nodeIdentifier, i);
             }
+        }
+    }
+
+    @Override
+    public void exitCellTrapStat(UFParser.CellTrapStatContext ctx) {
+        int numChambers = 0;
+        int chamberWidth = 0;
+        int chamberLength = 0;
+        int chamberSpacing = 0;
+        int channelWidth = 0;
+        for (UFParser.CellTrapStatParamContext par : ctx.cellTrapStatParams().cellTrapStatParam()) {
+            if (par.numChambersParam() != null) {
+                numChambers = Integer.parseInt(par.numChambersParam().num_chambers.getText());
+            }
+            if (par.chamberWidthParam() != null) {
+                chamberWidth = Integer.parseInt(par.chamberWidthParam().chamber_width.getText());
+            }
+            if (par.chamberLengthParam() != null) {
+                chamberLength = Integer.parseInt(par.chamberLengthParam().chamber_length.getText());
+            }
+            if (par.chamberSpacingParam() != null) {
+                chamberSpacing = Integer.parseInt(par.chamberSpacingParam().chamber_spacing.getText());
+            }
+            if (par.channelWidthParam() != null) {
+                channelWidth = Integer.parseInt(par.channelWidthParam().channel_width.getText());
+            }
+        }
+        if (ctx.type.getText().equals("SQUARE CELL TRAP")) {
+            for (UFParser.UfnameContext node : ctx.ufnames().ufname()) {
+                String identifier = node.ID().getText();
+                SquareCellTrap cellTrap = new SquareCellTrap(identifier, mCurrentLayer, chamberWidth, chamberLength, channelWidth);
+                if (!mSymbolTable.put(identifier, cellTrap)) {
+                    ErrorHandler.printError(mFilename, node.ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+                    setInvalid();
+                }
+                for (int i = 1; i <= 4; ++i) {
+                    mDeviceGraph.addVertex(identifier, i);
+                }
+            }
+        } else {
+            for (UFParser.UfnameContext node : ctx.ufnames().ufname()) {
+                String identifier = node.ID().getText();
+                LongCellTrap cellTrap = new LongCellTrap(identifier, mCurrentLayer, numChambers, chamberWidth, chamberLength, chamberSpacing, channelWidth);
+                if (!mSymbolTable.put(identifier, cellTrap)) {
+                    ErrorHandler.printError(mFilename, node.ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+                    setInvalid();
+                }
+                for (int i = 1; i <= 2; ++i) {
+                    mDeviceGraph.addVertex(identifier, i);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void exitMixerStat(UFParser.MixerStatContext ctx) {
+        String mixerIdentifier = ctx.ufname().ID().getText();
+        int numOfBends = 0;
+        int bendSpacing = 0;
+        int bendLength = 0;
+        int channelWidth = 0;
+        for (UFParser.MixerStatParamContext par : ctx.mixerStatParams().mixerStatParam()) {
+            if (par.numBendsParam() != null) {
+                numOfBends = Integer.parseInt(par.numBendsParam().number_bends.getText());
+            }
+            if (par.bendSpacingParam() != null) {
+                bendSpacing = Integer.parseInt(par.bendSpacingParam().bend_spacing.getText());
+            }
+            if (par.bendLengthParam() != null) {
+                bendLength = Integer.parseInt(par.bendLengthParam().bend_length.getText());
+            }
+            if (par.channelWidthParam() != null) {
+                channelWidth = Integer.parseInt(par.channelWidthParam().channel_width.getText());
+            }
+        }
+        Mixer mixer = new Mixer(mixerIdentifier, mCurrentLayer, numOfBends, bendSpacing, bendLength, channelWidth);
+        if (!mSymbolTable.put(mixerIdentifier, mixer)) {
+            ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+            setInvalid();
+        }
+        for (int i = 1; i <= 2; ++i) {
+            mDeviceGraph.addVertex(mixerIdentifier, 1);
+            mDeviceGraph.addVertex(mixerIdentifier, 2);
         }
     }
 
