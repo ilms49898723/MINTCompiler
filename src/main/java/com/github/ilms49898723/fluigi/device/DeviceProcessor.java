@@ -75,7 +75,7 @@ public class DeviceProcessor {
         png.fillRect(0, 0,width, height);
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);
-            component.drawPng(png);
+            component.draw(png);
         }
         File outputFile = new File(mOutputFilename + ".png");
         try {
@@ -91,7 +91,7 @@ public class DeviceProcessor {
         SVGGraphics2D svg = new SVGGraphics2D(width, height);
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);
-            component.drawSvg(svg);
+            component.draw(svg);
         }
         try {
             SVGUtils.writeToSVG(new File(mOutputFilename + ".svg"), svg.getSVGElement());

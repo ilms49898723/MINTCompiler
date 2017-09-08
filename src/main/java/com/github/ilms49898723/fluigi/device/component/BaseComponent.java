@@ -78,9 +78,24 @@ public abstract class BaseComponent {
         return mPorts.containsKey(id);
     }
 
-    public abstract void drawPng(Graphics2D png);
+    public void transpose(int degree) {
+        degree %= 360;
+        switch (degree) {
+            case 0:
+            case 90:
+            case 180:
+            case 270:
+                break;
+            default:
+                System.err.println("Invalid degree.");
+                return;
+        }
+        doTranspose(degree);
+    }
 
-    public abstract void drawSvg(SVGGraphics2D svg);
+    public abstract void doTranspose(int degree);
+
+    public abstract void draw(Graphics2D g);
 
     @Override
     public boolean equals(Object o) {

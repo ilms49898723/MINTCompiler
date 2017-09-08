@@ -24,20 +24,16 @@ public class Port extends BaseComponent {
     }
 
     @Override
-    public void drawPng(Graphics2D png) {
-        int x = (int) getPosition().getX();
-        int y = (int) getPosition().getY();
-        int r = (int) mRadius;
-        png.setPaint(Color.BLUE);
-        png.fillOval(x, y, r, r);
+    public void doTranspose(int degree) {
+
     }
 
     @Override
-    public void drawSvg(SVGGraphics2D svg) {
+    public void draw(Graphics2D g) {
         int x = (int) getPosition().getX();
         int y = (int) getPosition().getY();
         int r = (int) mRadius;
-        svg.setPaint(Color.BLUE);
-        svg.fillOval(x, y, r, r);
+        g.setPaint(Color.BLUE);
+        g.fillOval(x, y, r, r);
     }
 }

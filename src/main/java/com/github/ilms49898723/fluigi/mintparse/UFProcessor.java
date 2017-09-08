@@ -122,7 +122,7 @@ public class UFProcessor extends UFBaseListener {
         for (UFParser.UfnameContext ufname : ctx.ufnames().ufname()) {
             TerminalNode terminalNode = ufname.ID();
             String nodeIdentifier = terminalNode.getText();
-            Node node = new Node(nodeIdentifier, mCurrentLayer);
+            Node node = new Node(nodeIdentifier, mCurrentLayer, (int) mParameters.getMinResolution());
             if (!mSymbolTable.put(nodeIdentifier, node)) {
                 ErrorHandler.printError(mFilename, terminalNode, ErrorMessages.E_DUPLICATED_IDENTIFIER);
                 setInvalid();
