@@ -3,7 +3,6 @@ package com.github.ilms49898723.fluigi.device.component;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -78,7 +77,7 @@ public abstract class BaseComponent {
         return mPorts.containsKey(id);
     }
 
-    public void transpose(int degree) {
+    public void rotate(int degree) {
         degree %= 360;
         switch (degree) {
             case 0:
@@ -90,10 +89,10 @@ public abstract class BaseComponent {
                 System.err.println("Invalid degree.");
                 return;
         }
-        doTranspose(degree);
+        doRotate(degree);
     }
 
-    public abstract void doTranspose(int degree);
+    public abstract void doRotate(int degree);
 
     public abstract void draw(Graphics2D g);
 

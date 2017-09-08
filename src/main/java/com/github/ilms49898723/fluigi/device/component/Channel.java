@@ -14,7 +14,7 @@ public class Channel extends BaseComponent {
     }
 
     @Override
-    public void doTranspose(int degree) {
+    public void doRotate(int degree) {
 
     }
 
