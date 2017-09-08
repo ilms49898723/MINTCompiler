@@ -6,6 +6,8 @@ import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
+import com.github.ilms49898723.fluigi.placement.BasePlacer;
+import com.github.ilms49898723.fluigi.placement.DummyPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -41,15 +43,15 @@ public class DeviceProcessor {
             System.exit(1);
         }
         mDeviceGraph.dump();
-        // placement
+        BasePlacer placer = new DummyPlacer(mSymbolTable, mDeviceGraph, mParameters);
+        placer.start();
         // routing
         // design rule check
-        // output
         outputPng();
         outputSvg();
     }
 
-    public void parseMint() {
+    private void parseMint() {
         try {
             UFLexer lexer = new UFLexer(CharStreams.fromFileName(mInputFilename));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -64,12 +66,12 @@ public class DeviceProcessor {
     }
 
     private void outputPng() {
-        BufferedImage image = new BufferedImage(
-                (int) mParameters.getMaxDeviceWidth(),
-                (int) mParameters.getMaxDeviceHeight(),
-                BufferedImage.TYPE_INT_RGB
-        );
+        int width = (int) mParameters.getMaxDeviceWidth();
+        int height = (int) mParameters.getMaxDeviceHeight();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D png = (Graphics2D) image.getGraphics();
+        png.setColor(Color.WHITE);
+        png.fillRect(0, 0,width, height);
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);
             component.drawPng(png);
@@ -83,10 +85,9 @@ public class DeviceProcessor {
     }
 
     private void outputSvg() {
-        SVGGraphics2D svg = new SVGGraphics2D(
-                (int) mParameters.getMaxDeviceWidth(),
-                (int) mParameters.getMaxDeviceHeight()
-        );
+        int width = (int) mParameters.getMaxDeviceWidth();
+        int height = (int) mParameters.getMaxDeviceHeight();
+        SVGGraphics2D svg = new SVGGraphics2D(width, height);
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);
             component.drawSvg(svg);
