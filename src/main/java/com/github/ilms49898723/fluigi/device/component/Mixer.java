@@ -1,16 +1,18 @@
 package com.github.ilms49898723.fluigi.device.component;
 
-import com.github.ilms49898723.fluigi.device.component.drawing.Point2DPair;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+import javafx.geometry.Point2D;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Mixer extends BaseComponent {
     private List<Point2DPair> mPoints;
+    private List<Color> mColors;
     private int mNumBends;
     private int mBendSpacing;
     private int mBendLength;
@@ -19,6 +21,7 @@ public class Mixer extends BaseComponent {
     public Mixer(String identifier, ComponentLayer layer, int numBends, int bendSpacing, int bendLength, int channelWidth) {
         super(identifier, ComponentType.MIXER, layer);
         mPoints = new ArrayList<>();
+        mColors = new ArrayList<>();
         mNumBends = numBends;
         mBendSpacing = bendSpacing;
         mBendLength = bendLength;
@@ -27,50 +30,65 @@ public class Mixer extends BaseComponent {
     }
 
     @Override
-    public void doRotate(int degree) {
+    public boolean supportRotate() {
+        return true;
+    }
 
+    @Override
+    public void rotate() {
+        for (int i = 0; i < mPoints.size(); ++i) {
+            Point2D newPointA = Point2DUtil.rotate(mPoints.get(i).getPointA());
+            Point2D newPointB = Point2DUtil.rotate(mPoints.get(i).getPointB());
+            Point2D pointA = new Point2D(newPointA.getX(), newPointB.getY());
+            Point2D pointB = new Point2D(newPointB.getX(), newPointA.getY());
+            mPoints.set(i, new Point2DPair(pointA, pointB));
+        }
     }
 
     @Override
     public void draw(Graphics2D g) {
-        for (Point2DPair pair : mPoints) {
-            Point2D start = pair.getPointA();
-            start = new Point2D.Double(start.getX() + getPosition().getX(), start.getY() + getPosition().getY());
-            Point2D end = pair.getPointB();
-            end = new Point2D.Double(end.getX() - pair.getPointA().getX(), end.getY() - pair.getPointA().getY());
-            int x = (int) start.getX();
-            int y = (int) start.getY();
-            int w = (int) end.getX();
-            int h = (int) end.getY();
-            g.setColor(Color.BLUE);
-            g.fillRect(x, y, w, h);
+        Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
+        Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
+        for (int key : getPorts().keySet()) {
+            Point2DUtil.drawPoint(getPort(key), Color.BLACK, getPosition(), 20, g);
         }
     }
 
     private void setPoints() {
-        Point2D startPoint = new Point2D.Double(0.0, 0.0);
+        Point2D startPoint = new Point2D(0.0, 0.0);
         for (int i = 0; i < mNumBends; ++i) {
             mPoints.addAll(getSingleBend(startPoint));
-            startPoint = new Point2D.Double(startPoint.getX() + 2 * (mChannelWidth + mBendSpacing), startPoint.getY());
+            startPoint = new Point2D(startPoint.getX() + 2 * (mChannelWidth + mBendSpacing), startPoint.getY());
         }
+        for (int i = 0; i < mPoints.size(); ++i) {
+            mColors.add(Color.BLUE);
+        }
+        Point2D midPoint = mPoints.get(0).getPointA().midpoint(mPoints.get(mPoints.size() - 1).getPointB());
+        Point2D portA = new Point2D(mChannelWidth / 2, -mChannelWidth / 2);
+        Point2D portB = portA.add(mNumBends * 2 * (mChannelWidth + mBendSpacing), 0.0);
+        portA = portA.subtract(midPoint);
+        portB = portB.subtract(midPoint);
+        addPort(1, portA);
+        addPort(2, portB);
+        Point2DUtil.subtractPoints(mPoints, midPoint);
     }
 
     private List<Point2DPair> getSingleBend(Point2D startPoint) {
         List<Point2DPair> result = new ArrayList<>();
-        Point2D pa1 = new Point2D.Double(startPoint.getX(), startPoint.getY() - mChannelWidth - (mBendLength - mChannelWidth) / 2);
-        Point2D pa2 = new Point2D.Double(pa1.getX() + mChannelWidth, startPoint.getY());
+        Point2D pa1 = new Point2D(startPoint.getX(), startPoint.getY() - mChannelWidth - (mBendLength - mChannelWidth) / 2);
+        Point2D pa2 = new Point2D(pa1.getX() + mChannelWidth, startPoint.getY());
         result.add(new Point2DPair(pa1, pa2));
-        Point2D pb1 = new Point2D.Double(pa1.getX(), pa1.getY());
-        Point2D pb2 = new Point2D.Double(pb1.getX() + 2 * mChannelWidth + mBendSpacing, pb1.getY() + mChannelWidth);
+        Point2D pb1 = new Point2D(pa1.getX(), pa1.getY());
+        Point2D pb2 = new Point2D(pb1.getX() + 2 * mChannelWidth + mBendSpacing, pb1.getY() + mChannelWidth);
         result.add(new Point2DPair(pb1, pb2));
-        Point2D pc1 = new Point2D.Double(pb2.getX() - mChannelWidth, pb2.getY() - mChannelWidth);
-        Point2D pc2 = new Point2D.Double(pc1.getX() + mChannelWidth, pc1.getY() + mBendLength);
+        Point2D pc1 = new Point2D(pb2.getX() - mChannelWidth, pb2.getY() - mChannelWidth);
+        Point2D pc2 = new Point2D(pc1.getX() + mChannelWidth, pc1.getY() + mBendLength);
         result.add(new Point2DPair(pc1, pc2));
-        Point2D pd1 = new Point2D.Double(pc2.getX() - mChannelWidth, pc2.getY() - mChannelWidth);
-        Point2D pd2 = new Point2D.Double(pd1.getX() + 2 * mChannelWidth + mBendSpacing, pd1.getY() + mChannelWidth);
+        Point2D pd1 = new Point2D(pc2.getX() - mChannelWidth, pc2.getY() - mChannelWidth);
+        Point2D pd2 = new Point2D(pd1.getX() + 2 * mChannelWidth + mBendSpacing, pd1.getY() + mChannelWidth);
         result.add(new Point2DPair(pd1, pd2));
-        Point2D pe1 = new Point2D.Double(pd2.getX() - mChannelWidth, pd2.getY() - (mBendLength - mChannelWidth) / 2 - mChannelWidth);
-        Point2D pe2 = new Point2D.Double(pd2.getX(), pd2.getY());
+        Point2D pe1 = new Point2D(pd2.getX() - mChannelWidth, pd2.getY() - (mBendLength - mChannelWidth) / 2 - mChannelWidth);
+        Point2D pe2 = new Point2D(pd2.getX(), pd2.getY());
         result.add(new Point2DPair(pe1, pe2));
         return result;
     }

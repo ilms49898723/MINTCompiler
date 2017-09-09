@@ -3,7 +3,6 @@ package com.github.ilms49898723.fluigi.device.component;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import java.awt.*;
 
@@ -20,7 +19,12 @@ public class Node extends BaseComponent {
     }
 
     @Override
-    public void doRotate(int degree) {
+    public boolean supportRotate() {
+        return false;
+    }
+
+    @Override
+    public void rotate() {
 
     }
 

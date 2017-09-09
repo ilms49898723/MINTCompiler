@@ -1,16 +1,18 @@
 package com.github.ilms49898723.fluigi.device.component;
 
-import com.github.ilms49898723.fluigi.device.component.drawing.Point2DPair;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+import javafx.geometry.Point2D;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LongCellTrap extends BaseComponent {
     private List<Point2DPair> mPoints;
+    private List<Color> mColors;
     private int mNumChambers;
     private int mChamberWidth;
     private int mChamberLength;
@@ -20,6 +22,7 @@ public class LongCellTrap extends BaseComponent {
     public LongCellTrap(String identifier, ComponentLayer layer, int numChambers, int chamberWidth, int chamberLength, int chamberSpacing, int channelWidth) {
         super(identifier, ComponentType.LONG_CELLTRAP, layer);
         mPoints = new ArrayList<>();
+        mColors = new ArrayList<>();
         mNumChambers = numChambers;
         mChamberWidth = chamberWidth;
         mChamberLength = chamberLength;
@@ -29,37 +32,50 @@ public class LongCellTrap extends BaseComponent {
     }
 
     @Override
-    public void doRotate(int degree) {
+    public boolean supportRotate() {
+        return true;
+    }
+
+    @Override
+    public void rotate() {
+        for (int i = 0; i < mPoints.size(); ++i) {
+            Point2D newPointA = Point2DUtil.rotate(mPoints.get(i).getPointA());
+            Point2D newPointB = Point2DUtil.rotate(mPoints.get(i).getPointB());
+            Point2D pointA = new Point2D(newPointA.getX(), newPointB.getY());
+            Point2D pointB = new Point2D(newPointB.getX(), newPointA.getY());
+            mPoints.set(i, new Point2DPair(pointA, pointB));
+        }
     }
 
     @Override
     public void draw(Graphics2D g) {
-        g.setColor(Color.CYAN);
-        for (int i = 1; i < mPoints.size(); ++i) {
-            Point2D pt = mPoints.get(i).getPointA();
-            int w = (int) (mPoints.get(i).getPointB().getX() - pt.getX());
-            int h = (int) (mPoints.get(i).getPointB().getY() - pt.getY());
-            pt = new Point2D.Double(pt.getX() + getPosition().getX(), pt.getY() + getPosition().getY());
-            g.fillRect((int) pt.getX(), (int) pt.getY(), w, h);
+        Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
+        Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
+        for (int key : getPorts().keySet()) {
+            Point2DUtil.drawPoint(getPort(key), Color.BLACK, getPosition(), 20, g);
         }
-        g.setColor(Color.BLUE);
-        Point2D start = mPoints.get(0).getPointA();
-        start = new Point2D.Double(start.getX() + getPosition().getX(), start.getY() + getPosition().getY());
-        int channelWidth = (int) (mPoints.get(0).getPointB().getX() - mPoints.get(0).getPointA().getX());
-        int channelHeight = (int) (mPoints.get(0).getPointB().getY() - mPoints.get(0).getPointA().getY());
-        g.fillRect((int) start.getX(), (int) start.getY(), channelWidth, channelHeight);
     }
 
     private void setPoints() {
-        Point2D startPoint = new Point2D.Double(mChamberWidth, -mChamberLength);
-        Point2D channelStart = new Point2D.Double(0.0, 0.0);
-        Point2D channelEnd = new Point2D.Double((mNumChambers + 2) * mChamberWidth + (mNumChambers - 1) * mChamberSpacing, mChannelWidth);
-        mPoints.add(new Point2DPair(channelStart, channelEnd));
+        Point2D startPoint = new Point2D(mChamberWidth, -mChamberLength);
         for (int i = 0; i < mNumChambers; ++i) {
-            Point2D pa = new Point2D.Double(startPoint.getX(), startPoint.getY());
-            Point2D pb = new Point2D.Double(pa.getX() + mChamberWidth, pa.getY() + 2 * mChamberLength + mChannelWidth);
+            Point2D pa = new Point2D(startPoint.getX(), startPoint.getY());
+            Point2D pb = new Point2D(pa.getX() + mChamberWidth, pa.getY() + 2 * mChamberLength + mChannelWidth);
             mPoints.add(new Point2DPair(pa, pb));
-            startPoint = new Point2D.Double(startPoint.getX() + mChamberWidth + mChamberSpacing, startPoint.getY());
+            mColors.add(Color.CYAN);
+            startPoint = new Point2D(startPoint.getX() + mChamberWidth + mChamberSpacing, startPoint.getY());
         }
+        Point2D channelStart = new Point2D(0.0, 0.0);
+        Point2D channelEnd = new Point2D((mNumChambers + 2) * mChamberWidth + (mNumChambers - 1) * mChamberSpacing, mChannelWidth);
+        mPoints.add(new Point2DPair(channelStart, channelEnd));
+        mColors.add(Color.BLUE);
+        Point2D midPoint = new Point2D((channelStart.getX() + channelEnd.getX())/ 2, (channelStart.getY() + channelEnd.getY()) / 2);
+        Point2D portA = channelStart.add(0.0, mChannelWidth / 2);
+        Point2D portB = channelEnd.add(0.0, -mChannelWidth / 2);
+        portA = portA.subtract(midPoint);
+        portB = portB.subtract(midPoint);
+        addPort(1, portA);
+        addPort(2, portB);
+        Point2DUtil.subtractPoints(mPoints, midPoint);
     }
 }

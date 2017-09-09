@@ -1,6 +1,6 @@
-package com.github.ilms49898723.fluigi.device.component.drawing;
+package com.github.ilms49898723.fluigi.device.component.point;
 
-import java.awt.geom.Point2D;
+import javafx.geometry.Point2D;
 
 public class Point2DPair {
     private Point2D mPointA;

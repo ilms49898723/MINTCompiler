@@ -21,7 +21,7 @@ public abstract class BaseComponent {
         mIdentifier = identifier;
         mType = type;
         mLayer = layer;
-        mPosition = new Point2D(0, 0);
+        mPosition = new Point2D(0.0, 0.0);
         mPorts = new HashMap<>();
     }
 
@@ -69,30 +69,29 @@ public abstract class BaseComponent {
         mPosition = new Point2D(mPosition.getX(), y);
     }
 
-    public void addPort(int id, Point2D port) {
-        mPorts.put(id, port);
-    }
-
     public boolean hasPort(int id) {
         return mPorts.containsKey(id);
     }
 
-    public void rotate(int degree) {
-        degree %= 360;
-        switch (degree) {
-            case 0:
-            case 90:
-            case 180:
-            case 270:
-                break;
-            default:
-                System.err.println("Invalid degree.");
-                return;
-        }
-        doRotate(degree);
+    public void addPort(int id, Point2D port) {
+        mPorts.put(id, port);
     }
 
-    public abstract void doRotate(int degree);
+    public Point2D getPort(int id) {
+        return mPorts.get(id);
+    }
+
+    public void setPorts(Map<Integer, Point2D> ports) {
+        mPorts = ports;
+    }
+
+    public Map<Integer, Point2D> getPorts() {
+        return mPorts;
+    }
+
+    public abstract boolean supportRotate();
+
+    public abstract void rotate();
 
     public abstract void draw(Graphics2D g);
 

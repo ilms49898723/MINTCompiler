@@ -3,7 +3,6 @@ package com.github.ilms49898723.fluigi.device.component;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
-import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import java.awt.*;
 
@@ -24,7 +23,12 @@ public class Port extends BaseComponent {
     }
 
     @Override
-    public void doRotate(int degree) {
+    public boolean supportRotate() {
+        return false;
+    }
+
+    @Override
+    public void rotate() {
 
     }
 
@@ -34,6 +38,6 @@ public class Port extends BaseComponent {
         int y = (int) getPosition().getY();
         int r = (int) mRadius;
         g.setPaint(Color.BLUE);
-        g.fillOval(x, y, r, r);
+        g.fillOval(x - r / 2, y - r / 2, r, r);
     }
 }

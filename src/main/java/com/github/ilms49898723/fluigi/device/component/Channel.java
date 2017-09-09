@@ -14,7 +14,12 @@ public class Channel extends BaseComponent {
     }
 
     @Override
-    public void doRotate(int degree) {
+    public boolean supportRotate() {
+        return false;
+    }
+
+    @Override
+    public void rotate() {
 
     }
 
