@@ -47,6 +47,7 @@ public class Mixer extends BaseComponent {
 
     @Override
     public void draw(Graphics2D g) {
+    	rotate();
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
         Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
         for (int key : getPorts().keySet()) {
@@ -71,6 +72,7 @@ public class Mixer extends BaseComponent {
         addPort(1, portA);
         addPort(2, portB);
         Point2DUtil.subtractPoints(mPoints, midPoint);
+        setPosition(midPoint);
     }
 
     private List<Point2DPair> getSingleBend(Point2D startPoint) {
