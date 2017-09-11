@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceGraph {
-    private Graph<DeviceComponent, DefaultEdge> mDeviceGraph;
-    private List<DefaultEdge> mEdges;
+    private Graph<DeviceComponent, ComponentEdge> mDeviceGraph;
+    private List<ComponentEdge> mEdges;
 
     public DeviceGraph() {
-        mDeviceGraph = new SimpleGraph<>(DefaultEdge.class);
+        mDeviceGraph = new SimpleGraph<>(ComponentEdge.class);
         mEdges = new ArrayList<>();
     }
 
@@ -21,17 +21,17 @@ public class DeviceGraph {
     }
 
     public boolean addEdge(String fromId, int fromPort, String toId, int toPort) {
-        DefaultEdge edge = mDeviceGraph.addEdge(new DeviceComponent(fromId, fromPort), new DeviceComponent(toId, toPort));
+        ComponentEdge edge = mDeviceGraph.addEdge(new DeviceComponent(fromId, fromPort), new DeviceComponent(toId, toPort));
         mEdges.add(edge);
         return (edge != null);
     }
 
-    public List<DefaultEdge> getAllEdges() {
+    public List<ComponentEdge> getAllEdges() {
         return mEdges;
     }
 
     public void dump() {
-        for (DefaultEdge edge : mEdges) {
+        for (ComponentEdge edge : mEdges) {
             System.out.println(edge);
         }
     }
