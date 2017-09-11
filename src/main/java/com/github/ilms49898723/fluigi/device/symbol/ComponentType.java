@@ -6,5 +6,6 @@ public enum ComponentType {
     CHANNEL,
     LONG_CELLTRAP,
     SQUARE_CELLTRAP,
-    MIXER
+    MIXER, 
+    VALVE
 }
