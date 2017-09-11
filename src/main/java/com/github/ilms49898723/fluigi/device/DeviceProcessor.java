@@ -7,7 +7,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
-import com.github.ilms49898723.fluigi.placement.DummyPlacer;
+import com.github.ilms49898723.fluigi.placement.SimulatedAnnealingPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
 import com.github.ilms49898723.fluigi.routing.DummyRouter;
@@ -44,7 +44,7 @@ public class DeviceProcessor {
         if (!mProcessor.isValid()) {
             System.exit(1);
         }
-        BasePlacer placer = new DummyPlacer(mSymbolTable, mDeviceGraph, mParameters);
+        BasePlacer placer = new SimulatedAnnealingPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.start();
         BaseRouter router = new DummyRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.start();
