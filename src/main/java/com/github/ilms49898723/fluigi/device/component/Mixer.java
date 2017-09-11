@@ -65,6 +65,8 @@ public class Mixer extends BaseComponent {
         addPort(1, portA);
         addPort(2, portB);
         Point2DUtil.subtractPoints(mPoints, midPoint);
+        setWidth((int) (portB.getX() - portA.getX()));
+        setHeight(mBendLength);
     }
 
     private List<Point2DPair> getSingleBend(Point2D startPoint) {

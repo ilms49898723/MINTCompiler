@@ -71,5 +71,7 @@ public class LongCellTrap extends BaseComponent {
         addPort(1, portA);
         addPort(2, portB);
         Point2DUtil.subtractPoints(mPoints, midPoint);
+        setWidth((int) (portB.getX() - portA.getX()));
+        setHeight(2 * mChamberLength + mChannelWidth);
     }
 }

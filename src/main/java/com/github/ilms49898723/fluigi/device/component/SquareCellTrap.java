@@ -73,5 +73,7 @@ public class SquareCellTrap extends BaseComponent {
         addPort(3, portC);
         addPort(4, portD);
         Point2DUtil.subtractPoints(mPoints, midPoint);
+        setWidth((int) (portA.getX() - portB.getX()));
+        setHeight((int) (portC.getY() - portD.getY()));
     }
 }
