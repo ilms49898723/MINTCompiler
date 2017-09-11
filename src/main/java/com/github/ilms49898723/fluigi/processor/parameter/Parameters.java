@@ -9,14 +9,14 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import java.io.IOException;
 
 public class Parameters {
-    private double mMinResolution;
-    private double mMaxDeviceWidth;
-    private double mMaxDeviceHeight;
-    private double mRoutingSpacing;
-    private double mPortSpacing;
-    private double mChannelSpacing;
-    private double mValveSpacing;
-    private double mComponentSpacing;
+    private int mMinResolution;
+    private int mMaxDeviceWidth;
+    private int mMaxDeviceHeight;
+    private int mRoutingSpacing;
+    private int mPortSpacing;
+    private int mChannelSpacing;
+    private int mValveSpacing;
+    private int mComponentSpacing;
 
     public Parameters() {
         initialize();
@@ -38,77 +38,77 @@ public class Parameters {
     }
 
     public void initialize() {
-        mMinResolution = 0.1;
-        mMaxDeviceWidth = 500.0;
-        mMaxDeviceHeight = 500.0;
-        mRoutingSpacing = 1.0;
-        mPortSpacing = 1.0;
-        mChannelSpacing = 0.1;
-        mValveSpacing = 1.0;
-        mComponentSpacing = 1.0;
+        mMinResolution = 20;
+        mMaxDeviceWidth = 1000;
+        mMaxDeviceHeight = 1000;
+        mRoutingSpacing = 10;
+        mPortSpacing = 10;
+        mChannelSpacing = 10;
+        mValveSpacing = 10;
+        mComponentSpacing = 10;
     }
 
-    public double getMinResolution() {
+    public int getMinResolution() {
         return mMinResolution;
     }
 
-    public void setMinResolution(double minResolution) {
+    public void setMinResolution(int minResolution) {
         mMinResolution = minResolution;
     }
 
-    public double getMaxDeviceWidth() {
+    public int getMaxDeviceWidth() {
         return mMaxDeviceWidth;
     }
 
-    public void setMaxDeviceWidth(double maxDeviceWidth) {
+    public void setMaxDeviceWidth(int maxDeviceWidth) {
         mMaxDeviceWidth = maxDeviceWidth;
     }
 
-    public double getMaxDeviceHeight() {
+    public int getMaxDeviceHeight() {
         return mMaxDeviceHeight;
     }
 
-    public void setMaxDeviceHeight(double maxDeviceHeight) {
+    public void setMaxDeviceHeight(int maxDeviceHeight) {
         mMaxDeviceHeight = maxDeviceHeight;
     }
 
-    public double getRoutingSpacing() {
+    public int getRoutingSpacing() {
         return mRoutingSpacing;
     }
 
-    public void setRoutingSpacing(double routingSpacing) {
+    public void setRoutingSpacing(int routingSpacing) {
         mRoutingSpacing = routingSpacing;
     }
 
-    public double getPortSpacing() {
+    public int getPortSpacing() {
         return mPortSpacing;
     }
 
-    public void setPortSpacing(double portSpacing) {
+    public void setPortSpacing(int portSpacing) {
         mPortSpacing = portSpacing;
     }
 
-    public double getChannelSpacing() {
+    public int getChannelSpacing() {
         return mChannelSpacing;
     }
 
-    public void setChannelSpacing(double channelSpacing) {
+    public void setChannelSpacing(int channelSpacing) {
         mChannelSpacing = channelSpacing;
     }
 
-    public double getValveSpacing() {
+    public int getValveSpacing() {
         return mValveSpacing;
     }
 
-    public void setValveSpacing(double valveSpacing) {
+    public void setValveSpacing(int valveSpacing) {
         mValveSpacing = valveSpacing;
     }
 
-    public double getComponentSpacing() {
+    public int getComponentSpacing() {
         return mComponentSpacing;
     }
 
-    public void setComponentSpacing(double componentSpacing) {
+    public void setComponentSpacing(int componentSpacing) {
         mComponentSpacing = componentSpacing;
     }
 }

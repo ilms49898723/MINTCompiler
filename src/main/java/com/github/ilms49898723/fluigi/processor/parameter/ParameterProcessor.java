@@ -21,43 +21,43 @@ public class ParameterProcessor extends ParameterBaseListener {
         String value = ctx.VALUE().getText();
         switch (ctx.ID().getText()) {
             case "minResolution":
-                if (isFloat(ctx.VALUE())) {
-                    mParameters.setMinResolution(Double.parseDouble(value));
+                if (isInteger(ctx.VALUE())) {
+                    mParameters.setMinResolution(Integer.parseInt(value));
                 }
                 break;
             case "maxDeviceWidth":
                 if (isInteger(ctx.VALUE())) {
-                    mParameters.setMaxDeviceWidth(Double.parseDouble(value));
+                    mParameters.setMaxDeviceWidth(Integer.parseInt(value));
                 }
                 break;
             case "maxDeviceHeight":
                 if (isInteger(ctx.VALUE())) {
-                    mParameters.setMaxDeviceHeight(Double.parseDouble(value));
+                    mParameters.setMaxDeviceHeight(Integer.parseInt(value));
                 }
                 break;
             case "routingSpacing":
-                if (isFloat(ctx.VALUE())) {
-                    mParameters.setRoutingSpacing(Double.parseDouble(value));
+                if (isInteger(ctx.VALUE())) {
+                    mParameters.setRoutingSpacing(Integer.parseInt(value));
                 }
                 break;
             case "portSpacing":
-                if (isFloat(ctx.VALUE())) {
-                    mParameters.setPortSpacing(Double.parseDouble(value));
+                if (isInteger(ctx.VALUE())) {
+                    mParameters.setPortSpacing(Integer.parseInt(value));
                 }
                 break;
             case "channelSpacing":
-                if (isFloat(ctx.VALUE())) {
-                    mParameters.setChannelSpacing(Double.parseDouble(value));
+                if (isInteger(ctx.VALUE())) {
+                    mParameters.setChannelSpacing(Integer.parseInt(value));
                 }
                 break;
             case "valveSpacing":
-                if (isFloat(ctx.VALUE())) {
-                    mParameters.setValveSpacing(Double.parseDouble(value));
+                if (isInteger(ctx.VALUE())) {
+                    mParameters.setValveSpacing(Integer.parseInt(value));
                 }
                 break;
             case "componentSpacing":
-                if (isFloat(ctx.VALUE())) {
-                    mParameters.setComponentSpacing(Double.parseDouble(value));
+                if (isInteger(ctx.VALUE())) {
+                    mParameters.setComponentSpacing(Integer.parseInt(value));
                 }
                 break;
         }
