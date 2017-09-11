@@ -29,7 +29,7 @@ public class SquareCellTrap extends BaseComponent {
 
     @Override
     public boolean supportRotate() {
-        return true;
+        return false;
     }
 
     @Override

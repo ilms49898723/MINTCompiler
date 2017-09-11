@@ -15,7 +15,7 @@ public abstract class BaseComponent {
     private Integer mWidth;
     private Integer mHeight;
     private Point2D mPosition;
-    private Map<Integer, Point2D> mPorts;
+    protected Map<Integer, Point2D> mPorts;
 
     public BaseComponent(String identifier, ComponentType type, ComponentLayer layer) {
         mIdentifier = identifier;

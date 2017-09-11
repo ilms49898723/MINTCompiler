@@ -38,13 +38,7 @@ public class LongCellTrap extends BaseComponent {
 
     @Override
     public void rotate() {
-        for (int i = 0; i < mPoints.size(); ++i) {
-            Point2D newPointA = Point2DUtil.rotate(mPoints.get(i).getPointA());
-            Point2D newPointB = Point2DUtil.rotate(mPoints.get(i).getPointB());
-            Point2D pointA = new Point2D(newPointA.getX(), newPointB.getY());
-            Point2D pointB = new Point2D(newPointB.getX(), newPointA.getY());
-            mPoints.set(i, new Point2DPair(pointA, pointB));
-        }
+        Point2DUtil.rotatePoints(mPoints, mPorts);
     }
 
     @Override
