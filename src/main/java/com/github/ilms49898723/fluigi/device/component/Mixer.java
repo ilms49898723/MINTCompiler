@@ -37,11 +37,11 @@ public class Mixer extends BaseComponent {
     @Override
     public void rotate() {
         Point2DUtil.rotateDevice(mPoints, mPorts);
+        rotateWidthHeight();
     }
 
     @Override
     public void draw(Graphics2D g) {
-        rotate();
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
         Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
         for (int key : getPorts().keySet()) {

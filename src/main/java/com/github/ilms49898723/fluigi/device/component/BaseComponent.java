@@ -121,6 +121,12 @@ public abstract class BaseComponent {
         return mPorts;
     }
 
+    protected void rotateWidthHeight() {
+        int temp = mHeight;
+        mHeight = mWidth;
+        mWidth = temp;
+    }
+
     public abstract boolean supportRotate();
 
     public abstract void rotate();

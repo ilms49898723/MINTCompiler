@@ -50,14 +50,18 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
             for (int i = 0; i < components.size() * NUM_MOVES_PER_TEMP_PER_COMPONENT; ++i) {
                 BaseComponent c = components.get(mRandom.nextInt(components.size()));
                 Point2D original = c.getPosition();
-                if (nextRandom() >= 0.0) {
+                if (mRandom.nextDouble() <= 0.3) {
                     int newX = (int) (c.getPositionX() + nextRandom() * rangeX);
                     c.setPositionX(newX);
                     Point2DUtil.adjustComponent(c, mParameters);
-                } else {
+                } else if (mRandom.nextDouble() <= 0.6) {
                     int newY = (int) (c.getPositionY() + nextRandom() * rangeY);
                     c.setPositionY(newY);
                     Point2DUtil.adjustComponent(c, mParameters);
+                } else {
+                    if (c.supportRotate()) {
+                        c.rotate();
+                    }
                 }
                 double newCost = getCost();
                 if (newCost > cost) {
