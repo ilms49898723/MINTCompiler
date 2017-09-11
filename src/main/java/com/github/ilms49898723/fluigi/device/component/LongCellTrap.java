@@ -38,7 +38,7 @@ public class LongCellTrap extends BaseComponent {
 
     @Override
     public void rotate() {
-        Point2DUtil.rotatePoints(mPoints, mPorts);
+        Point2DUtil.rotateDevice(mPoints, mPorts);
     }
 
     @Override

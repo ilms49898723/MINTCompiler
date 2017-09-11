@@ -22,7 +22,7 @@ public class Point2DUtil {
         return new Point2D(newX, newY);
     }
 
-    public static void rotatePoints(List<Point2DPair> points, Map<Integer, Point2D> ports) {
+    public static void rotateDevice(List<Point2DPair> points, Map<Integer, Point2D> ports) {
         for (int i = 0; i < points.size(); ++i) {
             Point2D newPointA = Point2DUtil.rotate(points.get(i).getPointA());
             Point2D newPointB = Point2DUtil.rotate(points.get(i).getPointB());
