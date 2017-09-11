@@ -18,9 +18,8 @@ public class Point2DUtil {
     }
 
     public static Point2D rotate(Point2D point) {
-        int degree = 90;
-        double newX = Math.cos(Math.toRadians(degree)) * point.getX() - Math.sin(Math.toRadians(degree)) * point.getY();
-        double newY = Math.sin(Math.toRadians(degree)) * point.getX() + Math.cos(Math.toRadians(degree)) * point.getY();
+        double newX = (-1) * point.getY();
+        double newY = point.getX();
         return new Point2D(newX, newY);
     }
 
