@@ -1,5 +1,7 @@
 package com.github.ilms49898723.fluigi.device.component.point;
 
+import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
@@ -51,5 +53,45 @@ public class Point2DUtil {
             g.setColor(colors.get(i));
             g.fillRect((int) pt.getX(), (int) pt.getY(), w, h);
         }
+    }
+
+    public static Point2D calculateOverlap(BaseComponent a, BaseComponent b, Parameters parameters) {
+        int leftA = a.getLeftTopX() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        int rightA = a.getRightBottomX() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        int topA = a.getLeftTopY() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        int bottomA = a.getRightBottomY() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        int leftB = b.getLeftTopX() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        int rightB = b.getRightBottomX() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        int topB = b.getLeftTopY() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        int bottomB = b.getRightBottomY() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        if (rightA >= leftB && leftA <= rightB && bottomA >= topB && topA <= bottomB) {
+            int x = Math.min(rightA, rightB) - Math.max(leftA, leftB);
+            int y = Math.min(bottomA, bottomB) - Math.max(topA, topB);
+            x /= parameters.getMinResolution();
+            y /= parameters.getMinResolution();
+            return new Point2D(x, y);
+        } else {
+            return new Point2D(0, 0);
+        }
+    }
+
+    public static void adjustComponent(BaseComponent component, Parameters parameters) {
+        int deviceWidth = parameters.getMaxDeviceWidth();
+        int deviceHeight = parameters.getMaxDeviceHeight();
+        int x = component.getPositionX();
+        int y = component.getPositionY();
+        if (x - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() < 0) {
+            x = component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        }
+        if (x + component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() >= deviceWidth) {
+            x = deviceWidth - 1 - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        }
+        if (y - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() < 0) {
+            y = component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        }
+        if (y + component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() >= deviceHeight) {
+            y = deviceHeight - 1 - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        }
+        component.setPosition(new Point2D(x, y));
     }
 }

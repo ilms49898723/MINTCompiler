@@ -46,7 +46,7 @@ public class LongCellTrap extends BaseComponent {
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
         Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
         for (int key : getPorts().keySet()) {
-            Point2DUtil.drawPoint(getPort(key), Color.BLACK, getPosition(), 20, g);
+            Point2DUtil.drawPoint(getPort(key), Color.BLACK, Point2D.ZERO, 20, g);
         }
     }
 

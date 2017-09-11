@@ -11,6 +11,8 @@ public class Channel extends BaseComponent {
         super(identifier, ComponentType.CHANNEL, layer);
         addPort(1, new Point2D(0.0, 0.0));
         addPort(2, new Point2D(0.0, 0.0));
+        setWidth(0);
+        setHeight(0);
     }
 
     @Override

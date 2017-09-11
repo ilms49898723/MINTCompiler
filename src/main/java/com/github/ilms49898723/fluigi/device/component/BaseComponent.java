@@ -12,8 +12,8 @@ public abstract class BaseComponent {
     private String mIdentifier;
     private ComponentType mType;
     private ComponentLayer mLayer;
-    private Integer mWidth;
-    private Integer mHeight;
+    private int mWidth;
+    private int mHeight;
     private Point2D mPosition;
     protected Map<Integer, Point2D> mPorts;
 
@@ -37,24 +37,32 @@ public abstract class BaseComponent {
         return mLayer;
     }
 
-    public Integer getWidth() {
+    public int getWidth() {
         return mWidth;
     }
 
-    public void setWidth(Integer width) {
+    public void setWidth(int width) {
         mWidth = width;
     }
 
-    public Integer getHeight() {
+    public int getHeight() {
         return mHeight;
     }
 
-    public void setHeight(Integer height) {
+    public void setHeight(int height) {
         mHeight = height;
     }
 
     public Point2D getPosition() {
         return mPosition;
+    }
+
+    public int getPositionX() {
+        return (int) mPosition.getX();
+    }
+
+    public int getPositionY() {
+        return (int) mPosition.getY();
     }
 
     public void setPosition(Point2D position) {
@@ -69,6 +77,30 @@ public abstract class BaseComponent {
         mPosition = new Point2D(mPosition.getX(), y);
     }
 
+    public Point2D getLeftTopPoint() {
+        return new Point2D(getPositionX() - getWidth() / 2, getPositionY() - getHeight() / 2);
+    }
+
+    public int getLeftTopX() {
+        return (int) (getLeftTopPoint().getX());
+    }
+
+    public int getLeftTopY() {
+        return (int) (getLeftTopPoint().getY());
+    }
+
+    public Point2D getRightBottomPoint() {
+        return getLeftTopPoint().add(getWidth(), getHeight());
+    }
+
+    public int getRightBottomX() {
+        return (int) (getRightBottomPoint().getX());
+    }
+
+    public int getRightBottomY() {
+        return (int) (getRightBottomPoint().getY());
+    }
+
     public boolean hasPort(int id) {
         return mPorts.containsKey(id);
     }
@@ -78,7 +110,7 @@ public abstract class BaseComponent {
     }
 
     public Point2D getPort(int id) {
-        return mPorts.get(id);
+        return mPorts.get(id).add(getPosition());
     }
 
     public void setPorts(Map<Integer, Point2D> ports) {
@@ -104,27 +136,27 @@ public abstract class BaseComponent {
             return false;
         }
 
-        BaseComponent that = (BaseComponent) o;
+        BaseComponent component = (BaseComponent) o;
 
-        if (getIdentifier() != null ? !getIdentifier().equals(that.getIdentifier()) : that.getIdentifier() != null) {
+        if (getWidth() != component.getWidth()) {
             return false;
         }
-        if (getType() != that.getType()) {
+        if (getHeight() != component.getHeight()) {
             return false;
         }
-        if (getLayer() != that.getLayer()) {
+        if (getIdentifier() != null ? !getIdentifier().equals(component.getIdentifier()) : component.getIdentifier() != null) {
             return false;
         }
-        if (getWidth() != null ? !getWidth().equals(that.getWidth()) : that.getWidth() != null) {
+        if (getType() != component.getType()) {
             return false;
         }
-        if (getHeight() != null ? !getHeight().equals(that.getHeight()) : that.getHeight() != null) {
+        if (getLayer() != component.getLayer()) {
             return false;
         }
-        if (getPosition() != null ? !getPosition().equals(that.getPosition()) : that.getPosition() != null) {
+        if (getPosition() != null ? !getPosition().equals(component.getPosition()) : component.getPosition() != null) {
             return false;
         }
-        return mPorts != null ? mPorts.equals(that.mPorts) : that.mPorts == null;
+        return getPorts() != null ? getPorts().equals(component.getPorts()) : component.getPorts() == null;
     }
 
     @Override
@@ -132,10 +164,10 @@ public abstract class BaseComponent {
         int result = getIdentifier() != null ? getIdentifier().hashCode() : 0;
         result = 31 * result + (getType() != null ? getType().hashCode() : 0);
         result = 31 * result + (getLayer() != null ? getLayer().hashCode() : 0);
-        result = 31 * result + (getWidth() != null ? getWidth().hashCode() : 0);
-        result = 31 * result + (getHeight() != null ? getHeight().hashCode() : 0);
+        result = 31 * result + getWidth();
+        result = 31 * result + getHeight();
         result = 31 * result + (getPosition() != null ? getPosition().hashCode() : 0);
-        result = 31 * result + (mPorts != null ? mPorts.hashCode() : 0);
+        result = 31 * result + (getPorts() != null ? getPorts().hashCode() : 0);
         return result;
     }
 }

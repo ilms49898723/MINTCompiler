@@ -6,13 +6,14 @@ import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class DeviceGraph {
-    private Graph<DeviceComponent, ComponentEdge> mDeviceGraph;
-    private List<ComponentEdge> mEdges;
+    private Graph<DeviceComponent, DefaultEdge> mDeviceGraph;
+    private List<DefaultEdge> mEdges;
 
     public DeviceGraph() {
-        mDeviceGraph = new SimpleGraph<>(ComponentEdge.class);
+        mDeviceGraph = new SimpleGraph<>(DefaultEdge.class);
         mEdges = new ArrayList<>();
     }
 
@@ -21,17 +22,29 @@ public class DeviceGraph {
     }
 
     public boolean addEdge(String fromId, int fromPort, String toId, int toPort) {
-        ComponentEdge edge = mDeviceGraph.addEdge(new DeviceComponent(fromId, fromPort), new DeviceComponent(toId, toPort));
+        DefaultEdge edge = mDeviceGraph.addEdge(new DeviceComponent(fromId, fromPort), new DeviceComponent(toId, toPort));
         mEdges.add(edge);
         return (edge != null);
     }
 
-    public List<ComponentEdge> getAllEdges() {
+    public List<DefaultEdge> getAllEdges() {
         return mEdges;
     }
 
+    public Set<DefaultEdge> edgeSet() {
+        return mDeviceGraph.edgeSet();
+    }
+
+    public DeviceComponent getEdgeSource(DefaultEdge edge) {
+        return mDeviceGraph.getEdgeSource(edge);
+    }
+
+    public DeviceComponent getEdgeTarget(DefaultEdge edge) {
+        return mDeviceGraph.getEdgeTarget(edge);
+    }
+
     public void dump() {
-        for (ComponentEdge edge : mEdges) {
+        for (DefaultEdge edge : mEdges) {
             System.out.println(edge);
         }
     }

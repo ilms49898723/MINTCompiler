@@ -73,7 +73,7 @@ public class UFProcessor extends UFBaseListener {
         for (UFParser.UfnameContext ufname : ctx.ufnames().ufname()) {
             TerminalNode terminalNode = ufname.ID();
             String portIdentifier = terminalNode.getText();
-            double radius = Double.parseDouble(ctx.radiusParam().radius.getText());
+            int radius = Integer.parseInt(ctx.radiusParam().radius.getText());
             Port port = new Port(portIdentifier, mCurrentLayer, radius);
             if (!mSymbolTable.put(portIdentifier, port)) {
                 ErrorHandler.printError(mFilename, terminalNode, ErrorMessages.E_DUPLICATED_IDENTIFIER);

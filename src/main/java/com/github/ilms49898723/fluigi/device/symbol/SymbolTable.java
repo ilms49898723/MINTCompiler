@@ -2,15 +2,15 @@ package com.github.ilms49898723.fluigi.device.symbol;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SymbolTable {
     private Map<String, BaseComponent> mSymbols;
+    private List<BaseComponent> mComponentsExceptChannel;
 
     public SymbolTable() {
         mSymbols = new HashMap<>();
+        mComponentsExceptChannel = new ArrayList<>();
     }
 
     public boolean put(String identifier, BaseComponent component) {
@@ -18,6 +18,9 @@ public class SymbolTable {
             return false;
         } else {
             mSymbols.put(identifier, component);
+            if (component.getType() != ComponentType.CHANNEL) {
+                mComponentsExceptChannel.add(component);
+            }
             return true;
         }
     }
@@ -32,5 +35,21 @@ public class SymbolTable {
 
     public Set<String> keySet() {
         return mSymbols.keySet();
+    }
+
+    public Collection<BaseComponent> values() {
+        return mSymbols.values();
+    }
+
+    public List<BaseComponent> getComponentsExceptChannel() {
+        return mComponentsExceptChannel;
+    }
+
+    public int size() {
+        return mSymbols.size();
+    }
+
+    public int sizeExceptChannel() {
+        return mComponentsExceptChannel.size();
     }
 }

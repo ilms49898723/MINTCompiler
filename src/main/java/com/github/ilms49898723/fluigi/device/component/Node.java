@@ -16,6 +16,8 @@ public class Node extends BaseComponent {
         addPort(2, new Point2D(mLength / 2, 0.0));
         addPort(3, new Point2D(0.0, -mLength / 2));
         addPort(4, new Point2D(-mLength / 2, 0.0));
+        setWidth(mLength);
+        setHeight(mLength);
     }
 
     @Override
