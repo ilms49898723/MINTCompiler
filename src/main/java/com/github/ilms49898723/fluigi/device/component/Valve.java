@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 
@@ -38,7 +39,8 @@ public class Valve extends BaseComponent {
 	@Override
 	public void draw(Graphics2D g) {
 		// TODO Auto-generated method stub
-		
+		//Position will be decide after placement & routing
+		Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
 	}
 
 }
