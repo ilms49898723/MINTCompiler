@@ -1,7 +1,6 @@
 package com.github.ilms49898723.fluigi.device.component;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +8,8 @@ import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+
+import javafx.geometry.Point2D;
 
 public class Valve extends BaseComponent {
 	private List<Point2DPair> mPoints;
@@ -22,6 +23,7 @@ public class Valve extends BaseComponent {
 		mChannelId = channelId;
 		setWidth(width);
 		setHeight(length);
+		setPoints();
 	}
 
 	@Override
@@ -41,6 +43,13 @@ public class Valve extends BaseComponent {
 		// TODO Auto-generated method stub
 		//Position will be decide after placement & routing
 		Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
+	}
+	
+	private void setPoints() {
+		Point2D pa = new Point2D(-(getWidth() / 2), -(getHeight() / 2));
+		Point2D pb = new Point2D(getWidth() / 2, getHeight() / 2);
+		mPoints.add(new Point2DPair(pa, pb));
+		mColors.add(Color.RED);
 	}
 
 }
