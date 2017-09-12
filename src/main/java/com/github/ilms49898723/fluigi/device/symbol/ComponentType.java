@@ -7,5 +7,7 @@ public enum ComponentType {
     LONG_CELLTRAP,
     SQUARE_CELLTRAP,
     MIXER, 
-    VALVE
+    VALVE, 
+    TREE, 
+    ROTARY_PUMP
 }
