@@ -17,7 +17,6 @@ public class Tree extends BaseComponent {
 	private int mOutChannelNum;
 	private int mSpacing;
 	private int mChannelWidth;
-	
 	private int mChannelLength;
 	
 	public Tree(String identifier, ComponentLayer layer, int inNum, int outNum, int spacing, int channelWidth) {
@@ -28,6 +27,7 @@ public class Tree extends BaseComponent {
 		mOutChannelNum = outNum;
 		mSpacing = spacing;
 		mChannelWidth = channelWidth;
+		mChannelLength = mChannelWidth * 10;
 		setPoints();
 	}
 
@@ -57,16 +57,26 @@ public class Tree extends BaseComponent {
 			mPoints.addAll(getSingleChannel(startPt));
 			startPt = new Point2D(startPt.getX() + mChannelWidth + mSpacing, startPt.getY());
 		}
-		startPt = new Point2D(0.0, mChannelLength - mChannelWidth);
-		for(int i = 0 ; i < numLevel ; i++) {
-			for(int j = 0 ; j < 1 ; j++) {
-				
+		startPt = new Point2D(mPoints.get(0).getPointA().getX(), mChannelLength - mChannelWidth);
+		for(int i = 1 ; i <= numLevel ; i++) {
+			int numMixChannel = (int)Math.pow(2, (numLevel - i));
+			int disMixChannel = ((int)Math.pow(2, i)) * (mChannelWidth + mSpacing) + mChannelWidth;
+			int disNextLvl = ((int)Math.pow(2, i) - 1) * (mChannelWidth + mSpacing) / 2;
+			for(int j = 0 ; j < numMixChannel ; j++) {
+				mPoints.addAll(getSingleLevel(startPt, i));
+				startPt = new Point2D(startPt.getX() + disMixChannel, startPt.getY());
 			}
-			startPt = new Point2D(0.0, startPt.getY() + (mChannelLength / 2));
+			startPt = new Point2D(mPoints.get(0).getPointA().getX() + disNextLvl, startPt.getY() + (mChannelLength / 2) - mChannelWidth);
 		}
 		for(int i = 0 ; i < mPoints.size() ; i++) {
 			mColors.add(Color.BLUE);
 		}
+		
+		
+		
+		double midLength = mPoints.get(0).getPointA().getX() + ((numChannel*(mChannelWidth + mSpacing) - mSpacing) / 2);
+		double midHeight = mPoints.get(0).getPointA().midpoint(mPoints.get(mPoints.size() - 1).getPointB()).getY();
+		Point2D midPt = new Point2D(midLength, midHeight);
 	}
 	
 	private List<Point2DPair> getSingleChannel(Point2D startPt) {
@@ -77,8 +87,16 @@ public class Tree extends BaseComponent {
 		return result;
 	}
 	
-	private List<Point2DPair> getSingleLevel(Point2D startPt) {
+	private List<Point2DPair> getSingleLevel(Point2D startPt, int level) {
 		List<Point2DPair> result = new ArrayList<Point2DPair>();
+		int rec1Length = ((int)Math.pow(2, level - 1)) * (mChannelWidth + mSpacing) + mChannelWidth;
+		int rec2Height = mChannelLength / 2;
+		Point2D pa1 = new Point2D(startPt.getX(), startPt.getY());
+		Point2D pb1 = new Point2D(pa1.getX() + rec1Length, pa1.getY() + mChannelWidth);
+		result.add(new Point2DPair(pa1, pb1));
+		Point2D pa2 = new Point2D(startPt.getX() + ((rec1Length - mChannelWidth) / 2), startPt.getY());
+		Point2D pb2 = new Point2D(pa2.getX() + mChannelWidth, pa2.getY() + rec2Height);
+		result.add(new Point2DPair(pa2, pb2));
 		return result;
 	}
 }
