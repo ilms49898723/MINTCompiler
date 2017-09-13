@@ -43,13 +43,18 @@ public class Tree extends BaseComponent {
 	@Override
 	public void rotate() {
 		// TODO Auto-generated method stub
-		
+		Point2DUtil.rotateDevice(mPoints, mPorts);
+		rotateWidthHeight();
 	}
 
 	@Override
 	public void draw(Graphics2D g) {
 		// TODO Auto-generated method stub
-		
+		Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
+        Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
+        for (int key : getPorts().keySet()) {
+            Point2DUtil.drawPoint(getPort(key), Color.BLACK, Point2D.ZERO, 20, g);
+        }
 	}
 	
 	private void setPoints() {
@@ -78,6 +83,7 @@ public class Tree extends BaseComponent {
 		
 		Point2DUtil.subtractPoints(mPoints, midPt);
 		
+		//Port-0 = 1, Port-1~n = n
 		for(int i = 0 ; i < numChannel ; i++) {
 			Point2D port = new Point2D(mPoints.get(i).getPointA().getX() + mChannelWidth / 2, mPoints.get(i).getPointA().getY());
 			addPort(i + 1, port);
