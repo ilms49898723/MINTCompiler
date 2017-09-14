@@ -17,7 +17,7 @@ import java.util.PriorityQueue;
 
 public class HadlockRouter extends BaseRouter {
     private enum GridStatus {
-        VISITED, OCCUPIED, BACKTRACKED, EMPTY
+        VISITED, OCCUPIED, EMPTY
     }
 
     private class GridPoint implements Comparable<GridPoint> {
@@ -131,29 +131,36 @@ public class HadlockRouter extends BaseRouter {
                     System.err.println("Route Error!");
                     return;
                 }
+                markComponent(src);
+                markComponent(dst);
+                afterRouteChannel();
             }
         }
     }
 
     private void preMark() {
         for (BaseComponent component : mSymbolTable.getComponentsExceptChannel()) {
-            System.out.println("Premark component " + component.getIdentifier());
-            System.out.println("  At " + component.getPosition());
-            List<Point2DPair> points = component.getPoints();
-            for (Point2DPair pointPair : points) {
-                int delta = mParameters.getComponentSpacing() / 2;
-                Point2D pA = pointPair.getPointA().subtract(delta, delta);
-                Point2D pB = pointPair.getPointB().add(delta, delta);
-                int x = (int) pA.getX();
-                int y = (int) pA.getY();
-                int w = (int) pB.subtract(pA).getX();
-                int h = (int) pB.subtract(pA).getY();
-                for (int i = 0; i < w; ++i) {
-                    for (int j = 0; j < h; ++j) {
-                        mPathMap[x + i][y + j] = -1;
-                        mDetourMap[x + i][y + j] = -1;
-                        mMapStatus[x + i][y + j] = GridStatus.VISITED;
-                    }
+            markComponent(component);
+        }
+    }
+
+    private void markComponent(BaseComponent component) {
+        System.out.println("PreMark component " + component.getIdentifier());
+        System.out.println("  At " + component.getPosition());
+        List<Point2DPair> points = component.getPoints();
+        for (Point2DPair pointPair : points) {
+            int delta = mParameters.getComponentSpacing() / 2;
+            Point2D pA = pointPair.getPointA().subtract(delta, delta);
+            Point2D pB = pointPair.getPointB().add(delta, delta);
+            int x = (int) pA.getX();
+            int y = (int) pA.getY();
+            int w = (int) pB.subtract(pA).getX();
+            int h = (int) pB.subtract(pA).getY();
+            for (int i = 0; i < w; ++i) {
+                for (int j = 0; j < h; ++j) {
+                    mPathMap[x + i][y + j] = -1;
+                    mDetourMap[x + i][y + j] = -1;
+                    mMapStatus[x + i][y + j] = GridStatus.VISITED;
                 }
             }
         }
@@ -207,7 +214,7 @@ public class HadlockRouter extends BaseRouter {
             int dX = mTraceMap[current.mX][current.mY][0];
             int dY = mTraceMap[current.mX][current.mY][1];
             GridPoint next = current.add(dX, dY);
-            mMapStatus[next.mX][next.mY] = GridStatus.BACKTRACKED;
+            mMapStatus[next.mX][next.mY] = GridStatus.VISITED;
             Point2D leftTop = new Point2D(next.mX - channel.getChannelWidth() / 2, next.mY - channel.getChannelWidth() / 2);
             Point2D rightBottom = leftTop.add(channel.getChannelWidth(), channel.getChannelWidth());
             channel.addPoint(new Point2DPair(leftTop, rightBottom), Color.BLUE);
@@ -218,6 +225,7 @@ public class HadlockRouter extends BaseRouter {
         } else {
             System.err.println("Trace back succeed!");
         }
+        markComponent(channel);
     }
 
     private boolean isValidGrid(GridPoint pt, int channelWidth) {
@@ -238,22 +246,32 @@ public class HadlockRouter extends BaseRouter {
 
     private void initialCleanUp(GridPoint start, GridPoint end, Channel channel) {
         int channelWidth = channel.getChannelWidth();
-        int startX = start.mX - channelWidth / 2 - mParameters.getComponentSpacing();
-        int startY = start.mY - channelWidth / 2 - mParameters.getComponentSpacing();
-        for (int i = 0; i < startX + channelWidth + 2 * mParameters.getComponentSpacing(); ++i) {
-            for (int j = 0; j < startY + channelWidth + 2 * mParameters.getComponentSpacing(); ++j) {
+        int startX = start.mX - channelWidth / 2 - mParameters.getChannelSpacing();
+        int startY = start.mY - channelWidth / 2 - mParameters.getChannelSpacing();
+        for (int i = 0; i < startX + channelWidth + 2 * mParameters.getChannelSpacing(); ++i) {
+            for (int j = 0; j < startY + channelWidth + 2 * mParameters.getChannelSpacing(); ++j) {
                 mPathMap[i][j] = 0;
                 mDetourMap[i][j] = 0;
                 mMapStatus[i][j] = GridStatus.EMPTY;
             }
         }
-        int endX = end.mX - channelWidth / 2 - mParameters.getComponentSpacing();
-        int endY = end.mY - channelWidth / 2 - mParameters.getComponentSpacing();
-        for (int i = 0; i < endX + channelWidth + 2 * mParameters.getComponentSpacing(); ++i) {
-            for (int j = 0; j < endY + channelWidth + 2 * mParameters.getComponentSpacing(); ++j) {
+        int endX = end.mX - channelWidth / 2 - mParameters.getChannelSpacing();
+        int endY = end.mY - channelWidth / 2 - mParameters.getChannelSpacing();
+        for (int i = 0; i < endX + channelWidth + 2 * mParameters.getChannelSpacing(); ++i) {
+            for (int j = 0; j < endY + channelWidth + 2 * mParameters.getChannelSpacing(); ++j) {
                 mPathMap[i][j] = 0;
                 mDetourMap[i][j] = 0;
                 mMapStatus[i][j] = GridStatus.EMPTY;
+            }
+        }
+    }
+
+    private void afterRouteChannel() {
+        for (int i = 0; i < mPathMap.length; ++i) {
+            for (int j = 0; j < mPathMap[i].length; ++j) {
+                if (mMapStatus[i][j] != GridStatus.VISITED) {
+                    mMapStatus[i][j] = GridStatus.EMPTY;
+                }
             }
         }
     }
