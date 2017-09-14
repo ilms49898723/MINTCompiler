@@ -10,7 +10,7 @@ import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.SimulatedAnnealingPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
-import com.github.ilms49898723.fluigi.routing.DummyRouter;
+import com.github.ilms49898723.fluigi.routing.HadlockRouter;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -46,7 +46,7 @@ public class DeviceProcessor {
         }
         BasePlacer placer = new SimulatedAnnealingPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.start();
-        BaseRouter router = new DummyRouter(mSymbolTable, mDeviceGraph, mParameters);
+        BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.start();
         outputPng();
         outputSvg();
@@ -67,8 +67,8 @@ public class DeviceProcessor {
     }
 
     private void outputPng() {
-        int width = (int) mParameters.getMaxDeviceWidth();
-        int height = (int) mParameters.getMaxDeviceHeight();
+        int width = mParameters.getMaxDeviceWidth();
+        int height = mParameters.getMaxDeviceHeight();
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D png = (Graphics2D) image.getGraphics();
         png.setColor(Color.WHITE);
@@ -86,8 +86,8 @@ public class DeviceProcessor {
     }
 
     private void outputSvg() {
-        int width = (int) mParameters.getMaxDeviceWidth();
-        int height = (int) mParameters.getMaxDeviceHeight();
+        int width = mParameters.getMaxDeviceWidth();
+        int height = mParameters.getMaxDeviceHeight();
         SVGGraphics2D svg = new SVGGraphics2D(width, height);
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);

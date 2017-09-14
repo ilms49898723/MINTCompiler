@@ -2,6 +2,7 @@ package com.github.ilms49898723.fluigi.routing;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.Channel;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
@@ -9,6 +10,7 @@ import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -123,9 +125,11 @@ public class HadlockRouter extends BaseRouter {
                 BaseComponent src = mSymbolTable.get(source.getIdentifier());
                 BaseComponent dst = mSymbolTable.get(target.getIdentifier());
                 Channel chn = (Channel) mSymbolTable.get(channel.getChannel());
+                System.out.println("Routing channel " + chn.getIdentifier());
                 boolean routeResult = routeChannel(src, source.getPortNumber(), dst, target.getPortNumber(), chn);
                 if (!routeResult) {
                     System.err.println("Route Error!");
+                    return;
                 }
             }
         }
@@ -134,13 +138,22 @@ public class HadlockRouter extends BaseRouter {
     private void preMark() {
         for (BaseComponent component : mSymbolTable.getComponentsExceptChannel()) {
             System.out.println("Premark component " + component.getIdentifier());
-            System.out.println(component.getPosition());
-            System.out.println(component.getWidth() + " " + component.getHeight());
-            for (int i = component.getLeftTopX(); i <= component.getRightBottomX(); ++i) {
-                for (int j = component.getLeftTopY(); j <= component.getRightBottomY(); ++j) {
-                    mPathMap[i][j] = -1;
-                    mDetourMap[i][j] = -1;
-                    mMapStatus[i][j] = GridStatus.VISITED;
+            System.out.println("  At " + component.getPosition());
+            List<Point2DPair> points = component.getPoints();
+            for (Point2DPair pointPair : points) {
+                int delta = mParameters.getComponentSpacing() / 2;
+                Point2D pA = pointPair.getPointA().subtract(delta, delta);
+                Point2D pB = pointPair.getPointB().add(delta, delta);
+                int x = (int) pA.getX();
+                int y = (int) pA.getY();
+                int w = (int) pB.subtract(pA).getX();
+                int h = (int) pB.subtract(pA).getY();
+                for (int i = 0; i < w; ++i) {
+                    for (int j = 0; j < h; ++j) {
+                        mPathMap[x + i][y + j] = -1;
+                        mDetourMap[x + i][y + j] = -1;
+                        mMapStatus[x + i][y + j] = GridStatus.VISITED;
+                    }
                 }
             }
         }
@@ -197,7 +210,7 @@ public class HadlockRouter extends BaseRouter {
             mMapStatus[next.mX][next.mY] = GridStatus.BACKTRACKED;
             Point2D leftTop = new Point2D(next.mX - channel.getChannelWidth() / 2, next.mY - channel.getChannelWidth() / 2);
             Point2D rightBottom = leftTop.add(channel.getChannelWidth(), channel.getChannelWidth());
-//            channel.addPoint(new Point2DPair(leftTop, rightBottom), Color.BLUE);
+            channel.addPoint(new Point2DPair(leftTop, rightBottom), Color.BLUE);
             current = next;
         }
         if (!current.equalsPosition(end)) {
@@ -212,11 +225,10 @@ public class HadlockRouter extends BaseRouter {
         pt = pt.subtract(w / 2, w / 2);
         for (int i = 0; i < w; ++i) {
             for (int j = 0; j < w; ++j) {
-                if (pt.mX + i < 0 || pt.mY + i < 0 || pt.mX + i >= mParameters.getMaxDeviceWidth() || pt.mY + i >= mParameters.getMaxDeviceHeight()) {
+                if (pt.mX + i < 0 || pt.mY + j < 0 || pt.mX + i >= mParameters.getMaxDeviceWidth() || pt.mY + j >= mParameters.getMaxDeviceHeight()) {
                     return false;
                 }
-                if (mMapStatus[pt.mX + i][pt.mY + j] != GridStatus.EMPTY &&
-                    mMapStatus[pt.mX + i][pt.mY + j] != GridStatus.OCCUPIED) {
+                if (mMapStatus[pt.mX + i][pt.mY + j] == GridStatus.VISITED) {
                     return false;
                 }
             }
@@ -226,19 +238,19 @@ public class HadlockRouter extends BaseRouter {
 
     private void initialCleanUp(GridPoint start, GridPoint end, Channel channel) {
         int channelWidth = channel.getChannelWidth();
-        int startX = start.mX - channelWidth / 2;
-        int startY = start.mY - channelWidth / 2;
-        for (int i = 0; i < startX + channelWidth; ++i) {
-            for (int j = 0; j < startY + channelWidth; ++j) {
+        int startX = start.mX - channelWidth / 2 - mParameters.getComponentSpacing();
+        int startY = start.mY - channelWidth / 2 - mParameters.getComponentSpacing();
+        for (int i = 0; i < startX + channelWidth + 2 * mParameters.getComponentSpacing(); ++i) {
+            for (int j = 0; j < startY + channelWidth + 2 * mParameters.getComponentSpacing(); ++j) {
                 mPathMap[i][j] = 0;
                 mDetourMap[i][j] = 0;
                 mMapStatus[i][j] = GridStatus.EMPTY;
             }
         }
-        int endX = end.mX - channelWidth / 2;
-        int endY = end.mY - channelWidth / 2;
-        for (int i = 0; i < endX + channelWidth; ++i) {
-            for (int j = 0; j < endY + channelWidth; ++j) {
+        int endX = end.mX - channelWidth / 2 - mParameters.getComponentSpacing();
+        int endY = end.mY - channelWidth / 2 - mParameters.getComponentSpacing();
+        for (int i = 0; i < endX + channelWidth + 2 * mParameters.getComponentSpacing(); ++i) {
+            for (int j = 0; j < endY + channelWidth + 2 * mParameters.getComponentSpacing(); ++j) {
                 mPathMap[i][j] = 0;
                 mDetourMap[i][j] = 0;
                 mMapStatus[i][j] = GridStatus.EMPTY;

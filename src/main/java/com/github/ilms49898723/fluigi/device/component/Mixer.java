@@ -11,17 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Mixer extends BaseComponent {
-    private List<Point2DPair> mPoints;
-    private List<Color> mColors;
     private int mNumBends;
     private int mBendSpacing;
     private int mBendLength;
     private int mChannelWidth;
 
     public Mixer(String identifier, ComponentLayer layer, int numBends, int bendSpacing, int bendLength, int channelWidth) {
-        super(identifier, ComponentType.MIXER, layer);
-        mPoints = new ArrayList<>();
-        mColors = new ArrayList<>();
+        super(identifier, layer, ComponentType.MIXER);
         mNumBends = numBends;
         mBendSpacing = bendSpacing;
         mBendLength = bendLength;

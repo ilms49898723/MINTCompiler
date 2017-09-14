@@ -46,9 +46,9 @@ public class Point2DUtil {
     public static void drawPoints(List<Point2DPair> points, List<Color> colors, Point2D pivot, Graphics2D g) {
         for (int i = 0; i < points.size(); ++i) {
             Point2D pt = points.get(i).getPointA();
-            int w = (int) (points.get(i).getPointB().getX() - pt.getX());
-            int h = (int) (points.get(i).getPointB().getY() - pt.getY());
-            pt = new Point2D(pt.getX() + pivot.getX(), pt.getY() + pivot.getY());
+            int w = (int) (points.get(i).getPointB().subtract(pt)).getX();
+            int h = (int) (points.get(i).getPointB().subtract(pt)).getY();
+            pt = pt.add(pivot);
             g.setColor(colors.get(i));
             g.fillRect((int) pt.getX(), (int) pt.getY(), w, h);
         }

@@ -11,6 +11,18 @@ public class Point2DPair {
         mPointB = pointB;
     }
 
+    public Point2DPair addA(Point2D point) {
+        return new Point2DPair(mPointA.add(point), mPointB);
+    }
+
+    public Point2DPair addB(Point2D point) {
+        return new Point2DPair(mPointA, mPointB.add(point));
+    }
+
+    public Point2DPair addAll(Point2D point) {
+        return new Point2DPair(mPointA.add(point), mPointB.add(point));
+    }
+
     public void setPointA(Point2D pointA) {
         mPointA = pointA;
     }
@@ -29,6 +41,10 @@ public class Point2DPair {
 
     @Override
     public String toString() {
-        return "(" + mPointA.toString() + "," + mPointB.toString() + ")";
+        return "(" + pointToString(mPointA) + "," + pointToString(mPointB) + ")";
+    }
+
+    private String pointToString(Point2D pt) {
+        return "(" + ((int) pt.getX()) + ", " + ((int) pt.getY()) + ")";
     }
 }

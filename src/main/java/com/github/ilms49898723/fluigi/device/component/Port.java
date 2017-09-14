@@ -10,7 +10,7 @@ public class Port extends BaseComponent {
     private int mRadius;
 
     public Port(String identifier, ComponentLayer layer, int radius) {
-        super(identifier, ComponentType.PORT, layer);
+        super(identifier, layer, ComponentType.PORT);
         mRadius = radius;
         addPort(1, new Point2D(0.0, radius));
         addPort(2, new Point2D(radius, 0.0));

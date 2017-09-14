@@ -1,31 +1,24 @@
 package com.github.ilms49898723.fluigi.device.component;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
-
 import javafx.geometry.Point2D;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tree extends BaseComponent {
-	private List<Point2DPair> mPoints;
-	private List<Color> mColors;
 	private int mInChannelNum;
 	private int mOutChannelNum;
 	private int mSpacing;
 	private int mChannelWidth;
 	private int mChannelLength;
-	
+
 	public Tree(String identifier, ComponentLayer layer, int inNum, int outNum, int spacing, int channelWidth) {
-		super(identifier, ComponentType.TREE, layer);
-		mPoints = new ArrayList<>();
-		mColors = new ArrayList<>();
+		super(identifier, layer, ComponentType.TREE);
 		mInChannelNum = inNum;
 		mOutChannelNum = outNum;
 		mSpacing = spacing;
@@ -36,27 +29,24 @@ public class Tree extends BaseComponent {
 
 	@Override
 	public boolean supportRotate() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public void rotate() {
-		// TODO Auto-generated method stub
 		Point2DUtil.rotateDevice(mPoints, mPorts);
 		rotateWidthHeight();
 	}
 
 	@Override
 	public void draw(Graphics2D g) {
-		// TODO Auto-generated method stub
 		Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
         Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
         for (int key : getPorts().keySet()) {
             Point2DUtil.drawPoint(getPort(key), Color.BLACK, Point2D.ZERO, 20, g);
         }
 	}
-	
+
 	private void setPoints() {
 		int numChannel = (mInChannelNum == 1) ? mOutChannelNum : mInChannelNum;
 		int numLevel = (int) (Math.log(numChannel) / Math.log(2));
@@ -76,13 +66,13 @@ public class Tree extends BaseComponent {
 			}
 			startPt = new Point2D(mPoints.get(0).getPointA().getX() + disNextLvl, startPt.getY() + (mChannelLength / 2) - mChannelWidth);
 		}
-		
+
 		double midLength = mPoints.get(0).getPointA().getX() + ((numChannel*(mChannelWidth + mSpacing) - mSpacing) / 2);
 		double midHeight = mPoints.get(0).getPointA().midpoint(mPoints.get(mPoints.size() - 1).getPointB()).getY();
 		Point2D midPt = new Point2D(midLength, midHeight);
-		
+
 		Point2DUtil.subtractPoints(mPoints, midPt);
-		
+
 		//Port-0 = 1, Port-1~n = n
 		for(int i = 0 ; i < numChannel ; i++) {
 			Point2D port = new Point2D(mPoints.get(i).getPointA().getX() + mChannelWidth / 2, mPoints.get(i).getPointA().getY());
@@ -90,22 +80,22 @@ public class Tree extends BaseComponent {
 		}
 		Point2D finalPort = new Point2D((mPoints.get(mPoints.size() - 1).getPointB()).getX() - mChannelWidth / 2, (mPoints.get(mPoints.size() - 1).getPointB()).getY());
 		addPort(0, finalPort);
-		
+
 		for(int i = 0 ; i < mPoints.size() ; i++) {
 			mColors.add(Color.BLUE);
 		}
 	}
-	
+
 	private List<Point2DPair> getSingleChannel(Point2D startPt) {
-		List<Point2DPair> result = new ArrayList<Point2DPair>();
+		List<Point2DPair> result = new ArrayList<>();
 		Point2D pa = new Point2D(startPt.getX(), startPt.getY());
 		Point2D pb = new Point2D(startPt.getX() + mChannelWidth, startPt.getY() + mChannelLength);
 		result.add(new Point2DPair(pa, pb));
 		return result;
 	}
-	
+
 	private List<Point2DPair> getSingleLevel(Point2D startPt, int level) {
-		List<Point2DPair> result = new ArrayList<Point2DPair>();
+		List<Point2DPair> result = new ArrayList<>();
 		int rec1Length = ((int)Math.pow(2, level - 1)) * (mChannelWidth + mSpacing) + mChannelWidth;
 		int rec2Height = mChannelLength / 2;
 		Point2D pa1 = new Point2D(startPt.getX(), startPt.getY());

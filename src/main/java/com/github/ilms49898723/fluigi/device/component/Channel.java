@@ -7,18 +7,12 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Channel extends BaseComponent {
-    private List<Point2DPair> mPoints;
-    private List<Color> mColors;
     private int mChannelWidth;
 
     public Channel(String identifier, ComponentLayer layer, int channelWidth) {
-        super(identifier, ComponentType.CHANNEL, layer);
-        mPoints = new ArrayList<>();
-        mColors = new ArrayList<>();
+        super(identifier, layer, ComponentType.CHANNEL);
         mChannelWidth = channelWidth;
         addPort(1, new Point2D(0.0, 0.0));
         addPort(2, new Point2D(0.0, 0.0));
