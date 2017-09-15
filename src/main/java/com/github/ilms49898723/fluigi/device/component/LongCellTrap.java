@@ -7,12 +7,8 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LongCellTrap extends BaseComponent {
-    private List<Point2DPair> mPoints;
-    private List<Color> mColors;
     private int mNumChambers;
     private int mChamberWidth;
     private int mChamberLength;
@@ -20,9 +16,7 @@ public class LongCellTrap extends BaseComponent {
     private int mChannelWidth;
 
     public LongCellTrap(String identifier, ComponentLayer layer, int numChambers, int chamberWidth, int chamberLength, int chamberSpacing, int channelWidth) {
-        super(identifier, ComponentType.LONG_CELLTRAP, layer);
-        mPoints = new ArrayList<>();
-        mColors = new ArrayList<>();
+        super(identifier, layer, ComponentType.LONG_CELLTRAP);
         mNumChambers = numChambers;
         mChamberWidth = chamberWidth;
         mChamberLength = chamberLength;

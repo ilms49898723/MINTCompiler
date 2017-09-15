@@ -7,20 +7,14 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SquareCellTrap extends BaseComponent {
-    private List<Point2DPair> mPoints;
-    private List<Color> mColors;
     private int mChamberWidth;
     private int mChamberLength;
     private int mChannelWidth;
 
     public SquareCellTrap(String identifier, ComponentLayer layer, int chamberWidth, int chamberLength, int channelWidth) {
-        super(identifier, ComponentType.SQUARE_CELLTRAP, layer);
-        mPoints = new ArrayList<>();
-        mColors = new ArrayList<>();
+        super(identifier, layer, ComponentType.SQUARE_CELLTRAP);
         mChamberWidth = chamberWidth;
         mChamberLength = chamberLength;
         mChannelWidth = channelWidth;

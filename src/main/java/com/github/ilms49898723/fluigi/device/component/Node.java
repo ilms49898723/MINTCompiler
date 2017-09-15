@@ -10,7 +10,7 @@ public class Node extends BaseComponent {
     private int mLength;
 
     public Node(String identifier, ComponentLayer layer, int length) {
-        super(identifier, ComponentType.NODE, layer);
+        super(identifier, layer, ComponentType.NODE);
         mLength = length;
         addPort(1, new Point2D(0.0, mLength / 2));
         addPort(2, new Point2D(mLength / 2, 0.0));

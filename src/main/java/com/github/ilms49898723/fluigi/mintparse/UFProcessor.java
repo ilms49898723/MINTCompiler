@@ -3,8 +3,8 @@ package com.github.ilms49898723.fluigi.mintparse;
 import com.github.ilms49898723.fluigi.antlr.UFBaseListener;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
 import com.github.ilms49898723.fluigi.device.component.*;
-import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
@@ -105,7 +105,8 @@ public class UFProcessor extends UFBaseListener {
             }
         }
         String channelId = ctx.ufname().ID().getText();
-        Channel channel = new Channel(channelId, mCurrentLayer);
+        int width = Integer.parseInt(ctx.widthParam().width.getText());
+        Channel channel = new Channel(channelId, mCurrentLayer, width);
         if (!mSymbolTable.put(channelId, channel)) {
             ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
             setInvalid();
@@ -114,7 +115,7 @@ public class UFProcessor extends UFBaseListener {
         String targetId = ctx.component2.getText();
         int sourcePort = Integer.parseInt(ctx.port1.getText());
         int targetPort = Integer.parseInt(ctx.port2.getText());
-        mDeviceGraph.addEdge(sourceId, sourcePort, targetId, targetPort);
+        mDeviceGraph.addEdge(sourceId, sourcePort, targetId, targetPort, channelId);
     }
 
     @Override

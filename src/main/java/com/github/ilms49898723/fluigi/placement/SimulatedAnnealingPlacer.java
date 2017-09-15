@@ -3,11 +3,11 @@ package com.github.ilms49898723.fluigi.placement;
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
+import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
-import org.jgrapht.graph.DefaultEdge;
 
 import java.util.List;
 import java.util.Random;
@@ -43,7 +43,6 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
     private void doPlacement(double cost, double temp) {
         int rangeX = mParameters.getMaxDeviceWidth();
         int rangeY = mParameters.getMaxDeviceHeight();
-        System.out.println("Device: " + rangeX + " * " + rangeY);
         List<BaseComponent> components = mSymbolTable.getComponentsExceptChannel();
         while (temp > 0.005 * cost / components.size() && temp > 2) {
             int rejected = 0;
@@ -51,16 +50,17 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
                 BaseComponent c = components.get(mRandom.nextInt(components.size()));
                 Point2D original = c.getPosition();
                 if (mRandom.nextDouble() <= 0.3) {
-                    int newX = (int) (c.getPositionX() + nextRandom() * rangeX);
+                    int newX = (int) (c.getPositionX() + nextRandom() * (rangeX / 5));
                     c.setPositionX(newX);
                     Point2DUtil.adjustComponent(c, mParameters);
                 } else if (mRandom.nextDouble() <= 0.6) {
-                    int newY = (int) (c.getPositionY() + nextRandom() * rangeY);
+                    int newY = (int) (c.getPositionY() + nextRandom() * (rangeY / 5));
                     c.setPositionY(newY);
                     Point2DUtil.adjustComponent(c, mParameters);
                 } else {
                     if (c.supportRotate()) {
                         c.rotate();
+                        Point2DUtil.adjustComponent(c, mParameters);
                     }
                 }
                 double newCost = getCost();
@@ -97,7 +97,7 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
 
     private int getCost() {
         int result = 0;
-        for (DefaultEdge edge : mDeviceGraph.getAllEdges()) {
+        for (DeviceEdge edge : mDeviceGraph.getAllEdges()) {
             DeviceComponent source = mDeviceGraph.getEdgeSource(edge);
             DeviceComponent target = mDeviceGraph.getEdgeTarget(edge);
             Point2D srcPort = mSymbolTable.get(source.getIdentifier()).getPort(source.getPortNumber());

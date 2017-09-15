@@ -1,11 +1,14 @@
 package com.github.ilms49898723.fluigi.device.component;
 
+import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class BaseComponent {
@@ -15,13 +18,18 @@ public abstract class BaseComponent {
     private int mWidth;
     private int mHeight;
     private Point2D mPosition;
+
+    protected List<Point2DPair> mPoints;
+    protected List<Color> mColors;
     protected Map<Integer, Point2D> mPorts;
 
-    public BaseComponent(String identifier, ComponentType type, ComponentLayer layer) {
+    public BaseComponent(String identifier, ComponentLayer layer, ComponentType type) {
         mIdentifier = identifier;
         mType = type;
         mLayer = layer;
         mPosition = new Point2D(0.0, 0.0);
+        mPoints = new ArrayList<>();
+        mColors = new ArrayList<>();
         mPorts = new HashMap<>();
     }
 
@@ -121,10 +129,19 @@ public abstract class BaseComponent {
         return mPorts;
     }
 
+    public List<Point2DPair> getPoints() {
+        List<Point2DPair> result = new ArrayList<>();
+        for (Point2DPair pair : mPoints) {
+            result.add(pair.addAll(getPosition()));
+        }
+        return result;
+    }
+
     protected void rotateWidthHeight() {
-        int temp = mHeight;
-        mHeight = mWidth;
-        mWidth = temp;
+        int newW = mHeight;
+        int newH = mWidth;
+        mWidth = newW;
+        mHeight = newH;
     }
 
     public abstract boolean supportRotate();
