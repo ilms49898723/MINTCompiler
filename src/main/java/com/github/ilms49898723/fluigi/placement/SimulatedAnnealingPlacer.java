@@ -32,7 +32,6 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
         double temp = 0;
         for (int i = 0; i < 20; ++i) {
             int c = randomPlacement();
-            System.out.println("Initial placement #" + (i + 1) + ": " + c);
             temp += c;
             cost = c;
         }
@@ -86,8 +85,8 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
             } else {
                 temp *= 0.8;
             }
-            System.out.println("cost: " + getCost() + ", accept rate: " + String.format("%.2f", rateAccept));
         }
+        System.out.println("Placement Cost: " + getCost());
     }
 
     private int randomPlacement() {

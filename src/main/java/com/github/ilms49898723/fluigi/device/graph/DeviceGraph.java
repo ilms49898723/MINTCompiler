@@ -56,6 +56,10 @@ public class DeviceGraph {
         return result;
     }
 
+    public Set<DeviceComponent> vertexSet() {
+        return mDeviceGraph.vertexSet();
+    }
+
     public Set<DeviceEdge> edgeSet() {
         return mDeviceGraph.edgeSet();
     }

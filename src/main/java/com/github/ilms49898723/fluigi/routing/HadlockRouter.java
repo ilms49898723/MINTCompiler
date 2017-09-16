@@ -11,9 +11,8 @@ import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class HadlockRouter extends BaseRouter {
     private enum GridStatus {
@@ -112,11 +111,17 @@ public class HadlockRouter extends BaseRouter {
 
     private int[][] mTraceMap;
     private GridStatus[][] mMapStatus;
+    private Map<DeviceComponent, Point2D> mPortsPosition;
 
     public HadlockRouter(SymbolTable symbolTable, DeviceGraph deviceGraph, Parameters parameters) {
         super(symbolTable, deviceGraph, parameters);
         mTraceMap = new int[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
         mMapStatus = new GridStatus[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
+        mPortsPosition = new HashMap<>();
+        for (DeviceComponent port : mDeviceGraph.vertexSet()) {
+            Point2D position = mSymbolTable.get(port.getIdentifier()).getPort(port.getPortNumber());
+            mPortsPosition.put(port, position);
+        }
         for (int i = 0; i < mTraceMap.length; ++i) {
             for (int j = 0; j < mTraceMap[i].length; ++j) {
                 mTraceMap[i][j] = -1;
@@ -135,11 +140,9 @@ public class HadlockRouter extends BaseRouter {
             for (DeviceEdge channel : channelList) {
                 DeviceComponent source = mDeviceGraph.getEdgeSource(channel);
                 DeviceComponent target = mDeviceGraph.getEdgeTarget(channel);
-                BaseComponent src = mSymbolTable.get(source.getIdentifier());
-                BaseComponent dst = mSymbolTable.get(target.getIdentifier());
                 Channel chn = (Channel) mSymbolTable.get(channel.getChannel());
                 System.out.println("Routing channel " + chn.getIdentifier());
-                boolean routeResult = routeChannel(src, source.getPortNumber(), dst, target.getPortNumber(), chn);
+                boolean routeResult = routeChannel(source, target, chn);
                 if (!routeResult) {
                     System.err.println("Routing Failed!");
                     failedCleanUp();
@@ -174,7 +177,11 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
-    private boolean routeChannel(BaseComponent src, int srcPort, BaseComponent dst, int dstPort, Channel channel) {
+    private boolean routeChannel(DeviceComponent source, DeviceComponent target, Channel channel) {
+        BaseComponent src = mSymbolTable.get(source.getIdentifier());
+        BaseComponent dst = mSymbolTable.get(target.getIdentifier());
+        int srcPort = source.getPortNumber();
+        int dstPort = target.getPortNumber();
         PriorityQueue<GridPoint> queue = new PriorityQueue<>();
         Point2D startPt = src.getPort(srcPort);
         Point2D endPt = dst.getPort(dstPort);
@@ -190,7 +197,7 @@ public class HadlockRouter extends BaseRouter {
             int backOfCurrent = mTraceMap[current.mX][current.mY];
             for (int i = 0; i < 4; ++i) {
                 GridPoint next = current.add(sMoves[i][0], sMoves[i][1]);
-                if (!isValidGrid(next, channel.getChannelWidth()) || mMapStatus[next.mX][next.mY] != GridStatus.EMPTY) {
+                if (!isValidGrid(next, source, target, channel.getChannelWidth()) || mMapStatus[next.mX][next.mY] != GridStatus.EMPTY) {
                     continue;
                 }
                 if (next.manhattanDistance(end) >= current.manhattanDistance(end)) {
@@ -229,8 +236,9 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
-    private boolean isValidGrid(GridPoint pt, int channelWidth) {
+    private boolean isValidGrid(GridPoint pt, DeviceComponent source, DeviceComponent target, int channelWidth) {
         int w = mParameters.getChannelSpacing() * 2 + channelWidth;
+        Point2D point = new Point2D(pt.mX, pt.mY);
         pt = pt.subtract(w / 2, w / 2);
         for (int i = 0; i < w; ++i) {
             for (int j = 0; j < w; ++j) {
@@ -240,6 +248,16 @@ public class HadlockRouter extends BaseRouter {
                 if (mMapStatus[pt.mX + i][pt.mY + j] == GridStatus.VISITED) {
                     return false;
                 }
+            }
+        }
+        for (DeviceComponent key : mPortsPosition.keySet()) {
+            if (key.equals(source) || key.equals(target)) {
+                continue;
+            }
+            Point2D port = mPortsPosition.get(key);
+            if (Math.abs(point.subtract(port.getX(), 0.0).getX()) < mParameters.getPortSpacing() + mParameters.getChannelSpacing()
+                    && Math.abs(point.subtract(0.0, port.getY()).getY()) < mParameters.getPortSpacing() + mParameters.getChannelSpacing()) {
+                return false;
             }
         }
         return true;
