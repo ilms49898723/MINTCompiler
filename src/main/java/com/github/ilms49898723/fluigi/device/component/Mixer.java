@@ -47,16 +47,20 @@ public class Mixer extends BaseComponent {
 
     private void setPoints() {
         Point2D startPoint = new Point2D(0.0, 0.0);
+        int delta = mChannelWidth;
+        mPoints.add(new Point2DPair(startPoint.add(0, -delta), startPoint.add(2 * delta, 0)));
+        startPoint = startPoint.add(2 * delta, 0);
         for (int i = 0; i < mNumBends; ++i) {
             mPoints.addAll(getSingleBend(startPoint));
             startPoint = new Point2D(startPoint.getX() + 2 * (mChannelWidth + mBendSpacing), startPoint.getY());
         }
+        mPoints.add(new Point2DPair(startPoint.add(0, -delta), startPoint.add(3 * delta, 0)));
         for (int i = 0; i < mPoints.size(); ++i) {
             mColors.add(Color.BLUE);
         }
         Point2D midPoint = mPoints.get(0).getPointA().midpoint(mPoints.get(mPoints.size() - 1).getPointB());
         Point2D portA = new Point2D(mChannelWidth / 2, -mChannelWidth / 2);
-        Point2D portB = portA.add(mNumBends * 2 * (mChannelWidth + mBendSpacing), 0.0);
+        Point2D portB = portA.add(mNumBends * 2 * (mChannelWidth + mBendSpacing) + 4 * delta, 0.0);
         portA = portA.subtract(midPoint);
         portB = portB.subtract(midPoint);
         addPort(1, portA);
