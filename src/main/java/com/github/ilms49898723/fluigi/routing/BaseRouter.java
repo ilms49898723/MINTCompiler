@@ -15,5 +15,5 @@ public abstract class BaseRouter {
         mParameters = parameters;
     }
 
-    public abstract void start();
+    public abstract boolean routing();
 }

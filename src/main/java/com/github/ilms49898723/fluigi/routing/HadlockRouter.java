@@ -91,6 +91,8 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
+    private static final int BEND_COST = 3;
+
     private static final int sMoves[][] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     private static int backMove(int moveId) {
@@ -124,7 +126,7 @@ public class HadlockRouter extends BaseRouter {
     }
 
     @Override
-    public void start() {
+    public boolean routing() {
         preMark();
         List<List<DeviceEdge>> channelLists = new ArrayList<>();
         channelLists.add(mDeviceGraph.getAllFlowEdges(mSymbolTable));
@@ -139,12 +141,14 @@ public class HadlockRouter extends BaseRouter {
                 System.out.println("Routing channel " + chn.getIdentifier());
                 boolean routeResult = routeChannel(src, source.getPortNumber(), dst, target.getPortNumber(), chn);
                 if (!routeResult) {
-                    System.err.println("Route Error!");
-                    return;
+                    System.err.println("Routing Failed!");
+                    failedCleanUp();
+                    return false;
                 }
                 afterRouteChannel();
             }
         }
+        return true;
     }
 
     private void preMark() {
@@ -194,7 +198,8 @@ public class HadlockRouter extends BaseRouter {
                 } else {
                     next.mDetourCost = current.mDetourCost;
                 }
-                next.mPathCost = current.mPathCost + 1 + (backMove(i) == backOfCurrent ? 0 : 1);
+                next.mDetourCost += (backMove(i) == backOfCurrent ? 0 : BEND_COST);
+                next.mPathCost = current.mPathCost + 1;
                 mMapStatus[next.mX][next.mY] = GridStatus.OCCUPIED;
                 mTraceMap[next.mX][next.mY] = backMove(i);
                 queue.add(next);
@@ -257,6 +262,13 @@ public class HadlockRouter extends BaseRouter {
                     mMapStatus[i][j] = GridStatus.EMPTY;
                 }
             }
+        }
+    }
+
+    private void failedCleanUp() {
+        List<BaseComponent> channels = mSymbolTable.getChannels();
+        for (BaseComponent component : channels) {
+            ((Channel) component).cleanup();
         }
     }
 }
