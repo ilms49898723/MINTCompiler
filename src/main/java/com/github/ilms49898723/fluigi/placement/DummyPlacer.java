@@ -13,7 +13,7 @@ public class DummyPlacer extends BasePlacer {
     }
 
     @Override
-    public void start() {
+    public boolean placement() {
         Random random = new Random();
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);
@@ -22,5 +22,6 @@ public class DummyPlacer extends BasePlacer {
             component.setPositionX(x);
             component.setPositionY(y);
         }
+        return true;
     }
 }

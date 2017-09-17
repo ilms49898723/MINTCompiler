@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Random;
 
 public class SimulatedAnnealingPlacer extends BasePlacer {
+    private static final int MAX_ITERATION = 100;
+
     private static final int CHANNEL_COST = 1;
     private static final int OVERLAP_COST = 10;
     private static final int NUM_MOVES_PER_TEMP_PER_COMPONENT = 50;
@@ -25,12 +27,11 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
     }
 
     @Override
-    public void start() {
+    public boolean placement() {
         double cost = 0;
         double temp = 0;
         for (int i = 0; i < 20; ++i) {
             int c = randomPlacement();
-            System.out.println("Initial placement #" + (i + 1) + ": " + c);
             temp += c;
             cost = c;
         }
@@ -38,13 +39,16 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
         do {
             doPlacement(cost, temp);
         } while (hasOverlap());
+        return true;
     }
 
     private void doPlacement(double cost, double temp) {
         int rangeX = mParameters.getMaxDeviceWidth();
         int rangeY = mParameters.getMaxDeviceHeight();
+        int counter = 0;
         List<BaseComponent> components = mSymbolTable.getComponentsExceptChannel();
-        while (temp > 0.005 * cost / components.size() && temp > 2) {
+        while (temp > 0.005 * cost / components.size() && temp > 2 && counter < MAX_ITERATION) {
+            ++counter;
             int rejected = 0;
             for (int i = 0; i < components.size() * NUM_MOVES_PER_TEMP_PER_COMPONENT; ++i) {
                 BaseComponent c = components.get(mRandom.nextInt(components.size()));
@@ -81,8 +85,8 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
             } else {
                 temp *= 0.8;
             }
-            System.out.println("cost: " + getCost() + ", accept rate: " + String.format("%.2f", rateAccept));
         }
+        System.out.println("Placement Cost: " + getCost());
     }
 
     private int randomPlacement() {

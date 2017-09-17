@@ -7,6 +7,7 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Channel extends BaseComponent {
     private int mChannelWidth;
@@ -27,6 +28,11 @@ public class Channel extends BaseComponent {
     public void addPoint(Point2DPair point, Color color) {
         mPoints.add(point);
         mColors.add(color);
+    }
+
+    public void cleanup() {
+        mPoints = new ArrayList<>();
+        mColors = new ArrayList<>();
     }
 
     @Override
