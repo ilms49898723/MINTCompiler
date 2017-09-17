@@ -255,8 +255,8 @@ public class HadlockRouter extends BaseRouter {
                 continue;
             }
             Point2D port = mPortsPosition.get(key);
-            if (Math.abs(point.subtract(port.getX(), 0.0).getX()) < mParameters.getPortSpacing() + mParameters.getChannelSpacing()
-                    && Math.abs(point.subtract(0.0, port.getY()).getY()) < mParameters.getPortSpacing() + mParameters.getChannelSpacing()) {
+            if (Math.abs(point.subtract(port.getX(), 0.0).getX()) < mParameters.getPortSpacing()
+                    && Math.abs(point.subtract(0.0, port.getY()).getY()) < mParameters.getPortSpacing()) {
                 return false;
             }
         }
