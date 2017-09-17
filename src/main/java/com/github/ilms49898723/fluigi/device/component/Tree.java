@@ -41,10 +41,10 @@ public class Tree extends BaseComponent {
 	@Override
 	public void draw(Graphics2D g) {
 		Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
-        Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
+        /*Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
         for (int key : getPorts().keySet()) {
             Point2DUtil.drawPoint(getPort(key), Color.BLACK, Point2D.ZERO, 20, g);
-        }
+        }*/
 	}
 
 	private void setPoints() {
@@ -58,7 +58,7 @@ public class Tree extends BaseComponent {
 		startPt = new Point2D(mPoints.get(0).getPointA().getX(), mChannelLength - mChannelWidth);
 		for(int i = 1 ; i <= numLevel ; i++) {
 			int numMixChannel = (int)Math.pow(2, (numLevel - i));
-			int disMixChannel = ((int)Math.pow(2, i)) * (mChannelWidth + mSpacing) + mChannelWidth;
+			int disMixChannel = ((int)Math.pow(2, i)) * (mChannelWidth + mSpacing);
 			int disNextLvl = ((int)Math.pow(2, i) - 1) * (mChannelWidth + mSpacing) / 2;
 			for(int j = 0 ; j < numMixChannel ; j++) {
 				mPoints.addAll(getSingleLevel(startPt, i));
