@@ -83,6 +83,9 @@ public class Tree extends BaseComponent {
 		for(int i = 0 ; i < mPoints.size() ; i++) {
 			mColors.add(Color.BLUE);
 		}
+		
+		setWidth(numChannel * (mChannelWidth + mSpacing) - mSpacing);
+		setHeight(mChannelLength + numLevel * (mChannelLength/2 - mChannelWidth));
 	}
 
 	private List<Point2DPair> getSingleChannel(Point2D startPt) {
