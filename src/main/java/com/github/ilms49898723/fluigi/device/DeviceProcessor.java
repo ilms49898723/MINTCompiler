@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class DeviceProcessor {
+    private static final int MAX_ITERATION = 10;
+
     private String mInputFilename;
     private String mOutputFilename;
     private Parameters mParameters;
@@ -44,10 +46,21 @@ public class DeviceProcessor {
         if (!mProcessor.isValid()) {
             System.exit(1);
         }
-        BasePlacer placer = new SimulatedAnnealingPlacer(mSymbolTable, mDeviceGraph, mParameters);
-        placer.start();
-        BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
-        router.start();
+        int counter = 0;
+        while (counter < MAX_ITERATION) {
+            ++counter;
+            boolean result;
+            BasePlacer placer = new SimulatedAnnealingPlacer(mSymbolTable, mDeviceGraph, mParameters);
+            result = placer.placement();
+            if (!result) {
+                continue;
+            }
+            BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
+            result = router.routing();
+            if (result) {
+                break;
+            }
+        }
         outputPng();
         outputSvg();
     }

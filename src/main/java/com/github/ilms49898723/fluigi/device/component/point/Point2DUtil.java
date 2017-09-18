@@ -79,17 +79,17 @@ public class Point2DUtil {
         int deviceHeight = parameters.getMaxDeviceHeight();
         int x = component.getPositionX();
         int y = component.getPositionY();
-        if (x - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() < 0) {
-            x = component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        if (x - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing() < 0) {
+            x = component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing();
         }
-        if (x + component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() >= deviceWidth) {
-            x = deviceWidth - 1 - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        if (x + component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing() >= deviceWidth) {
+            x = deviceWidth - 1 - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing();
         }
-        if (y - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() < 0) {
-            y = component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
+        if (y - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing() < 0) {
+            y = component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing();
         }
-        if (y + component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() >= deviceHeight) {
-            y = deviceHeight - 1 - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
+        if (y + component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing() >= deviceHeight) {
+            y = deviceHeight - 1 - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing();
         }
         component.setPosition(new Point2D(x, y));
     }

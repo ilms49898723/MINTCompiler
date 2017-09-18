@@ -6,10 +6,12 @@ import java.util.*;
 
 public class SymbolTable {
     private Map<String, BaseComponent> mSymbols;
+    private List<BaseComponent> mChannels;
     private List<BaseComponent> mComponentsExceptChannel;
 
     public SymbolTable() {
         mSymbols = new HashMap<>();
+        mChannels = new ArrayList<>();
         mComponentsExceptChannel = new ArrayList<>();
     }
 
@@ -20,6 +22,8 @@ public class SymbolTable {
             mSymbols.put(identifier, component);
             if (component.getType() != ComponentType.CHANNEL) {
                 mComponentsExceptChannel.add(component);
+            } else {
+                mChannels.add(component);
             }
             return true;
         }
@@ -39,6 +43,10 @@ public class SymbolTable {
 
     public Collection<BaseComponent> values() {
         return mSymbols.values();
+    }
+
+    public List<BaseComponent> getChannels() {
+        return mChannels;
     }
 
     public List<BaseComponent> getComponentsExceptChannel() {

@@ -15,5 +15,5 @@ public abstract class BasePlacer {
         mParameters = parameters;
     }
 
-    public abstract void start();
+    public abstract boolean placement();
 }
