@@ -246,7 +246,32 @@ public class UFProcessor extends UFBaseListener {
     		mDeviceGraph.addVertex(treeIdentifier, i);
     	}
     }
+    
+    @Override
+    public void exitRotaryStat(UFParser.RotaryStatContext ctx) {
+    	String rotaryIdentifier = ctx.ufname().ID().getText();
+    	int radius = 0;
+    	int flowChannelWidth = 0;
+    	for (UFParser.RotaryStatParamContext par : ctx.rotaryStatParams().rotaryStatParam()) {
+    		if(par.radiusParam() != null) {
+    			radius = Integer.parseInt(par.radiusParam().radius.getText());
+    		}
+    		if(par.flowChannelWidthParam() != null) {
+    			flowChannelWidth = Integer.parseInt(par.flowChannelWidthParam().flow_channel_width.getText());
+    		}
+    	}
+    	
+    	RotaryPump rotarypump = new RotaryPump(rotaryIdentifier, mCurrentLayer, radius, flowChannelWidth);
+    	if(!mSymbolTable.put(rotaryIdentifier, rotarypump)) {
+    		ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+    		setInvalid();
+    	}
+    	for (int i = 1 ; i <= 2 ; i++) {
+    		mDeviceGraph.addVertex(rotaryIdentifier, i);
+    	}
+    }
 
+    
     @Override
     public void visitErrorNode(ErrorNode node) {
         super.visitErrorNode(node);
