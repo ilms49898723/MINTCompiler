@@ -34,5 +34,4 @@ build/
 # Eclipse file
 .project
 .classpath
-.settings/org.eclipse.buildship.core.prefs
-
+.settings/
