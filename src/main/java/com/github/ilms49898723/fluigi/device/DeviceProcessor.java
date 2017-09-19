@@ -46,6 +46,7 @@ public class DeviceProcessor {
         if (!mProcessor.isValid()) {
             System.exit(1);
         }
+        mDeviceGraph.dump();
         int counter = 0;
         boolean placementAndRoutingResult = false;
         while (counter < MAX_ITERATION) {

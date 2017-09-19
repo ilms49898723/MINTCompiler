@@ -24,6 +24,11 @@ public class DeviceEdge {
     }
 
     @Override
+    public String toString() {
+        return "channel from " + mSource + " to " + mTarget + " id " + mChannel;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

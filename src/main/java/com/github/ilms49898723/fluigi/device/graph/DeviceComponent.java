@@ -18,6 +18,11 @@ public class DeviceComponent {
     }
 
     @Override
+    public String toString() {
+        return mIdentifier + ":" + mPortNumber;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -39,10 +44,5 @@ public class DeviceComponent {
         int result = getIdentifier() != null ? getIdentifier().hashCode() : 0;
         result = 31 * result + getPortNumber();
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return mIdentifier + ":" + mPortNumber;
     }
 }

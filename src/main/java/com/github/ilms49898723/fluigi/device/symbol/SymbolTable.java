@@ -33,6 +33,10 @@ public class SymbolTable {
         return mSymbols.getOrDefault(identifier, null);
     }
 
+    public BaseComponent remove(String identifier) {
+        return mSymbols.remove(identifier);
+    }
+
     public boolean containsKey(String identifier) {
         return mSymbols.containsKey(identifier);
     }

@@ -65,4 +65,49 @@ public class DeviceGraph {
     public DeviceComponent getEdgeTarget(DeviceEdge edge) {
         return mDeviceGraph.getEdgeTarget(edge);
     }
+
+    public DeviceEdge getEdge(String channelIdentifier) {
+        for (DeviceEdge edge : mDeviceGraph.edgeSet()) {
+            if (edge.getChannel().equals(channelIdentifier)) {
+                return edge;
+            }
+        }
+        return null;
+    }
+
+    public DeviceEdge getEdge(DeviceComponent source, DeviceComponent target) {
+        return mDeviceGraph.getEdge(source, target);
+    }
+
+    public void removeEdge(DeviceEdge edge) {
+        mDeviceGraph.removeEdge(edge);
+        for (int i = 0; i < mEdges.size(); ++i) {
+            if (mEdges.get(i).equals(edge)) {
+                mEdges.remove(i);
+                break;
+            }
+        }
+        for (int i = 0; i < mFlowEdges.size(); ++i) {
+            if (mFlowEdges.get(i).equals(edge)) {
+                mFlowEdges.remove(i);
+                break;
+            }
+        }
+        for (int i = 0; i < mControlEdges.size(); ++i) {
+            if (mControlEdges.get(i).equals(edge)) {
+                mControlEdges.remove(i);
+                break;
+            }
+        }
+    }
+
+    public void removeEdge(DeviceComponent source, DeviceComponent target) {
+        mDeviceGraph.removeEdge(source, target);
+    }
+
+    public void dump() {
+        for (DeviceEdge edge : mEdges) {
+            System.out.println(edge);
+        }
+    }
 }

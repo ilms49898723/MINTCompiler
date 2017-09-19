@@ -3,6 +3,8 @@ package com.github.ilms49898723.fluigi.mintparse;
 import com.github.ilms49898723.fluigi.antlr.UFBaseListener;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
 import com.github.ilms49898723.fluigi.device.component.*;
+import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
+import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
@@ -271,6 +273,45 @@ public class UFProcessor extends UFBaseListener {
     	}
     }
 
+    @Override
+    public void exitValveStat(UFParser.ValveStatContext ctx) {
+        String valveIdentifier = ctx.ufname().ID().getText();
+        String channelIdentifier = ctx.channel.getText();
+        if (!mSymbolTable.containsKey(channelIdentifier)) {
+            ErrorHandler.printError(mFilename, ctx.channel, ErrorMessages.E_UNDEFINED_IDENTIFIER);
+            setInvalid();
+        }
+        int w = 0;
+        int l = 0;
+        if (ctx.widthParam() != null) {
+            w = Integer.parseInt(ctx.widthParam().width.getText());
+        }
+        if (ctx.lengthParam() != null) {
+            l = Integer.parseInt(ctx.lengthParam().length.getText());
+        }
+        Valve valve = new Valve(valveIdentifier, mCurrentLayer, w, l, channelIdentifier);
+        if (!mSymbolTable.put(valveIdentifier, valve)) {
+            ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+            setInvalid();
+        }
+        DeviceEdge edge = mDeviceGraph.getEdge(channelIdentifier);
+        DeviceComponent source = mDeviceGraph.getEdgeSource(edge);
+        DeviceComponent target = mDeviceGraph.getEdgeTarget(edge);
+        String originalEdgeId = edge.getChannel();
+        Channel originalEdge = (Channel) mSymbolTable.remove(originalEdgeId);
+        mDeviceGraph.removeEdge(edge);
+        for (int i = 0; i < 3; ++i) {
+            mDeviceGraph.addVertex(valveIdentifier, i + 1);
+        }
+        String channelId1 = originalEdgeId + "#ch1";
+        String channelId2 = originalEdgeId + "#ch2";
+        BaseComponent newChannel1 = new Channel(channelId1, ComponentLayer.FLOW, originalEdge.getChannelWidth());
+        BaseComponent newChannel2 = new Channel(channelId2, ComponentLayer.FLOW, originalEdge.getChannelWidth());
+        mSymbolTable.put(channelId1, newChannel1);
+        mSymbolTable.put(channelId2, newChannel2);
+        mDeviceGraph.addEdge(source.getIdentifier(), source.getPortNumber(), valveIdentifier, 2, channelId1, ComponentLayer.FLOW);
+        mDeviceGraph.addEdge(valveIdentifier, 3, target.getIdentifier(), target.getPortNumber(), channelId2, ComponentLayer.FLOW);
+    }
 
     @Override
     public void visitErrorNode(ErrorNode node) {
