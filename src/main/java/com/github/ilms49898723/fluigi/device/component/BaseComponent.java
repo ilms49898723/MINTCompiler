@@ -121,10 +121,6 @@ public abstract class BaseComponent {
         return mPorts.get(id).add(getPosition());
     }
 
-    public void setPorts(Map<Integer, Point2D> ports) {
-        mPorts = ports;
-    }
-
     public Map<Integer, Point2D> getPorts() {
         return mPorts;
     }
@@ -179,6 +175,12 @@ public abstract class BaseComponent {
         if (getPosition() != null ? !getPosition().equals(component.getPosition()) : component.getPosition() != null) {
             return false;
         }
+        if (getPoints() != null ? !getPoints().equals(component.getPoints()) : component.getPoints() != null) {
+            return false;
+        }
+        if (mColors != null ? !mColors.equals(component.mColors) : component.mColors != null) {
+            return false;
+        }
         return getPorts() != null ? getPorts().equals(component.getPorts()) : component.getPorts() == null;
     }
 
@@ -190,6 +192,8 @@ public abstract class BaseComponent {
         result = 31 * result + getWidth();
         result = 31 * result + getHeight();
         result = 31 * result + (getPosition() != null ? getPosition().hashCode() : 0);
+        result = 31 * result + (getPoints() != null ? getPoints().hashCode() : 0);
+        result = 31 * result + (mColors != null ? mColors.hashCode() : 0);
         result = 31 * result + (getPorts() != null ? getPorts().hashCode() : 0);
         return result;
     }

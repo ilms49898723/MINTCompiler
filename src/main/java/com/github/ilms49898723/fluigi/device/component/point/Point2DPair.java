@@ -11,11 +11,11 @@ public class Point2DPair {
         mPointB = pointB;
     }
 
-    public Point2DPair addA(Point2D point) {
+    public Point2DPair addPointA(Point2D point) {
         return new Point2DPair(mPointA.add(point), mPointB);
     }
 
-    public Point2DPair addB(Point2D point) {
+    public Point2DPair addPointB(Point2D point) {
         return new Point2DPair(mPointA, mPointB.add(point));
     }
 

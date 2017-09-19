@@ -15,9 +15,7 @@ public class Channel extends BaseComponent {
     public Channel(String identifier, ComponentLayer layer, int channelWidth) {
         super(identifier, layer, ComponentType.CHANNEL);
         mChannelWidth = channelWidth;
-        addPort(1, new Point2D(0.0, 0.0));
-        addPort(2, new Point2D(0.0, 0.0));
-        setWidth(0);
+        setWidth(mChannelWidth);
         setHeight(0);
     }
 
@@ -48,5 +46,29 @@ public class Channel extends BaseComponent {
     @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, Point2D.ZERO, g);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        Channel channel = (Channel) o;
+
+        return getChannelWidth() == channel.getChannelWidth();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + getChannelWidth();
+        return result;
     }
 }

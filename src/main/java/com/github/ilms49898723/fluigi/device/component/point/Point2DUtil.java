@@ -54,6 +54,10 @@ public class Point2DUtil {
         }
     }
 
+    public static boolean isOverlapped(BaseComponent a, BaseComponent b, Parameters parameters) {
+        return calculateOverlap(a, b, parameters).equals(Point2D.ZERO);
+    }
+
     public static Point2D calculateOverlap(BaseComponent a, BaseComponent b, Parameters parameters) {
         int leftA = a.getLeftTopX() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
         int rightA = a.getRightBottomX() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
@@ -70,7 +74,7 @@ public class Point2DUtil {
             y /= parameters.getMinResolution();
             return new Point2D(x, y);
         } else {
-            return new Point2D(0, 0);
+            return Point2D.ZERO;
         }
     }
 

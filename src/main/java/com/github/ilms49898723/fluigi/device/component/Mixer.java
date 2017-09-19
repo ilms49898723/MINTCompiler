@@ -89,4 +89,40 @@ public class Mixer extends BaseComponent {
         result.add(new Point2DPair(pe1, pe2));
         return result;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        Mixer mixer = (Mixer) o;
+
+        if (mNumBends != mixer.mNumBends) {
+            return false;
+        }
+        if (mBendSpacing != mixer.mBendSpacing) {
+            return false;
+        }
+        if (mBendLength != mixer.mBendLength) {
+            return false;
+        }
+        return mChannelWidth == mixer.mChannelWidth;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + mNumBends;
+        result = 31 * result + mBendSpacing;
+        result = 31 * result + mBendLength;
+        result = 31 * result + mChannelWidth;
+        return result;
+    }
 }

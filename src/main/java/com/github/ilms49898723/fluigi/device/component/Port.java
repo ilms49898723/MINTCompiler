@@ -51,4 +51,28 @@ public class Port extends BaseComponent {
         addPort(3, new Point2D(0.0, -mRadius));
         addPort(4, new Point2D(-mRadius, 0.0));
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        Port port = (Port) o;
+
+        return !(getRadius() != port.getRadius());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (int) getRadius();
+        return result;
+    }
 }

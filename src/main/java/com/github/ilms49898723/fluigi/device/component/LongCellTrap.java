@@ -69,4 +69,44 @@ public class LongCellTrap extends BaseComponent {
         setWidth((int) (portB.getX() - portA.getX()));
         setHeight(2 * mChamberLength + mChannelWidth);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        LongCellTrap cellTrap = (LongCellTrap) o;
+
+        if (mNumChambers != cellTrap.mNumChambers) {
+            return false;
+        }
+        if (mChamberWidth != cellTrap.mChamberWidth) {
+            return false;
+        }
+        if (mChamberLength != cellTrap.mChamberLength) {
+            return false;
+        }
+        if (mChamberSpacing != cellTrap.mChamberSpacing) {
+            return false;
+        }
+        return mChannelWidth == cellTrap.mChannelWidth;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + mNumChambers;
+        result = 31 * result + mChamberWidth;
+        result = 31 * result + mChamberLength;
+        result = 31 * result + mChamberSpacing;
+        result = 31 * result + mChannelWidth;
+        return result;
+    }
 }
