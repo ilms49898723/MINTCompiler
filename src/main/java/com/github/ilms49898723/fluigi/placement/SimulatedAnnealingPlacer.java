@@ -17,7 +17,7 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
 
     private static final int CHANNEL_COST = 1;
     private static final int OVERLAP_COST = 10;
-    private static final int NUM_MOVES_PER_TEMP_PER_COMPONENT = 50;
+    private static final int NUM_MOVES_PER_TEMP_PER_COMPONENT = 100;
 
     private Random mRandom;
 
@@ -46,7 +46,7 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
         int rangeX = mParameters.getMaxDeviceWidth();
         int rangeY = mParameters.getMaxDeviceHeight();
         int counter = 0;
-        List<BaseComponent> components = mSymbolTable.getComponentsExceptChannel();
+        List<BaseComponent> components = mSymbolTable.getComponents();
         while (temp > 0.005 * cost / components.size() && temp > 2 && counter < MAX_ITERATION) {
             ++counter;
             int rejected = 0;
@@ -91,7 +91,7 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
 
     private int randomPlacement() {
         Random random = new Random();
-        for (BaseComponent component : mSymbolTable.getComponentsExceptChannel()) {
+        for (BaseComponent component : mSymbolTable.getComponents()) {
             component.setPositionX(random.nextInt(mParameters.getMaxDeviceWidth()));
             component.setPositionY(random.nextInt(mParameters.getMaxDeviceHeight()));
             Point2DUtil.adjustComponent(component, mParameters);
@@ -109,7 +109,7 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
             Point2D distance = dstPort.subtract(srcPort);
             result += CHANNEL_COST * (Math.abs((int) distance.getX()) + Math.abs((int) distance.getY())) / mParameters.getMinResolution();
         }
-        List<BaseComponent> components = mSymbolTable.getComponentsExceptChannel();
+        List<BaseComponent> components = mSymbolTable.getComponents();
         for (int i = 0; i < components.size(); ++i) {
             for (int j = 0; j < components.size(); ++j) {
                 if (i != j) {
@@ -124,7 +124,7 @@ public class SimulatedAnnealingPlacer extends BasePlacer {
     }
 
     private boolean hasOverlap() {
-        List<BaseComponent> components = mSymbolTable.getComponentsExceptChannel();
+        List<BaseComponent> components = mSymbolTable.getComponents();
         for (int i = 0; i < components.size(); ++i) {
             for (int j = 0; j < components.size(); ++j) {
                 if (i != j) {

@@ -6,13 +6,13 @@ import java.util.*;
 
 public class SymbolTable {
     private Map<String, BaseComponent> mSymbols;
+    private List<BaseComponent> mComponents;
     private List<BaseComponent> mChannels;
-    private List<BaseComponent> mComponentsExceptChannel;
 
     public SymbolTable() {
         mSymbols = new HashMap<>();
+        mComponents = new ArrayList<>();
         mChannels = new ArrayList<>();
-        mComponentsExceptChannel = new ArrayList<>();
     }
 
     public boolean put(String identifier, BaseComponent component) {
@@ -21,7 +21,7 @@ public class SymbolTable {
         } else {
             mSymbols.put(identifier, component);
             if (component.getType() != ComponentType.CHANNEL) {
-                mComponentsExceptChannel.add(component);
+                mComponents.add(component);
             } else {
                 mChannels.add(component);
             }
@@ -45,19 +45,19 @@ public class SymbolTable {
         return mSymbols.values();
     }
 
-    public List<BaseComponent> getChannels() {
-        return mChannels;
+    public List<BaseComponent> getComponents() {
+        return mComponents;
     }
 
-    public List<BaseComponent> getComponentsExceptChannel() {
-        return mComponentsExceptChannel;
+    public List<BaseComponent> getChannels() {
+        return mChannels;
     }
 
     public int size() {
         return mSymbols.size();
     }
 
-    public int sizeExceptChannel() {
-        return mComponentsExceptChannel.size();
+    public int componentSize() {
+        return mComponents.size();
     }
 }

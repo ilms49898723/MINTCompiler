@@ -115,7 +115,7 @@ public class UFProcessor extends UFBaseListener {
         String targetId = ctx.component2.getText();
         int sourcePort = Integer.parseInt(ctx.port1.getText());
         int targetPort = Integer.parseInt(ctx.port2.getText());
-        mDeviceGraph.addEdge(sourceId, sourcePort, targetId, targetPort, channelId);
+        mDeviceGraph.addEdge(sourceId, sourcePort, targetId, targetPort, channelId, mCurrentLayer);
     }
 
     @Override
@@ -214,7 +214,7 @@ public class UFProcessor extends UFBaseListener {
         mDeviceGraph.addVertex(mixerIdentifier, 1);
         mDeviceGraph.addVertex(mixerIdentifier, 2);
     }
-    
+
     @Override
     public void exitTreeStat(UFParser.TreeStatContext ctx) {
     	String treeIdentifier = ctx.ufname().ID().getText();
@@ -236,7 +236,7 @@ public class UFProcessor extends UFBaseListener {
     			channelWidth = Integer.parseInt(par.flowChannelWidthParam().flow_channel_width.getText());
     		}
     	}
-    	
+
     	Tree tree = new Tree(treeIdentifier, mCurrentLayer, inNum, outNum, spacing, channelWidth);
     	if(!mSymbolTable.put(treeIdentifier, tree)) {
     		ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
@@ -246,7 +246,7 @@ public class UFProcessor extends UFBaseListener {
     		mDeviceGraph.addVertex(treeIdentifier, i);
     	}
     }
-    
+
     @Override
     public void exitRotaryStat(UFParser.RotaryStatContext ctx) {
     	String rotaryIdentifier = ctx.ufname().ID().getText();
@@ -260,7 +260,7 @@ public class UFProcessor extends UFBaseListener {
     			flowChannelWidth = Integer.parseInt(par.flowChannelWidthParam().flow_channel_width.getText());
     		}
     	}
-    	
+
     	RotaryPump rotarypump = new RotaryPump(rotaryIdentifier, mCurrentLayer, radius, flowChannelWidth);
     	if(!mSymbolTable.put(rotaryIdentifier, rotarypump)) {
     		ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
@@ -271,7 +271,7 @@ public class UFProcessor extends UFBaseListener {
     	}
     }
 
-    
+
     @Override
     public void visitErrorNode(ErrorNode node) {
         super.visitErrorNode(node);

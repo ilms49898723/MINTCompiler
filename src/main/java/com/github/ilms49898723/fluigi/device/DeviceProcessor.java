@@ -47,6 +47,7 @@ public class DeviceProcessor {
             System.exit(1);
         }
         int counter = 0;
+        boolean placementAndRoutingResult = false;
         while (counter < MAX_ITERATION) {
             ++counter;
             boolean result;
@@ -58,8 +59,13 @@ public class DeviceProcessor {
             BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
             result = router.routing();
             if (result) {
+                placementAndRoutingResult = true;
                 break;
             }
+        }
+        if (!placementAndRoutingResult) {
+            System.err.println("Placement or Routing error!");
+            // System.exit(1);
         }
         outputPng();
         outputSvg();
@@ -102,6 +108,8 @@ public class DeviceProcessor {
         int width = mParameters.getMaxDeviceWidth();
         int height = mParameters.getMaxDeviceHeight();
         SVGGraphics2D svg = new SVGGraphics2D(width, height);
+        svg.setColor(Color.WHITE);
+        svg.fillRect(0, 0, width, height);
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);
             component.draw(svg);

@@ -134,8 +134,8 @@ public class HadlockRouter extends BaseRouter {
     public boolean routing() {
         preMark();
         List<List<DeviceEdge>> channelLists = new ArrayList<>();
-        channelLists.add(mDeviceGraph.getAllFlowEdges(mSymbolTable));
-        channelLists.add(mDeviceGraph.getAllControlEdges(mSymbolTable));
+        channelLists.add(mDeviceGraph.getAllFlowEdges());
+        channelLists.add(mDeviceGraph.getAllControlEdges());
         for (List<DeviceEdge> channelList : channelLists) {
             for (DeviceEdge channel : channelList) {
                 DeviceComponent source = mDeviceGraph.getEdgeSource(channel);
@@ -155,7 +155,7 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private void preMark() {
-        for (BaseComponent component : mSymbolTable.getComponentsExceptChannel()) {
+        for (BaseComponent component : mSymbolTable.getComponents()) {
             markComponent(component);
         }
     }

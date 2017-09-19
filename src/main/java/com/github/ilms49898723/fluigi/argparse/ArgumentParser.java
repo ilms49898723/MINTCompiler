@@ -9,7 +9,7 @@ public class ArgumentParser {
         Options options = new Options();
         Option ufInput = new Option("m", "MINT description file");
         Option paramInput = new Option("i", true, "parameter file");
-        Option layoutOutput = new Option("o", true, "output filename");
+        Option layoutOutput = new Option("o", true, "output filename (File ext. is not needed.");
         ufInput.setArgName("FILE");
         ufInput.setRequired(true);
         ufInput.setArgs(1);
