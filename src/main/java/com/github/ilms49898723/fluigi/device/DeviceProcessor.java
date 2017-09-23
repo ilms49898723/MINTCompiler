@@ -7,7 +7,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
-import com.github.ilms49898723.fluigi.placement.mincut.MinCutInitialPlacer;
+import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -44,7 +44,7 @@ public class DeviceProcessor {
         if (!mProcessor.isValid()) {
             System.exit(1);
         }
-        BasePlacer placer = new MinCutInitialPlacer(mSymbolTable, mDeviceGraph, mParameters);
+        BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
 //        int counter = 0;
 //        boolean placementAndRoutingResult = false;

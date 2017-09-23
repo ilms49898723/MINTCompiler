@@ -4,9 +4,60 @@ import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleGraph;
 
-import java.util.Set;
+import java.util.*;
 
 public class GraphUtil {
+    public static class FarthestPair {
+        private Graph<String, GraphEdge> mGraph;
+        private List<String> mVertices;
+        private String mVertexA;
+        private String mVertexB;
+
+        public FarthestPair(Graph<String, GraphEdge> graph) {
+            mGraph = graph;
+            mVertices = new ArrayList<>(graph.vertexSet());
+            mVertexA = breathFirstSearch(mVertices.get(0));
+            mVertexB = breathFirstSearch(mVertexA);
+        }
+
+        public String getVertexA() {
+            return mVertexA;
+        }
+
+        public String getVertexB() {
+            return mVertexB;
+        }
+
+        private String breathFirstSearch(String vertex) {
+            Queue<String> queue = new ArrayDeque<>();
+            Map<String, Integer> visited = new HashMap<>();
+            for (String v : mVertices) {
+                visited.put(v, -1);
+            }
+            queue.add(vertex);
+            visited.put(vertex, 0);
+            while (!queue.isEmpty()) {
+                String front = queue.poll();
+                for (GraphEdge edge : mGraph.edgesOf(front)) {
+                    String out = (edge.getVertexA().equals(front)) ? edge.getVertexB() : edge.getVertexA();
+                    if (visited.get(out) == -1) {
+                        visited.put(out, visited.get(front) + 1);
+                        queue.add(out);
+                    }
+                }
+            }
+            String result = "";
+            int max = Integer.MIN_VALUE;
+            for (String key : visited.keySet()) {
+                if (visited.get(key) > max) {
+                    max = visited.get(key);
+                    result = key;
+                }
+            }
+            return result;
+        }
+    }
+
     public static UndirectedGraph<String, GraphEdge> constructGraph(Graph<DeviceComponent, DeviceEdge> deviceGraph) {
         UndirectedGraph<String, GraphEdge> graph = new SimpleGraph<>(GraphEdge.class);
         for (DeviceComponent vertex : deviceGraph.vertexSet()) {
