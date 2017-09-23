@@ -58,6 +58,10 @@ public class DeviceGraph {
         return mDeviceGraph.edgeSet();
     }
 
+    public Set<DeviceEdge> edgesOf(DeviceComponent source) {
+        return mDeviceGraph.edgesOf(source);
+    }
+
     public DeviceComponent getEdgeSource(DeviceEdge edge) {
         return mDeviceGraph.getEdgeSource(edge);
     }
@@ -103,6 +107,10 @@ public class DeviceGraph {
 
     public void removeEdge(DeviceComponent source, DeviceComponent target) {
         mDeviceGraph.removeEdge(source, target);
+    }
+
+    public Graph<DeviceComponent, DeviceEdge> getGraph() {
+        return mDeviceGraph;
     }
 
     public void dump() {

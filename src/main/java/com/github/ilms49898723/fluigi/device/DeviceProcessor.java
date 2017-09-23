@@ -7,10 +7,8 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
-import com.github.ilms49898723.fluigi.placement.SimulatedAnnealingPlacer;
+import com.github.ilms49898723.fluigi.placement.mincut.MinCutInitialPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
-import com.github.ilms49898723.fluigi.routing.BaseRouter;
-import com.github.ilms49898723.fluigi.routing.HadlockRouter;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -46,28 +44,28 @@ public class DeviceProcessor {
         if (!mProcessor.isValid()) {
             System.exit(1);
         }
-        mDeviceGraph.dump();
-        int counter = 0;
-        boolean placementAndRoutingResult = false;
-        while (counter < MAX_ITERATION) {
-            ++counter;
-            boolean result;
-            BasePlacer placer = new SimulatedAnnealingPlacer(mSymbolTable, mDeviceGraph, mParameters);
-            result = placer.placement();
-            if (!result) {
-                continue;
-            }
-            BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
-            result = router.routing();
-            if (result) {
-                placementAndRoutingResult = true;
-                break;
-            }
-        }
-        if (!placementAndRoutingResult) {
-            System.err.println("Placement or Routing error!");
-            // System.exit(1);
-        }
+        BasePlacer placer = new MinCutInitialPlacer(mSymbolTable, mDeviceGraph, mParameters);
+        placer.placement();
+//        int counter = 0;
+//        boolean placementAndRoutingResult = false;
+//        while (counter < MAX_ITERATION) {
+//            ++counter;
+//            boolean result;
+//            BasePlacer placer = new SimulatedAnnealingPlacer(mSymbolTable, mDeviceGraph, mParameters);
+//            result = placer.placement();
+//            if (!result) {
+//                continue;
+//            }
+//            BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
+//            result = router.routing();
+//            if (result) {
+//                placementAndRoutingResult = true;
+//                break;
+//            }
+//        }
+//        if (!placementAndRoutingResult) {
+//            System.err.println("Placement or Routing error!");
+//        }
         outputPng();
         outputSvg();
     }

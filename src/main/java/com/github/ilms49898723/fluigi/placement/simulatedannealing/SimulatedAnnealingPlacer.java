@@ -1,4 +1,4 @@
-package com.github.ilms49898723.fluigi.placement;
+package com.github.ilms49898723.fluigi.placement.simulatedannealing;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
@@ -6,6 +6,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
+import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 
