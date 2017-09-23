@@ -36,7 +36,7 @@ public class GraphPartitionPlacer extends BasePlacer {
             String startA = farthestPair.getVertexA();
             int numVertex = graph.vertexSet().size();
             int limitA = numVertex / 2;
-            Set<String> vertexA = breathFirstSearch(graph, startA, limitA);
+            Set<String> vertexA = breadthFirstSearch(graph, startA, limitA);
             Set<String> vertexB = new HashSet<>();
             vertexB.addAll(graph.vertexSet());
             vertexB.removeAll(vertexA);
@@ -81,7 +81,7 @@ public class GraphPartitionPlacer extends BasePlacer {
 //        return subArea / allArea;
     }
 
-    private Set<String> breathFirstSearch(Graph<String, GraphEdge> graph, String start, int limit) {
+    private Set<String> breadthFirstSearch(Graph<String, GraphEdge> graph, String start, int limit) {
         Set<String> result = new HashSet<>();
         int size = 0;
         Queue<String> queue = new ArrayDeque<>();

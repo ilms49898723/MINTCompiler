@@ -16,8 +16,8 @@ public class GraphUtil {
         public FarthestPair(Graph<String, GraphEdge> graph) {
             mGraph = graph;
             mVertices = new ArrayList<>(graph.vertexSet());
-            mVertexA = breathFirstSearch(mVertices.get(0));
-            mVertexB = breathFirstSearch(mVertexA);
+            mVertexA = breadthFirstSearch(mVertices.get(0));
+            mVertexB = breadthFirstSearch(mVertexA);
         }
 
         public String getVertexA() {
@@ -28,7 +28,7 @@ public class GraphUtil {
             return mVertexB;
         }
 
-        private String breathFirstSearch(String vertex) {
+        private String breadthFirstSearch(String vertex) {
             Queue<String> queue = new ArrayDeque<>();
             Map<String, Integer> visited = new HashMap<>();
             for (String v : mVertices) {
