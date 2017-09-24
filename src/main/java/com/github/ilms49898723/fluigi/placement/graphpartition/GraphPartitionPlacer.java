@@ -29,7 +29,6 @@ public class GraphPartitionPlacer extends BasePlacer {
 
     private boolean graphPartition(Graph<String, GraphEdge> graph, Point2D basePoint, Point2D size) {
         if (graph.vertexSet().size() <= NUM_CELLS_IN_A_SLOT) {
-            System.out.println(graph.vertexSet());
             return placeCells(graph, basePoint, size);
         } else {
             GraphUtil.FarthestPair farthestPair = new GraphUtil.FarthestPair(graph);
@@ -67,18 +66,7 @@ public class GraphPartitionPlacer extends BasePlacer {
     private double getRate(Set<String> sub, Set<String> all) {
         double a = (double) sub.size();
         double b = (double) all.size();
-        System.out.println(a / b);
         return a / b;
-//        double allArea = 0.0;
-//        double subArea = 0.0;
-//        for (String v : all) {
-//            BaseComponent component = mSymbolTable.get(v);
-//            allArea += component.getWidth() * component.getHeight();
-//            if (sub.contains(v)) {
-//                subArea += component.getWidth() * component.getHeight();
-//            }
-//        }
-//        return subArea / allArea;
     }
 
     private Set<String> breadthFirstSearch(Graph<String, GraphEdge> graph, String start, int limit) {
