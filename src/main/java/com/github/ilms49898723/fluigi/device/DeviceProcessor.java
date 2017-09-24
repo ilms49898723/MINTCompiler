@@ -3,12 +3,15 @@ package com.github.ilms49898723.fluigi.device;
 import com.github.ilms49898723.fluigi.antlr.UFLexer;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
+import com.github.ilms49898723.fluigi.routing.BaseRouter;
+import com.github.ilms49898723.fluigi.routing.HadlockRouter;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -46,6 +49,14 @@ public class DeviceProcessor {
         }
         BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
+
+        for (BaseComponent component : mSymbolTable.getComponents()) {
+            Point2DUtil.adjustComponent(component, mParameters);
+        }
+
+        BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
+        router.routing();
+
 //        int counter = 0;
 //        boolean placementAndRoutingResult = false;
 //        while (counter < MAX_ITERATION) {

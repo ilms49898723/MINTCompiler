@@ -117,6 +117,8 @@ public class UFProcessor extends UFBaseListener {
         String targetId = ctx.component2.getText();
         int sourcePort = Integer.parseInt(ctx.port1.getText());
         int targetPort = Integer.parseInt(ctx.port2.getText());
+        mSymbolTable.get(sourceId).setPortChannelWidth(sourcePort, width);
+        mSymbolTable.get(targetId).setPortChannelWidth(targetPort, width);
         mDeviceGraph.addEdge(sourceId, sourcePort, targetId, targetPort, channelId, mCurrentLayer);
     }
 

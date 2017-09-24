@@ -1,6 +1,7 @@
 package com.github.ilms49898723.fluigi.device.component.point;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 
@@ -23,7 +24,7 @@ public class Point2DUtil {
         return new Point2D(newX, newY);
     }
 
-    public static void rotateDevice(List<Point2DPair> points, Map<Integer, Point2D> ports) {
+    public static void rotateDevice(List<Point2DPair> points, Map<Integer, Point2D> ports, Map<Integer, PortDirection> directions) {
         for (int i = 0; i < points.size(); ++i) {
             Point2D newPointA = Point2DUtil.rotate(points.get(i).getPointA());
             Point2D newPointB = Point2DUtil.rotate(points.get(i).getPointB());
@@ -34,6 +35,23 @@ public class Point2DUtil {
         for (int identifier : ports.keySet()) {
             Point2D pt = ports.get(identifier);
             ports.put(identifier, Point2DUtil.rotate(pt));
+        }
+        for (int identifier : directions.keySet()) {
+            PortDirection direction = directions.get(identifier);
+            switch (direction) {
+                case TOP:
+                    directions.put(identifier, PortDirection.RIGHT);
+                    break;
+                case BOTTOM:
+                    directions.put(identifier, PortDirection.LEFT);
+                    break;
+                case LEFT:
+                    directions.put(identifier, PortDirection.TOP);
+                    break;
+                case RIGHT:
+                    directions.put(identifier, PortDirection.BOTTOM);
+                    break;
+            }
         }
     }
 
@@ -52,6 +70,32 @@ public class Point2DUtil {
             g.setColor(colors.get(i));
             g.fillRect((int) pt.getX(), (int) pt.getY(), w, h);
         }
+    }
+
+    public static void drawPort(Point2D portPosition, Point2D devicePosition, PortDirection direction, int channelWidth, Graphics2D g, Color color) {
+        Point2D pa = Point2D.ZERO;
+        Point2D pb = Point2D.ZERO;
+        switch (direction) {
+            case TOP:
+                pa = portPosition.subtract(channelWidth / 2, 0.0);
+                pb = devicePosition.add(channelWidth / 2, 0.0);
+                break;
+            case BOTTOM:
+                pa = devicePosition.subtract(channelWidth / 2, 0.0);
+                pb = portPosition.add(channelWidth / 2, 0.0);
+                break;
+            case LEFT:
+                pa = portPosition.subtract(0.0, channelWidth / 2);
+                pb = devicePosition.add(0.0, channelWidth / 2);
+                break;
+            case RIGHT:
+                pa = devicePosition.subtract(0.0, channelWidth / 2);
+                pb = portPosition.add(0.0, channelWidth / 2);
+                break;
+        }
+        Point2D size = pb.subtract(pa);
+        g.setColor(color);
+        g.fillRect((int) pa.getX(), (int) pa.getY(), (int) size.getX(), (int) size.getY());
     }
 
     public static boolean isOverlapped(BaseComponent a, BaseComponent b, Parameters parameters) {

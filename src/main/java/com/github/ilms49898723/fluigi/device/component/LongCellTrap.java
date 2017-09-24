@@ -4,6 +4,7 @@ import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
@@ -31,18 +32,8 @@ public class LongCellTrap extends BaseComponent {
     }
 
     @Override
-    public void rotate() {
-        Point2DUtil.rotateDevice(mPoints, mPorts);
-        rotateWidthHeight();
-    }
-
-    @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
-        Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
-        for (int key : getPorts().keySet()) {
-            Point2DUtil.drawPoint(getPort(key), Color.BLACK, Point2D.ZERO, 20, g);
-        }
     }
 
     private void setPoints() {
@@ -63,8 +54,8 @@ public class LongCellTrap extends BaseComponent {
         Point2D portB = channelEnd.add(0.0, -mChannelWidth / 2);
         portA = portA.subtract(midPoint);
         portB = portB.subtract(midPoint);
-        addPort(1, portA);
-        addPort(2, portB);
+        addPort(1, portA, PortDirection.LEFT);
+        addPort(2, portB, PortDirection.RIGHT);
         Point2DUtil.subtractPoints(mPoints, midPoint);
         setWidth((int) (portB.getX() - portA.getX()));
         setHeight(2 * mChamberLength + mChannelWidth);

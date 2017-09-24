@@ -4,6 +4,7 @@ import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
@@ -33,18 +34,8 @@ public class Tree extends BaseComponent {
     }
 
     @Override
-    public void rotate() {
-        Point2DUtil.rotateDevice(mPoints, mPorts);
-        rotateWidthHeight();
-    }
-
-    @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
-        /*Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
-        for (int key : getPorts().keySet()) {
-            Point2DUtil.drawPoint(getPort(key), Color.BLACK, Point2D.ZERO, 20, g);
-        }*/
     }
 
     private void setPoints() {
@@ -75,10 +66,10 @@ public class Tree extends BaseComponent {
 
         for(int i = 0 ; i < numChannel ; i++) {
             Point2D port = new Point2D(mPoints.get(i).getPointA().getX() + mChannelWidth / 2, mPoints.get(i).getPointA().getY());
-            addPort(i + 1, port);
+            addPort(i + 1, port, PortDirection.BOTTOM);
         }
         Point2D finalPort = new Point2D((mPoints.get(mPoints.size() - 1).getPointB()).getX() - mChannelWidth / 2, (mPoints.get(mPoints.size() - 1).getPointB()).getY());
-        addPort(numChannel + 1, finalPort);
+        addPort(numChannel + 1, finalPort, PortDirection.TOP);
 
         for(int i = 0 ; i < mPoints.size() ; i++) {
             mColors.add(Color.BLUE);

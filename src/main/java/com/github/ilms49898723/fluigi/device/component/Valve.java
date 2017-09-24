@@ -4,6 +4,7 @@ import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
@@ -21,12 +22,7 @@ public class Valve extends BaseComponent {
 
     @Override
     public boolean supportRotate() {
-        return false;
-    }
-
-    @Override
-    public void rotate() {
-
+        return true;
     }
 
     @Override
@@ -42,9 +38,8 @@ public class Valve extends BaseComponent {
         Point2D portL = new Point2D(-getWidth() / 2, 0.0);
         Point2D portR = new Point2D(getWidth() / 2, 0.0);
         Point2D port = new Point2D(0.0, getHeight() / 2);
-        addPort(1, port);
-        addPort(2, portL);
-        addPort(3, portR);
+        addPort(1, port, PortDirection.BOTTOM);
+        addPort(2, portL, PortDirection.LEFT);
+        addPort(3, portR, PortDirection.RIGHT);
     }
-
 }

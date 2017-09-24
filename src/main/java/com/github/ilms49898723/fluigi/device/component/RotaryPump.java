@@ -1,7 +1,6 @@
 package com.github.ilms49898723.fluigi.device.component;
 
 import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
-import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
@@ -28,12 +27,6 @@ public class RotaryPump extends BaseComponent{
 	@Override
     public boolean supportRotate() {
         return true;
-    }
-
-    @Override
-    public void rotate() {
-    		Point2DUtil.rotateDevice(mPoints, mPorts);
-		rotateWidthHeight();
     }
 
     @Override

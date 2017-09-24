@@ -1,8 +1,10 @@
 package com.github.ilms49898723.fluigi.device.component;
 
 import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
@@ -22,6 +24,8 @@ public abstract class BaseComponent {
     protected List<Point2DPair> mPoints;
     protected List<Color> mColors;
     protected Map<Integer, Point2D> mPorts;
+    protected Map<Integer, PortDirection> mPortDirection;
+    protected Map<Integer, Integer> mPortChannelWidth;
 
     public BaseComponent(String identifier, ComponentLayer layer, ComponentType type) {
         mIdentifier = identifier;
@@ -31,6 +35,8 @@ public abstract class BaseComponent {
         mPoints = new ArrayList<>();
         mColors = new ArrayList<>();
         mPorts = new HashMap<>();
+        mPortDirection = new HashMap<>();
+        mPortChannelWidth = new HashMap<>();
     }
 
     public String getIdentifier() {
@@ -113,8 +119,14 @@ public abstract class BaseComponent {
         return mPorts.containsKey(id);
     }
 
-    public void addPort(int id, Point2D port) {
+    public void addPort(int id, Point2D port, PortDirection direction) {
         mPorts.put(id, port);
+        mPortDirection.put(id, direction);
+        mPortChannelWidth.put(id, -1);
+    }
+
+    public void setPortChannelWidth(int id, int width) {
+        mPortChannelWidth.put(id, width);
     }
 
     public Point2D getPort(int id) {
@@ -133,7 +145,14 @@ public abstract class BaseComponent {
         return result;
     }
 
-    protected void rotateWidthHeight() {
+    public void rotate() {
+        if (supportRotate()) {
+            Point2DUtil.rotateDevice(mPoints, mPorts, mPortDirection);
+            rotateWidthHeight();
+        }
+    }
+
+    private void rotateWidthHeight() {
         int newW = mHeight;
         int newH = mWidth;
         mWidth = newW;
@@ -141,8 +160,6 @@ public abstract class BaseComponent {
     }
 
     public abstract boolean supportRotate();
-
-    public abstract void rotate();
 
     public abstract void draw(Graphics2D g);
 

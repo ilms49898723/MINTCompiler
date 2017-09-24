@@ -4,6 +4,7 @@ import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
+import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
@@ -27,17 +28,8 @@ public class SquareCellTrap extends BaseComponent {
     }
 
     @Override
-    public void rotate() {
-
-    }
-
-    @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
-        Point2DUtil.drawPoint(getPosition(), Color.BLACK, Point2D.ZERO, 20, g);
-        for (int key : getPorts().keySet()) {
-            Point2DUtil.drawPoint(getPort(key), Color.BLACK, Point2D.ZERO, 20, g);
-        }
     }
 
     private void setPoints(Point2D startPoint) {
@@ -62,10 +54,10 @@ public class SquareCellTrap extends BaseComponent {
         portB = portB.subtract(midPoint);
         portC = portC.subtract(midPoint);
         portD = portD.subtract(midPoint);
-        addPort(1, portA);
-        addPort(2, portB);
-        addPort(3, portC);
-        addPort(4, portD);
+        addPort(1, portA, PortDirection.RIGHT);
+        addPort(2, portB, PortDirection.LEFT);
+        addPort(3, portC, PortDirection.BOTTOM);
+        addPort(4, portD, PortDirection.TOP);
         Point2DUtil.subtractPoints(mPoints, midPoint);
         setWidth((int) (portA.getX() - portB.getX()));
         setHeight((int) (portC.getY() - portD.getY()));
