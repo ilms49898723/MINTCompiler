@@ -1,4 +1,4 @@
-package com.github.ilms49898723.fluigi.routing;
+package com.github.ilms49898723.fluigi.routing.hadlock;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.Channel;
@@ -8,6 +8,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
+import com.github.ilms49898723.fluigi.routing.BaseRouter;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
@@ -109,6 +110,8 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
+    private static final int MAX_ITERATION = 10;
+
     private int[][] mTraceMap;
     private GridStatus[][] mMapStatus;
     private Map<DeviceComponent, Point2D> mPortsPosition;
@@ -122,36 +125,58 @@ public class HadlockRouter extends BaseRouter {
             Point2D position = mSymbolTable.get(port.getIdentifier()).getPort(port.getPortNumber());
             mPortsPosition.put(port, position);
         }
+    }
+
+    @Override
+    public boolean routing() {
+        initializeMap();
+        List<List<DeviceEdge>> channelLists = new ArrayList<>();
+        channelLists.add(mDeviceGraph.getAllFlowEdges());
+        channelLists.add(mDeviceGraph.getAllControlEdges());
+        int routingCounter = 0;
+        for (List<DeviceEdge> channelList : channelLists) {
+            boolean result;
+            do {
+                result = routeChannels(channelList);
+                ++routingCounter;
+            } while (!result && routingCounter < MAX_ITERATION);
+            if (!result) {
+                System.err.println("Routing failed.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean routeChannels(List<DeviceEdge> channels) {
+        for (int i = 0; i < channels.size(); ++i) {
+            DeviceEdge channel = channels.get(i);
+            DeviceComponent source = mDeviceGraph.getEdgeSource(channel);
+            DeviceComponent target = mDeviceGraph.getEdgeTarget(channel);
+            Channel chn = (Channel) mSymbolTable.get(channel.getChannel());
+            System.out.println("Routing channel " + chn.getIdentifier());
+            boolean routeResult = routeChannel(source, target, chn);
+            if (!routeResult) {
+                System.err.println("Routing Failed on channel " + chn.getIdentifier());
+                System.err.println("Try re-ordering and re-routing.");
+                channels.remove(i);
+                channels.add(0, channel);
+                failedCleanUp();
+                return false;
+            }
+            afterRouteChannel();
+        }
+        return true;
+    }
+
+    private void initializeMap() {
         for (int i = 0; i < mTraceMap.length; ++i) {
             for (int j = 0; j < mTraceMap[i].length; ++j) {
                 mTraceMap[i][j] = -1;
                 mMapStatus[i][j] = GridStatus.EMPTY;
             }
         }
-    }
-
-    @Override
-    public boolean routing() {
         preMark();
-        List<List<DeviceEdge>> channelLists = new ArrayList<>();
-        channelLists.add(mDeviceGraph.getAllFlowEdges());
-        channelLists.add(mDeviceGraph.getAllControlEdges());
-        for (List<DeviceEdge> channelList : channelLists) {
-            for (DeviceEdge channel : channelList) {
-                DeviceComponent source = mDeviceGraph.getEdgeSource(channel);
-                DeviceComponent target = mDeviceGraph.getEdgeTarget(channel);
-                Channel chn = (Channel) mSymbolTable.get(channel.getChannel());
-                System.out.println("Routing channel " + chn.getIdentifier());
-                boolean routeResult = routeChannel(source, target, chn);
-                if (!routeResult) {
-                    System.err.println("Routing Failed!");
-//                    failedCleanUp();
-                    return false;
-                }
-                afterRouteChannel();
-            }
-        }
-        return true;
     }
 
     private void preMark() {
@@ -284,6 +309,7 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private void failedCleanUp() {
+        initializeMap();
         List<BaseComponent> channels = mSymbolTable.getChannels();
         for (BaseComponent component : channels) {
             ((Channel) component).cleanup();
