@@ -16,6 +16,11 @@ public class ErrorHandler {
         System.err.println(token.getText() + ": " + message);
     }
 
+    public static void printWarning(String filename, String token, String message) {
+        System.err.println("In file " + filename);
+        System.err.println("Warning: " + token + ": " + message);
+    }
+
     public static void printErrorAndExit(String filename, TerminalNode node, String message) {
         printError(filename, node, message);
         System.exit(1);

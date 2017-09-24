@@ -145,7 +145,7 @@ public class HadlockRouter extends BaseRouter {
                 boolean routeResult = routeChannel(source, target, chn);
                 if (!routeResult) {
                     System.err.println("Routing Failed!");
-                    failedCleanUp();
+//                    failedCleanUp();
                     return false;
                 }
                 afterRouteChannel();

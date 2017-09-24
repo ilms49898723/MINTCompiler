@@ -4,8 +4,13 @@ import com.github.ilms49898723.fluigi.antlr.UFLexer;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
+import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
+import com.github.ilms49898723.fluigi.device.graph.GraphEdge;
+import com.github.ilms49898723.fluigi.device.graph.GraphUtil;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
+import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
+import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
@@ -17,12 +22,15 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
+import org.jgrapht.Graph;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DeviceProcessor {
     private static final int MAX_ITERATION = 10;
@@ -47,6 +55,7 @@ public class DeviceProcessor {
         if (!mProcessor.isValid()) {
             System.exit(1);
         }
+        prePlacementCleanUp();
         BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
 
@@ -57,26 +66,6 @@ public class DeviceProcessor {
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
 
-//        int counter = 0;
-//        boolean placementAndRoutingResult = false;
-//        while (counter < MAX_ITERATION) {
-//            ++counter;
-//            boolean result;
-//            BasePlacer placer = new SimulatedAnnealingPlacer(mSymbolTable, mDeviceGraph, mParameters);
-//            result = placer.placement();
-//            if (!result) {
-//                continue;
-//            }
-//            BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
-//            result = router.routing();
-//            if (result) {
-//                placementAndRoutingResult = true;
-//                break;
-//            }
-//        }
-//        if (!placementAndRoutingResult) {
-//            System.err.println("Placement or Routing error!");
-//        }
         outputPng();
         outputSvg();
     }
@@ -92,6 +81,29 @@ public class DeviceProcessor {
             walker.walk(mProcessor, context);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void prePlacementCleanUp() {
+        Graph<String, GraphEdge> graph = GraphUtil.constructGraph(mDeviceGraph.getGraph());
+        List<String> toRemove = new ArrayList<>();
+        List<DeviceComponent> toRemoveVertex = new ArrayList<>();
+        for (String identifier : mSymbolTable.keySet()) {
+            if (graph.containsVertex(identifier) && graph.edgesOf(identifier).isEmpty()) {
+                ErrorHandler.printWarning(mInputFilename, identifier, ErrorMessages.E_NO_CHANNEL_CONNECTED);
+                toRemove.add(identifier);
+            }
+        }
+        for (DeviceComponent component : mDeviceGraph.vertexSet()) {
+            if (toRemove.contains(component.getIdentifier())) {
+                toRemoveVertex.add(component);
+            }
+        }
+        for (String id : toRemove) {
+            mSymbolTable.remove(id);
+        }
+        for (DeviceComponent vertex : toRemoveVertex) {
+            mDeviceGraph.removeVertex(vertex);
         }
     }
 

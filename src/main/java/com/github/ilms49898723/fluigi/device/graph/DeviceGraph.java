@@ -83,6 +83,10 @@ public class DeviceGraph {
         return mDeviceGraph.getEdge(source, target);
     }
 
+    public void removeVertex(DeviceComponent vertex) {
+        mDeviceGraph.removeVertex(vertex);
+    }
+
     public void removeEdge(DeviceEdge edge) {
         mDeviceGraph.removeEdge(edge);
         for (int i = 0; i < mEdges.size(); ++i) {
