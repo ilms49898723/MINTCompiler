@@ -91,7 +91,9 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
-    private static final int BEND_COST = 3;
+    private static final int MAX_ITERATION = 10;
+
+    private static final int BEND_COST = 10;
 
     private static final int sMoves[][] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
@@ -109,8 +111,6 @@ public class HadlockRouter extends BaseRouter {
                 return -1;
         }
     }
-
-    private static final int MAX_ITERATION = 10;
 
     private int[][] mTraceMap;
     private GridStatus[][] mMapStatus;

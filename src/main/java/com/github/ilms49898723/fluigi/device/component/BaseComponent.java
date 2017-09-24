@@ -145,6 +145,21 @@ public abstract class BaseComponent {
         return result;
     }
 
+    public void swapPort(int portA, int portB) {
+        Point2D posA = mPorts.get(portA);
+        Point2D posB = mPorts.get(portB);
+        PortDirection dirA = mPortDirection.get(portA);
+        PortDirection dirB = mPortDirection.get(portB);
+        int widthA = mPortChannelWidth.get(portA);
+        int widthB = mPortChannelWidth.get(portB);
+        mPorts.put(portA, posB);
+        mPorts.put(portB, posA);
+        mPortDirection.put(portA, dirB);
+        mPortDirection.put(portB, dirA);
+        mPortChannelWidth.put(portA, widthB);
+        mPortChannelWidth.put(portB, widthA);
+    }
+
     public void rotate() {
         if (supportRotate()) {
             Point2DUtil.rotateDevice(mPoints, mPorts, mPortDirection);

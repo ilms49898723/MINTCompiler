@@ -311,8 +311,8 @@ public class UFProcessor extends UFBaseListener {
         BaseComponent newChannel2 = new Channel(channelId2, ComponentLayer.FLOW, originalEdge.getChannelWidth());
         mSymbolTable.put(channelId1, newChannel1);
         mSymbolTable.put(channelId2, newChannel2);
-        mDeviceGraph.addEdge(source.getIdentifier(), source.getPortNumber(), valveIdentifier, 2, channelId1, ComponentLayer.FLOW);
-        mDeviceGraph.addEdge(valveIdentifier, 3, target.getIdentifier(), target.getPortNumber(), channelId2, ComponentLayer.FLOW);
+        mDeviceGraph.addEdge(source.getIdentifier(), source.getPortNumber(), valveIdentifier, 3, channelId1, ComponentLayer.FLOW);
+        mDeviceGraph.addEdge(valveIdentifier, 4, target.getIdentifier(), target.getPortNumber(), channelId2, ComponentLayer.FLOW);
     }
 
     @Override

@@ -37,9 +37,11 @@ public class Valve extends BaseComponent {
         mColors.add(Color.RED);
         Point2D portL = new Point2D(-getWidth() / 2, 0.0);
         Point2D portR = new Point2D(getWidth() / 2, 0.0);
-        Point2D port = new Point2D(0.0, getHeight() / 2);
-        addPort(1, port, PortDirection.BOTTOM);
-        addPort(2, portL, PortDirection.LEFT);
-        addPort(3, portR, PortDirection.RIGHT);
+        Point2D portB = new Point2D(0.0, getHeight() / 2);
+        Point2D portT = new Point2D(0.0, -getHeight() / 2);
+        addPort(1, portB, PortDirection.BOTTOM);
+        addPort(2, portT, PortDirection.TOP);
+        addPort(3, portL, PortDirection.LEFT);
+        addPort(4, portR, PortDirection.RIGHT);
     }
 }
