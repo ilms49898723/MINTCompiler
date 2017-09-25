@@ -13,6 +13,7 @@ import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
+import com.github.ilms49898723.fluigi.placement.forcedirected.ForceDirectedPlacer;
 import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
@@ -62,6 +63,8 @@ public class DeviceProcessor {
         for (BaseComponent component : mSymbolTable.getComponents()) {
             Point2DUtil.adjustComponent(component, mParameters);
         }
+        
+        BasePlacer iterativePlacer = new ForceDirectedPlacer(mSymbolTable, mDeviceGraph, mParameters);
 
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
