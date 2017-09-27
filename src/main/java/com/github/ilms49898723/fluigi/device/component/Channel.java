@@ -39,6 +39,11 @@ public class Channel extends BaseComponent {
     }
 
     @Override
+    public boolean supportSwapPort() {
+        return false;
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, Point2D.ZERO, g);
     }

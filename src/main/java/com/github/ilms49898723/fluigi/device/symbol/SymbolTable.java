@@ -53,8 +53,28 @@ public class SymbolTable {
         return mComponents;
     }
 
+    public List<BaseComponent> getComponents(ComponentLayer layer) {
+        List<BaseComponent> result = new ArrayList<>();
+        for (BaseComponent component : mComponents) {
+            if (component.getLayer() == layer) {
+                result.add(component);
+            }
+        }
+        return result;
+    }
+
     public List<BaseComponent> getChannels() {
         return mChannels;
+    }
+
+    public List<BaseComponent> getChannels(ComponentLayer layer) {
+        List<BaseComponent> result = new ArrayList<>();
+        for (BaseComponent channel : mChannels) {
+            if (channel.getLayer() == layer) {
+                result.add(channel);
+            }
+        }
+        return result;
     }
 
     public int size() {

@@ -6,6 +6,7 @@ import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
@@ -250,7 +251,7 @@ public class HadlockRouter extends BaseRouter {
             mMapStatus[next.mX][next.mY] = GridStatus.VISITED;
             Point2D leftTop = new Point2D(next.mX - channel.getChannelWidth() / 2, next.mY - channel.getChannelWidth() / 2);
             Point2D rightBottom = leftTop.add(channel.getChannelWidth(), channel.getChannelWidth());
-            channel.addPoint(new Point2DPair(leftTop, rightBottom), Color.BLUE);
+            channel.addPoint(new Point2DPair(leftTop, rightBottom), (channel.getLayer() == ComponentLayer.FLOW) ? Color.BLUE : Color.RED);
             current = next;
         }
         if (!current.equalsPosition(end)) {

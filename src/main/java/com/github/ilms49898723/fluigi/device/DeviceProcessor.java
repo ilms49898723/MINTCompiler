@@ -8,6 +8,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.graph.GraphEdge;
 import com.github.ilms49898723.fluigi.device.graph.GraphUtil;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
@@ -15,6 +16,7 @@ import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.forcedirected.ForceDirectedPlacer;
 import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
+import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
 import com.github.ilms49898723.fluigi.routing.hadlock.HadlockRouter;
@@ -63,9 +65,11 @@ public class DeviceProcessor {
         for (BaseComponent component : mSymbolTable.getComponents()) {
             Point2DUtil.adjustComponent(component, mParameters);
         }
-        
+
         BasePlacer iterativePlacer = new ForceDirectedPlacer(mSymbolTable, mDeviceGraph, mParameters);
 
+        BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
+        propagator.placement();
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
 
@@ -117,10 +121,7 @@ public class DeviceProcessor {
         Graphics2D png = (Graphics2D) image.getGraphics();
         png.setColor(Color.WHITE);
         png.fillRect(0, 0,width, height);
-        for (String identifier : mSymbolTable.keySet()) {
-            BaseComponent component = mSymbolTable.get(identifier);
-            component.draw(png);
-        }
+        drawComponent(png);
         File outputFile = new File(mOutputFilename + ".png");
         try {
             ImageIO.write(image, "png", outputFile);
@@ -135,14 +136,26 @@ public class DeviceProcessor {
         SVGGraphics2D svg = new SVGGraphics2D(width, height);
         svg.setColor(Color.WHITE);
         svg.fillRect(0, 0, width, height);
-        for (String identifier : mSymbolTable.keySet()) {
-            BaseComponent component = mSymbolTable.get(identifier);
-            component.draw(svg);
-        }
+        drawComponent(svg);
         try {
             SVGUtils.writeToSVG(new File(mOutputFilename + ".svg"), svg.getSVGElement());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void drawComponent(Graphics2D png) {
+        for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.FLOW)) {
+            component.draw(png);
+        }
+        for (BaseComponent component : mSymbolTable.getChannels(ComponentLayer.FLOW)) {
+            component.draw(png);
+        }
+        for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.CONTROL)) {
+            component.draw(png);
+        }
+        for (BaseComponent component : mSymbolTable.getChannels(ComponentLayer.CONTROL)) {
+            component.draw(png);
         }
     }
 }

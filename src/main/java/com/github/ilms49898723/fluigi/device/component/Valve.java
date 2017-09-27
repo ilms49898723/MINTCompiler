@@ -26,7 +26,24 @@ public class Valve extends BaseComponent {
     }
 
     @Override
+    public boolean supportSwapPort() {
+        return true;
+    }
+
+    @Override
     public void draw(Graphics2D g) {
+        for (int portId : mPortChannelWidth.keySet()) {
+            if (mPortChannelWidth.get(portId) != -1) {
+                Point2DUtil.drawPort(
+                        getPort(portId),
+                        getPosition(),
+                        mPortDirection.get(portId),
+                        mPortChannelWidth.get(portId),
+                        g,
+                        (portId == 3 || portId == 4) ? Color.BLUE : Color.RED
+                );
+            }
+        }
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
     }
 

@@ -125,8 +125,9 @@ public abstract class BaseComponent {
         mPortChannelWidth.put(id, -1);
     }
 
-    public void setPortChannelWidth(int id, int width) {
+    public void setPortChannelWidth(int id, int width, int channelSpacing) {
         mPortChannelWidth.put(id, width);
+        portProcess(id, width, channelSpacing);
     }
 
     public Point2D getPort(int id) {
@@ -135,6 +136,10 @@ public abstract class BaseComponent {
 
     public Map<Integer, Point2D> getPorts() {
         return mPorts;
+    }
+
+    public int getNumPorts() {
+        return mPorts.size();
     }
 
     public List<Point2DPair> getPoints() {
@@ -146,18 +151,20 @@ public abstract class BaseComponent {
     }
 
     public void swapPort(int portA, int portB) {
-        Point2D posA = mPorts.get(portA);
-        Point2D posB = mPorts.get(portB);
-        PortDirection dirA = mPortDirection.get(portA);
-        PortDirection dirB = mPortDirection.get(portB);
-        int widthA = mPortChannelWidth.get(portA);
-        int widthB = mPortChannelWidth.get(portB);
-        mPorts.put(portA, posB);
-        mPorts.put(portB, posA);
-        mPortDirection.put(portA, dirB);
-        mPortDirection.put(portB, dirA);
-        mPortChannelWidth.put(portA, widthB);
-        mPortChannelWidth.put(portB, widthA);
+        if (supportSwapPort()) {
+            Point2D posA = mPorts.get(portA);
+            Point2D posB = mPorts.get(portB);
+            PortDirection dirA = mPortDirection.get(portA);
+            PortDirection dirB = mPortDirection.get(portB);
+            int widthA = mPortChannelWidth.get(portA);
+            int widthB = mPortChannelWidth.get(portB);
+            mPorts.put(portA, posB);
+            mPorts.put(portB, posA);
+            mPortDirection.put(portA, dirB);
+            mPortDirection.put(portB, dirA);
+            mPortChannelWidth.put(portA, widthB);
+            mPortChannelWidth.put(portB, widthA);
+        }
     }
 
     public void rotate() {
@@ -174,7 +181,30 @@ public abstract class BaseComponent {
         mHeight = newH;
     }
 
+    private void portProcess(int id, int width, int channelSpacing) {
+        if (mType == ComponentType.PORT || mType == ComponentType.NODE || mType == ComponentType.VALVE) {
+            Point2D portPosition = mPorts.get(id);
+            int delta = width / 2 + channelSpacing;
+            switch (mPortDirection.get(id)) {
+                case TOP:
+                    mPorts.put(id, portPosition.subtract(0.0, delta));
+                    break;
+                case BOTTOM:
+                    mPorts.put(id, portPosition.add(0.0, delta));
+                    break;
+                case LEFT:
+                    mPorts.put(id, portPosition.subtract(delta, 0.0));
+                    break;
+                case RIGHT:
+                    mPorts.put(id, portPosition.add(delta, 0.0));
+                    break;
+            }
+        }
+    }
+
     public abstract boolean supportRotate();
+
+    public abstract boolean supportSwapPort();
 
     public abstract void draw(Graphics2D g);
 

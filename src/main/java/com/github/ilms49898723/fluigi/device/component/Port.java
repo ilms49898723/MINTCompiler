@@ -30,11 +30,16 @@ public class Port extends BaseComponent {
     }
 
     @Override
+    public boolean supportSwapPort() {
+        return true;
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         int x = (int) getPosition().getX();
         int y = (int) getPosition().getY();
         int r = mRadius;
-        g.setPaint(Color.BLUE);
+        g.setPaint((getLayer() == ComponentLayer.FLOW) ? Color.BLUE : Color.RED);
         g.fillOval(x - r / 2, y - r / 2, r, r);
         for (int portId : mPortChannelWidth.keySet()) {
             if (mPortChannelWidth.get(portId) != -1) {
@@ -54,10 +59,10 @@ public class Port extends BaseComponent {
         Point2D leftTop = new Point2D(-mRadius / 2, -mRadius / 2);
         Point2D rightBottom = new Point2D(mRadius, mRadius);
         mPoints.add(new Point2DPair(leftTop, rightBottom));
-        addPort(1, new Point2D(0.0, -mRadius), PortDirection.TOP);
-        addPort(2, new Point2D(0.0, mRadius), PortDirection.BOTTOM);
-        addPort(3, new Point2D(-mRadius, 0.0), PortDirection.LEFT);
-        addPort(4, new Point2D(mRadius, 0.0), PortDirection.RIGHT);
+        addPort(1, Point2D.ZERO, PortDirection.TOP);
+        addPort(2, Point2D.ZERO, PortDirection.BOTTOM);
+        addPort(3, Point2D.ZERO, PortDirection.LEFT);
+        addPort(4, Point2D.ZERO, PortDirection.RIGHT);
     }
 
     @Override
