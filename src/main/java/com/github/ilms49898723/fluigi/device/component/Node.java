@@ -14,10 +14,10 @@ public class Node extends BaseComponent {
     public Node(String identifier, ComponentLayer layer, int length) {
         super(identifier, layer, ComponentType.NODE);
         mLength = length;
-        addPort(1, new Point2D(0.0, -mLength / 2), PortDirection.TOP);
-        addPort(2, new Point2D(0.0, mLength / 2), PortDirection.BOTTOM);
-        addPort(3, new Point2D(-mLength / 2, 0.0), PortDirection.LEFT);
-        addPort(4, new Point2D(mLength / 2, 0.0), PortDirection.RIGHT);
+        addPort(1, Point2D.ZERO, PortDirection.TOP);
+        addPort(2, Point2D.ZERO, PortDirection.BOTTOM);
+        addPort(3, Point2D.ZERO, PortDirection.LEFT);
+        addPort(4, Point2D.ZERO, PortDirection.RIGHT);
         setWidth(mLength);
         setHeight(mLength);
     }
@@ -37,7 +37,7 @@ public class Node extends BaseComponent {
         int x = (int) getPosition().getX();
         int y = (int) getPosition().getY();
         int size = mLength / 2;
-        g.setPaint(Color.BLUE);
+        g.setPaint((getLayer() == ComponentLayer.FLOW) ? Color.BLUE : Color.RED);
         g.fillRect(x - size, y - size, mLength, mLength);
         g.fillRect(x - size, y - size, mLength, mLength);
         for (int portId : mPortChannelWidth.keySet()) {

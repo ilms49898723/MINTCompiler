@@ -125,8 +125,9 @@ public abstract class BaseComponent {
         mPortChannelWidth.put(id, -1);
     }
 
-    public void setPortChannelWidth(int id, int width) {
+    public void setPortChannelWidth(int id, int width, int channelSpacing) {
         mPortChannelWidth.put(id, width);
+        portProcess(id, width, channelSpacing);
     }
 
     public Point2D getPort(int id) {
@@ -135,6 +136,10 @@ public abstract class BaseComponent {
 
     public Map<Integer, Point2D> getPorts() {
         return mPorts;
+    }
+
+    public int getNumPorts() {
+        return mPorts.size();
     }
 
     public List<Point2DPair> getPoints() {
@@ -174,6 +179,27 @@ public abstract class BaseComponent {
         int newH = mWidth;
         mWidth = newW;
         mHeight = newH;
+    }
+
+    private void portProcess(int id, int width, int channelSpacing) {
+        if (mType == ComponentType.PORT || mType == ComponentType.NODE || mType == ComponentType.VALVE) {
+            Point2D portPosition = mPorts.get(id);
+            int delta = width / 2 + channelSpacing;
+            switch (mPortDirection.get(id)) {
+                case TOP:
+                    mPorts.put(id, portPosition.subtract(0.0, delta));
+                    break;
+                case BOTTOM:
+                    mPorts.put(id, portPosition.add(0.0, delta));
+                    break;
+                case LEFT:
+                    mPorts.put(id, portPosition.subtract(delta, 0.0));
+                    break;
+                case RIGHT:
+                    mPorts.put(id, portPosition.add(delta, 0.0));
+                    break;
+            }
+        }
     }
 
     public abstract boolean supportRotate();

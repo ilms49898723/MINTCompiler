@@ -117,8 +117,8 @@ public class UFProcessor extends UFBaseListener {
         String targetId = ctx.component2.getText();
         int sourcePort = Integer.parseInt(ctx.port1.getText());
         int targetPort = Integer.parseInt(ctx.port2.getText());
-        mSymbolTable.get(sourceId).setPortChannelWidth(sourcePort, width);
-        mSymbolTable.get(targetId).setPortChannelWidth(targetPort, width);
+        mSymbolTable.get(sourceId).setPortChannelWidth(sourcePort, width, mParameters.getChannelSpacing());
+        mSymbolTable.get(targetId).setPortChannelWidth(targetPort, width, mParameters.getChannelSpacing());
         mDeviceGraph.addEdge(sourceId, sourcePort, targetId, targetPort, channelId, mCurrentLayer);
     }
 
@@ -302,7 +302,7 @@ public class UFProcessor extends UFBaseListener {
         String originalEdgeId = edge.getChannel();
         Channel originalEdge = (Channel) mSymbolTable.remove(originalEdgeId);
         mDeviceGraph.removeEdge(edge);
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 4; ++i) {
             mDeviceGraph.addVertex(valveIdentifier, i + 1);
         }
         String channelId1 = originalEdgeId + "#ch1";
@@ -313,6 +313,8 @@ public class UFProcessor extends UFBaseListener {
         mSymbolTable.put(channelId2, newChannel2);
         mDeviceGraph.addEdge(source.getIdentifier(), source.getPortNumber(), valveIdentifier, 3, channelId1, ComponentLayer.FLOW);
         mDeviceGraph.addEdge(valveIdentifier, 4, target.getIdentifier(), target.getPortNumber(), channelId2, ComponentLayer.FLOW);
+        valve.setPortChannelWidth(3, originalEdge.getChannelWidth(), mParameters.getChannelSpacing());
+        valve.setPortChannelWidth(4, originalEdge.getChannelWidth(), mParameters.getChannelSpacing());
     }
 
     @Override
