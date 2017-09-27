@@ -1,6 +1,7 @@
 package com.github.ilms49898723.fluigi.placement.forcedirected;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,16 +18,14 @@ import javafx.geometry.Point2D;
 
 public class ForceDirectedPlacer extends BasePlacer{
 	
-	private List<Integer> mLockedList;
+	private Map<String, Integer> mLocked;
 	private Map<String, Integer> mWeights;
 
 	public ForceDirectedPlacer(SymbolTable symbolTable, DeviceGraph deviceGraph, Parameters parameters) {
 		super(symbolTable, deviceGraph, parameters);
 		// TODO Auto-generated constructor stub
-		mLockedList = new ArrayList<>();
-		for (int i = 0 ; i < mSymbolTable.getComponents().size() ; i++) {
-			mLockedList.add(0);
-		}
+		mLocked = new HashMap<String, Integer>();
+		mWeights = new HashMap<String, Integer>();
 	}
 
 	@Override
@@ -37,25 +36,22 @@ public class ForceDirectedPlacer extends BasePlacer{
 	
 	private boolean forceDirected() {
 		for (int i = 0 ; i < mSymbolTable.getComponents().size() ; i++) {
-			if(mLockedList.get(i) == 1) continue;
-			fixSingleComponentPosition(i);
+			String id = mSymbolTable.getComponents().get(i).getIdentifier();
+			if(mLocked.get(id) == 1) continue;
+			fixSingleComponentPosition(id);
 		}
-		
 		
 		return true;
 	}
 	
-	private boolean fixSingleComponentPosition (int index) {
-		if(mLockedList.get(index) == 1) return false;
-		
+	private boolean fixSingleComponentPosition (String id) {
 		Point2D newPosition = new Point2D(0, 0);//The new position
 		List<BaseComponent> connectedComponents = new ArrayList<>();
 		
 		//Find connected components
-		for(int i = 1 ; i <= mSymbolTable.getComponents().get(index).getPorts().size() ; i++){
-			if(!mSymbolTable.getComponents().get(index).hasPort(i)) continue;
+		for(int i = 1 ; i <= mSymbolTable.get(id).getPorts().size() ; i++){
+			if(!mSymbolTable.get(id).hasPort(i)) continue;
 			
-			String id = mSymbolTable.getComponents().get(index).getIdentifier();
 			DeviceComponent srcPort = new DeviceComponent(id, i);
 			Set<DeviceEdge> connectedEdges = mDeviceGraph.edgesOf(srcPort);
 			for(DeviceEdge itr : connectedEdges) {
@@ -87,7 +83,7 @@ public class ForceDirectedPlacer extends BasePlacer{
 			r += mWeights.get(connectedComponents.get(i).getIdentifier());
 		}
 		newPosition = new Point2D(s1 / r, s2 / r);
-		mLockedList.set(index, 1);
+		mLocked.put(id, 1);
 		
 		/*****
 		if (new position is valid) {
@@ -101,31 +97,45 @@ public class ForceDirectedPlacer extends BasePlacer{
 			}
 		}
 		*****/
-		
-		
-		
+		List<String> overlapComponents = checkPositionValid(id, newPosition);
+		if (overlapComponents.isEmpty()) {
+			mSymbolTable.get(id).setPosition(newPosition);
+		} else {
+			for (int i = 0 ; i < overlapComponents.size() ; i++) {
+				if(mLocked.containsKey(overlapComponents.get(i))) {
+					fixNearestValidPosition(id);
+				} else {
+					fixSingleComponentPosition(overlapComponents.get(i));
+				}
+			}
+		}
 		
 		return true;
 	}
 	
-	private boolean fixNearestValidPosition (int index) {
+	private boolean fixNearestValidPosition (String id) {
 		//find the smallest force and valid position
-		mLockedList.set(index, 1);
+		//mLocked.set(index, 1);
 		return true;
 	}
 	
-	private boolean checkPositionValid(String id, Point2D newPt) {
-		
-		Point2D LeftTopPt = new Point2D(newPt.getX() - (mSymbolTable.get(id).getWidth() / 2), newPt.getY() - (mSymbolTable.get(id).getHeight() / 2));
-		Point2D BottomRightPt = new Point2D(newPt.getX() + (mSymbolTable.get(id).getWidth() / 2), newPt.getY() + (mSymbolTable.get(id).getHeight() / 2));
+	private List<String> checkPositionValid(String id, Point2D newPt) {
+		List<String> result = new ArrayList<>();
+		int w1 = mSymbolTable.get(id).getWidth();
+		int h1 = mSymbolTable.get(id).getHeight();
 		
 		for(int i = 0 ; i < mSymbolTable.getComponents().size() ; i++) {
 			if(id.equals(mSymbolTable.getComponents().get(i).getIdentifier())) continue;
 			
+			int w2 = mSymbolTable.getComponents().get(i).getWidth();
+			int h2 = mSymbolTable.getComponents().get(i).getHeight();
+			double distanceX = Math.abs(mSymbolTable.getComponents().get(i).getPositionX() - newPt.getX());
+			double distanceY = Math.abs(mSymbolTable.getComponents().get(i).getPositionY() - newPt.getY());
 			
+			if (distanceX <= (w1 + w2) / 2 && distanceY <= (h1 + h2) / 2) result.add(mSymbolTable.getComponents().get(i).getIdentifier());
 		}
 		
-		return true;
+		return result;
 	}
 
 }
