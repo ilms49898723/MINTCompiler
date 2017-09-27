@@ -28,6 +28,11 @@ public class SquareCellTrap extends BaseComponent {
     }
 
     @Override
+    public boolean supportSwapPort() {
+        return true;
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
     }

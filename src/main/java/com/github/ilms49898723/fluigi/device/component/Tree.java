@@ -34,6 +34,11 @@ public class Tree extends BaseComponent {
     }
 
     @Override
+    public boolean supportSwapPort() {
+        return false;
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
     }

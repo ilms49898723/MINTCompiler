@@ -30,6 +30,11 @@ public class Port extends BaseComponent {
     }
 
     @Override
+    public boolean supportSwapPort() {
+        return true;
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         int x = (int) getPosition().getX();
         int y = (int) getPosition().getY();

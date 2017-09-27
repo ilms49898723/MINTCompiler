@@ -29,7 +29,12 @@ public class RotaryPump extends BaseComponent{
         return true;
     }
 
-    @Override
+	@Override
+	public boolean supportSwapPort() {
+		return false;
+	}
+
+	@Override
     public void draw(Graphics2D g) {
 		int x = (int) getPosition().getX();
         int y = (int) getPosition().getY();

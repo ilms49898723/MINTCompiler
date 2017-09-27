@@ -146,18 +146,20 @@ public abstract class BaseComponent {
     }
 
     public void swapPort(int portA, int portB) {
-        Point2D posA = mPorts.get(portA);
-        Point2D posB = mPorts.get(portB);
-        PortDirection dirA = mPortDirection.get(portA);
-        PortDirection dirB = mPortDirection.get(portB);
-        int widthA = mPortChannelWidth.get(portA);
-        int widthB = mPortChannelWidth.get(portB);
-        mPorts.put(portA, posB);
-        mPorts.put(portB, posA);
-        mPortDirection.put(portA, dirB);
-        mPortDirection.put(portB, dirA);
-        mPortChannelWidth.put(portA, widthB);
-        mPortChannelWidth.put(portB, widthA);
+        if (supportSwapPort()) {
+            Point2D posA = mPorts.get(portA);
+            Point2D posB = mPorts.get(portB);
+            PortDirection dirA = mPortDirection.get(portA);
+            PortDirection dirB = mPortDirection.get(portB);
+            int widthA = mPortChannelWidth.get(portA);
+            int widthB = mPortChannelWidth.get(portB);
+            mPorts.put(portA, posB);
+            mPorts.put(portB, posA);
+            mPortDirection.put(portA, dirB);
+            mPortDirection.put(portB, dirA);
+            mPortChannelWidth.put(portA, widthB);
+            mPortChannelWidth.put(portB, widthA);
+        }
     }
 
     public void rotate() {
@@ -175,6 +177,8 @@ public abstract class BaseComponent {
     }
 
     public abstract boolean supportRotate();
+
+    public abstract boolean supportSwapPort();
 
     public abstract void draw(Graphics2D g);
 
