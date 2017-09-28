@@ -76,30 +76,33 @@ public class ForceDirectedPlacer extends BasePlacer{
 			mWeights.put(connectedComponents.get(i).getIdentifier(), weight);
 		}
 		
-		//calculate force and find zero-force location
-		double s1 = 0, s2 = 0, r = 0;
-		for(int i = 0 ; i < connectedComponents.size() ; i++) {
-			s1 += connectedComponents.get(i).getPositionX() * mWeights.get(connectedComponents.get(i).getIdentifier());
-			s2 += connectedComponents.get(i).getPositionY() * mWeights.get(connectedComponents.get(i).getIdentifier());
-			r += mWeights.get(connectedComponents.get(i).getIdentifier());
-		}
-		newPosition = new Point2D(s1 / r, s2 / r);
-		mLocked.put(id, 1);
-		
-		List<String> overlapComponents = getOverlapComponents(id, newPosition);
-		if (overlapComponents.isEmpty()) {
-			mSymbolTable.get(id).setPosition(newPosition);
-		} else {
-			for (int i = 0 ; i < overlapComponents.size() ; i++) {
-				if(mLocked.containsKey(overlapComponents.get(i))) {
-					Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
-					if(p == null) return false;
-					mSymbolTable.get(id).setPosition(p);
-				} else {
-					fixSingleComponentPosition(overlapComponents.get(i));
+		if(connectedComponents.size() != 1) {
+			
+			//calculate force and find zero-force location
+			double s1 = 0, s2 = 0, r = 0;
+			for(int i = 0 ; i < connectedComponents.size() ; i++) {
+				s1 += connectedComponents.get(i).getPositionX() * mWeights.get(connectedComponents.get(i).getIdentifier());
+				s2 += connectedComponents.get(i).getPositionY() * mWeights.get(connectedComponents.get(i).getIdentifier());
+				r += mWeights.get(connectedComponents.get(i).getIdentifier());
+			}
+			newPosition = new Point2D(s1 / r, s2 / r);
+			mLocked.put(id, 1);
+			
+			List<String> overlapComponents = getOverlapComponents(id, newPosition);
+			if (overlapComponents.isEmpty()) {
+				mSymbolTable.get(id).setPosition(newPosition);
+			} else {
+				for (int i = 0 ; i < overlapComponents.size() ; i++) {
+					if(mLocked.containsKey(overlapComponents.get(i))) {
+						Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
+						if(p == null) return false;
+						mSymbolTable.get(id).setPosition(p);
+					} else {
+						fixSingleComponentPosition(overlapComponents.get(i));
+					}
 				}
 			}
-		}
+		} else { mLocked.put(id, 1); }
 		
 		return true;
 	}
