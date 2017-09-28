@@ -86,26 +86,15 @@ public class ForceDirectedPlacer extends BasePlacer{
 		newPosition = new Point2D(s1 / r, s2 / r);
 		mLocked.put(id, 1);
 		
-		/*****
-		if (new position is valid) {
-			return true;
-		} else {
-			get the component caused new position invalid
-			if(invalid component locked) {
-				fixNearestValidPosition(index);
-			} else {
-				fixSingleComponentPosition(invalid id)
-			}
-		}
-		*****/
-		List<String> overlapComponents = checkPositionValid(id, newPosition);
+		List<String> overlapComponents = getOverlapComponents(id, newPosition);
 		if (overlapComponents.isEmpty()) {
 			mSymbolTable.get(id).setPosition(newPosition);
 		} else {
 			for (int i = 0 ; i < overlapComponents.size() ; i++) {
 				if(mLocked.containsKey(overlapComponents.get(i))) {
-					if(fixNearestValidPosition(id) == false)
-						return false;
+					Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
+					if(p == null) return false;
+					mSymbolTable.get(id).setPosition(p);
 				} else {
 					fixSingleComponentPosition(overlapComponents.get(i));
 				}
@@ -115,17 +104,7 @@ public class ForceDirectedPlacer extends BasePlacer{
 		return true;
 	}
 	
-	private boolean fixNearestValidPosition (String id) {
-		//find the smallest force and valid position
-		//mLocked.set(index, 1);
-		Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
-		if(p == null) return false;
-		
-		mSymbolTable.get(id).setPosition(p);
-		return true;
-	}
-	
-	private List<String> checkPositionValid(String id, Point2D newPt) {
+	private List<String> getOverlapComponents(String id, Point2D newPt) {
 		List<String> result = new ArrayList<>();
 		int w1 = mSymbolTable.get(id).getWidth();
 		int h1 = mSymbolTable.get(id).getHeight();
