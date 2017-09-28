@@ -36,8 +36,8 @@ public class ForceDirectedPlacer extends BasePlacer{
 	}
 	
 	private boolean forceDirected() {
-		for (int i = 0 ; i < mSymbolTable.getComponents().size() ; i++) {
-			String id = mSymbolTable.getComponents().get(i).getIdentifier();
+		for (BaseComponent c : mSymbolTable.getComponents()) {
+			String id = c.getIdentifier();
 			if(mLocked.get(id) == 1) continue;
 			fixSingleComponentPosition(id);
 		}
