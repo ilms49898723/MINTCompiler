@@ -12,6 +12,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
+import com.github.ilms49898723.fluigi.placement.overlap.OverlapFixer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 
 import javafx.geometry.Point2D;
@@ -103,7 +104,8 @@ public class ForceDirectedPlacer extends BasePlacer{
 		} else {
 			for (int i = 0 ; i < overlapComponents.size() ; i++) {
 				if(mLocked.containsKey(overlapComponents.get(i))) {
-					fixNearestValidPosition(id);
+					if(fixNearestValidPosition(id) == false)
+						return false;
 				} else {
 					fixSingleComponentPosition(overlapComponents.get(i));
 				}
@@ -116,6 +118,10 @@ public class ForceDirectedPlacer extends BasePlacer{
 	private boolean fixNearestValidPosition (String id) {
 		//find the smallest force and valid position
 		//mLocked.set(index, 1);
+		Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
+		if(p == null) return false;
+		
+		mSymbolTable.get(id).setPosition(p);
 		return true;
 	}
 	
