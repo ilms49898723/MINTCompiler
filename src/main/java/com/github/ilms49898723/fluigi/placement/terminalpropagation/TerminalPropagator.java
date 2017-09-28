@@ -1,13 +1,13 @@
 package com.github.ilms49898723.fluigi.placement.terminalpropagation;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
-import javafx.geometry.Point2D;
 
 public class TerminalPropagator extends BasePlacer {
     public TerminalPropagator(SymbolTable symbolTable, DeviceGraph deviceGraph, Parameters parameters) {
@@ -66,14 +66,9 @@ public class TerminalPropagator extends BasePlacer {
             for (DeviceEdge edge : mDeviceGraph.edgesOf(vertex)) {
                 BaseComponent src = mSymbolTable.get(edge.getSource().getIdentifier());
                 BaseComponent dst = mSymbolTable.get(edge.getTarget().getIdentifier());
-                cost += manhattanDistance(src.getPort(edge.getSource().getPortNumber()), dst.getPort(edge.getTarget().getPortNumber()));
+                cost += Point2DUtil.manhattanDistance(src.getPort(edge.getSource().getPortNumber()), dst.getPort(edge.getTarget().getPortNumber()));
             }
         }
         return cost;
-    }
-
-    private int manhattanDistance(Point2D a, Point2D b) {
-        Point2D delta = a.subtract(b);
-        return ((int) Math.abs(delta.getX())) + ((int) Math.abs(delta.getY()));
     }
 }

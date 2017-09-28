@@ -141,4 +141,9 @@ public class Point2DUtil {
         }
         component.setPosition(new Point2D(x, y));
     }
+
+    public static int manhattanDistance(Point2D a, Point2D b) {
+        Point2D delta = a.subtract(b);
+        return ((int) Math.abs(delta.getX())) + ((int) Math.abs(delta.getY()));
+    }
 }
