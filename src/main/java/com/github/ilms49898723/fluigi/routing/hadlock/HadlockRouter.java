@@ -18,7 +18,7 @@ import java.util.List;
 
 public class HadlockRouter extends BaseRouter {
     private enum GridStatus {
-        VISITED, OCCUPIED, EMPTY
+        VISITED, OCCUPIED, LAYER, EMPTY
     }
 
     private class GridPoint implements Comparable<GridPoint> {
@@ -93,9 +93,8 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private static final int MAX_ITERATION = 10;
-
+    private static final int LAYER_COST = 10;
     private static final int BEND_COST = 10;
-
     private static final int sMoves[][] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     private static int backMove(int moveId) {
@@ -130,7 +129,8 @@ public class HadlockRouter extends BaseRouter {
 
     @Override
     public boolean routing() {
-        initializeMap();
+        initializeMap(true);
+        routingPreMark();
         List<List<DeviceEdge>> channelLists = new ArrayList<>();
         channelLists.add(mDeviceGraph.getAllFlowEdges());
         channelLists.add(mDeviceGraph.getAllControlEdges());
@@ -145,6 +145,10 @@ public class HadlockRouter extends BaseRouter {
                 System.err.println("Routing failed.");
                 return false;
             }
+            afterRouteLayer();
+            initializeMap(false);
+            routingPreMark();
+            routingCounter = 0;
         }
         return true;
     }
@@ -158,11 +162,11 @@ public class HadlockRouter extends BaseRouter {
             System.out.println("Routing channel " + chn.getIdentifier());
             boolean routeResult = routeChannel(source, target, chn);
             if (!routeResult) {
-                System.err.println("Routing Failed on channel " + chn.getIdentifier());
+                System.err.println("Routing failed on channel " + chn.getIdentifier());
                 System.err.println("Try re-ordering and re-routing.");
                 channels.remove(i);
                 channels.add(0, channel);
-                failedCleanUp();
+                failedCleanUp(channels);
                 return false;
             }
             afterRouteChannel();
@@ -170,17 +174,22 @@ public class HadlockRouter extends BaseRouter {
         return true;
     }
 
-    private void initializeMap() {
+    private void initializeMap(boolean force) {
         for (int i = 0; i < mTraceMap.length; ++i) {
             for (int j = 0; j < mTraceMap[i].length; ++j) {
                 mTraceMap[i][j] = -1;
-                mMapStatus[i][j] = GridStatus.EMPTY;
+                if (force) {
+                    mMapStatus[i][j] = GridStatus.EMPTY;
+                } else {
+                    if (mMapStatus[i][j] != GridStatus.LAYER) {
+                        mMapStatus[i][j] = GridStatus.EMPTY;
+                    }
+                }
             }
         }
-        preMark();
     }
 
-    private void preMark() {
+    private void routingPreMark() {
         for (BaseComponent component : mSymbolTable.getComponents()) {
             markComponent(component);
         }
@@ -223,7 +232,7 @@ public class HadlockRouter extends BaseRouter {
             int backOfCurrent = mTraceMap[current.mX][current.mY];
             for (int i = 0; i < 4; ++i) {
                 GridPoint next = current.add(sMoves[i][0], sMoves[i][1]);
-                if (!isValidGrid(next, source, target, channel.getChannelWidth()) || mMapStatus[next.mX][next.mY] != GridStatus.EMPTY) {
+                if (!isValidGrid(next, source, target, channel.getChannelWidth())) {
                     continue;
                 }
                 if (next.manhattanDistance(end) >= current.manhattanDistance(end)) {
@@ -233,6 +242,7 @@ public class HadlockRouter extends BaseRouter {
                 }
                 next.mDetourCost += (backMove(i) == backOfCurrent ? 0 : BEND_COST);
                 next.mPathCost = current.mPathCost + 1;
+                next.mPathCost += (mMapStatus[next.mX][next.mY] == GridStatus.LAYER) ? LAYER_COST : 0;
                 mMapStatus[next.mX][next.mY] = GridStatus.OCCUPIED;
                 mTraceMap[next.mX][next.mY] = backMove(i);
                 queue.add(next);
@@ -263,6 +273,8 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private boolean isValidGrid(GridPoint pt, DeviceComponent source, DeviceComponent target, int channelWidth) {
+        int x = pt.mX;
+        int y = pt.mY;
         int w = mParameters.getChannelSpacing() * 2 + channelWidth;
         Point2D point = new Point2D(pt.mX, pt.mY);
         pt = pt.subtract(w / 2, w / 2);
@@ -286,7 +298,7 @@ public class HadlockRouter extends BaseRouter {
                 return false;
             }
         }
-        return true;
+        return (mMapStatus[x][y] == GridStatus.EMPTY || mMapStatus[x][y] == GridStatus.LAYER);
     }
 
     private void cleanPort(GridPoint pt, int channelWidth) {
@@ -300,19 +312,34 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private void afterRouteChannel() {
-        for (int i = 0; i < mTraceMap.length; ++i) {
-            for (int j = 0; j < mTraceMap[i].length; ++j) {
-                if (mMapStatus[i][j] != GridStatus.VISITED) {
+        for (int i = 0; i < mMapStatus.length; ++i) {
+            for (int j = 0; j < mMapStatus[i].length; ++j) {
+                if (mMapStatus[i][j] != GridStatus.VISITED && mMapStatus[i][j] != GridStatus.LAYER) {
                     mMapStatus[i][j] = GridStatus.EMPTY;
                 }
             }
         }
     }
 
-    private void failedCleanUp() {
-        initializeMap();
-        List<BaseComponent> channels = mSymbolTable.getChannels();
-        for (BaseComponent component : channels) {
+    private void afterRouteLayer() {
+        for (int i = 0; i < mMapStatus.length; ++i) {
+            for (int j = 0; j < mMapStatus[i].length; ++j) {
+                if (mMapStatus[i][j] == GridStatus.VISITED) {
+                    mMapStatus[i][j] = GridStatus.LAYER;
+                } else {
+                    mMapStatus[i][j] = GridStatus.EMPTY;
+                }
+            }
+        }
+    }
+
+    private void failedCleanUp(List<DeviceEdge> channels) {
+        initializeMap(false);
+        List<BaseComponent> channelComponents = new ArrayList<>();
+        for (DeviceEdge edge : channels) {
+            channelComponents.add(mSymbolTable.get(edge.getChannel()));
+        }
+        for (BaseComponent component : channelComponents) {
             ((Channel) component).cleanup();
         }
     }
