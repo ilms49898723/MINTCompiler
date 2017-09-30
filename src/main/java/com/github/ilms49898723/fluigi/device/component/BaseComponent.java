@@ -141,6 +141,10 @@ public abstract class BaseComponent {
     public int getNumPorts() {
         return mPorts.size();
     }
+    
+    public PortDirection getPortDirection(int id) {
+    	return mPortDirection.get(id);
+    }
 
     public List<Point2DPair> getPoints() {
         List<Point2DPair> result = new ArrayList<>();
