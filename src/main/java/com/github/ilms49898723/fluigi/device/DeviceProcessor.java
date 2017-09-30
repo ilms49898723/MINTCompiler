@@ -77,6 +77,9 @@ public class DeviceProcessor {
         }
         for (int i = 0; i < mSymbolTable.getComponents().size(); ++i) {
             for (int j = 0; j < mSymbolTable.getComponents().size(); ++j) {
+                if (i == j) {
+                    continue;
+                }
                 if (Point2DUtil.isOverlapped(
                         mSymbolTable.getComponents().get(i),
                         mSymbolTable.getComponents().get(j),
