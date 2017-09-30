@@ -34,6 +34,18 @@ public class SymbolTable {
     }
 
     public BaseComponent remove(String identifier) {
+        for (int i = 0; i < mComponents.size(); ++i) {
+            if (mComponents.get(i).getIdentifier().equals(identifier)) {
+                mComponents.remove(i);
+                break;
+            }
+        }
+        for (int i = 0; i < mChannels.size(); ++i) {
+            if (mChannels.get(i).getIdentifier().equals(identifier)) {
+                mChannels.remove(i);
+                break;
+            }
+        }
         return mSymbols.remove(identifier);
     }
 
