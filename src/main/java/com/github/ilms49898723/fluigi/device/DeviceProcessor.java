@@ -70,6 +70,11 @@ public class DeviceProcessor {
 
         BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         propagator.placement();
+
+        for (BaseComponent component : mSymbolTable.getComponents()) {
+            Point2DUtil.adjustComponent(component, mParameters);
+        }
+
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
 
