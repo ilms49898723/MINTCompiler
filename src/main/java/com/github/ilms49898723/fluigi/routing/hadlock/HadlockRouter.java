@@ -206,7 +206,9 @@ public class HadlockRouter extends BaseRouter {
             int h = (int) pB.subtract(pA).getY();
             for (int i = 0; i < w; ++i) {
                 for (int j = 0; j < h; ++j) {
-                    mMapStatus[x + i][y + j] = GridStatus.VISITED;
+                    if (mMapStatus[x + i][y + j] != GridStatus.LAYER) {
+                        mMapStatus[x + i][y + j] = GridStatus.VISITED;
+                    }
                 }
             }
         }
@@ -224,6 +226,7 @@ public class HadlockRouter extends BaseRouter {
         GridPoint end = new GridPoint((int) endPt.getX(), (int) endPt.getY(), 0, 0);
         cleanPort(start, channel.getChannelWidth());
         cleanPort(end, channel.getChannelWidth());
+        System.out.println(isValidGrid(start, source, target, channel.getChannelWidth()) + " " + isValidGrid(end, source, target, channel.getChannelWidth()));
         queue.add(start);
         GridPoint current = start;
         mTraceMap[start.mX][start.mY] = -1;
@@ -335,6 +338,7 @@ public class HadlockRouter extends BaseRouter {
 
     private void failedCleanUp(List<DeviceEdge> channels) {
         initializeMap(false);
+        routingPreMark();
         List<BaseComponent> channelComponents = new ArrayList<>();
         for (DeviceEdge edge : channels) {
             channelComponents.add(mSymbolTable.get(edge.getChannel()));

@@ -1,5 +1,6 @@
 package com.github.ilms49898723.fluigi.device.component;
 
+import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
@@ -18,8 +19,9 @@ public class Node extends BaseComponent {
         addPort(2, Point2D.ZERO, PortDirection.BOTTOM);
         addPort(3, Point2D.ZERO, PortDirection.LEFT);
         addPort(4, Point2D.ZERO, PortDirection.RIGHT);
-        setWidth(mLength);
-        setHeight(mLength);
+        setWidth(mLength * 2);
+        setHeight(mLength * 2);
+        setPoints(mLength);
     }
 
     @Override
@@ -76,5 +78,11 @@ public class Node extends BaseComponent {
         int result = super.hashCode();
         result = 31 * result + mLength;
         return result;
+    }
+
+    private void setPoints(int length) {
+        Point2D lu = new Point2D(-length / 2, -length / 2);
+        Point2D rb = new Point2D(length / 2, length / 2);
+        mPoints.add(new Point2DPair(lu, rb));
     }
 }
