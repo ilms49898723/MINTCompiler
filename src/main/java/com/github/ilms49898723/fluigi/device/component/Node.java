@@ -54,12 +54,7 @@ public class Node extends BaseComponent {
 
     @Override
     public void draw(Graphics2D g) {
-        int x = (int) getPosition().getX();
-        int y = (int) getPosition().getY();
-        int size = mLength / 2;
-        g.setPaint((getLayer() == ComponentLayer.FLOW) ? Color.BLUE : Color.RED);
-        g.fillRect(x - size, y - size, mLength, mLength);
-        g.fillRect(x - size, y - size, mLength, mLength);
+        g.setColor((getLayer() == ComponentLayer.FLOW) ? Color.BLUE : Color.RED);
         for (int portId : mPortChannelWidth.keySet()) {
             if (mPortChannelWidth.get(portId) != -1) {
                 Point2DUtil.drawPort(

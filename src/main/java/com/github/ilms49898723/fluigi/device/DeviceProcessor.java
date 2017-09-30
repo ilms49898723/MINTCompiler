@@ -68,12 +68,22 @@ public class DeviceProcessor {
 
         BasePlacer iterativePlacer = new ForceDirectedPlacer(mSymbolTable, mDeviceGraph, mParameters);
         iterativePlacer.placement();
-        
+
         BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         propagator.placement();
 
         for (BaseComponent component : mSymbolTable.getComponents()) {
             Point2DUtil.adjustComponent(component, mParameters);
+        }
+        for (int i = 0; i < mSymbolTable.getComponents().size(); ++i) {
+            for (int j = 0; j < mSymbolTable.getComponents().size(); ++j) {
+                if (Point2DUtil.isOverlapped(
+                        mSymbolTable.getComponents().get(i),
+                        mSymbolTable.getComponents().get(j),
+                        mParameters)) {
+                    System.err.println("WHYYY");
+                }
+            }
         }
 
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
