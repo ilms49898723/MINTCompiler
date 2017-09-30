@@ -123,27 +123,28 @@ public class Point2DUtil {
     }
 
     public static boolean isOverlapped(BaseComponent a, BaseComponent b, Parameters parameters) {
-        return calculateOverlap(a, b, parameters).equals(Point2D.ZERO);
+        int x1 = a.getPositionX();
+        int y1 = a.getPositionY();
+        int x2 = b.getPositionX();
+        int y2 = b.getPositionY();
+        int dx = Math.abs(x1 - x2);
+        int dy = Math.abs(y1 - y2);
+        int w = a.getWidth() / 2 + b.getWidth() / 2 + parameters.getComponentSpacing();
+        int h = a.getHeight() / 2 + b.getHeight() / 2 + parameters.getComponentSpacing();
+        return (dx <= w && dy <= h);
     }
 
     public static Point2D calculateOverlap(BaseComponent a, BaseComponent b, Parameters parameters) {
-        int leftA = a.getLeftTopX() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
-        int rightA = a.getRightBottomX() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
-        int topA = a.getLeftTopY() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
-        int bottomA = a.getRightBottomY() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
-        int leftB = b.getLeftTopX() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
-        int rightB = b.getRightBottomX() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
-        int topB = b.getLeftTopY() - parameters.getComponentSpacing() - parameters.getRoutingSpacing();
-        int bottomB = b.getRightBottomY() + parameters.getComponentSpacing() + parameters.getRoutingSpacing();
-        if (rightA >= leftB && leftA <= rightB && bottomA >= topB && topA <= bottomB) {
-            int x = Math.min(rightA, rightB) - Math.max(leftA, leftB);
-            int y = Math.min(bottomA, bottomB) - Math.max(topA, topB);
-            x /= parameters.getMinResolution();
-            y /= parameters.getMinResolution();
-            return new Point2D(x, y);
-        } else {
-            return Point2D.ZERO;
-        }
+        int x1 = a.getPositionX();
+        int y1 = a.getPositionY();
+        int x2 = b.getPositionX();
+        int y2 = b.getPositionY();
+        int dx = Math.abs(x1 - x2);
+        int dy = Math.abs(y1 - y2);
+        int w = a.getWidth() / 2 + b.getWidth() / 2 + parameters.getComponentSpacing();
+        int h = a.getHeight() / 2 + b.getHeight() / 2 + parameters.getComponentSpacing();
+        boolean overlap = (dx <= w && dy <= h);
+        return (overlap ? new Point2D(dx, dy) : Point2D.ZERO);
     }
 
     public static void adjustComponent(BaseComponent component, Parameters parameters) {

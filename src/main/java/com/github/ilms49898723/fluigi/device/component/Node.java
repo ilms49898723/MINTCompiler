@@ -21,8 +21,8 @@ public class Node extends BaseComponent {
         addPort(2, Point2D.ZERO, PortDirection.BOTTOM);
         addPort(3, Point2D.ZERO, PortDirection.LEFT);
         addPort(4, Point2D.ZERO, PortDirection.RIGHT);
-        setWidth(mLength * 2);
-        setHeight(mLength * 2);
+        setWidth(mLength);
+        setHeight(mLength);
         setPoints(mLength);
     }
 

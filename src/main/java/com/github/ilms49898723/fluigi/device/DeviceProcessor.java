@@ -16,6 +16,7 @@ import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.forcedirected.ForceDirectedPlacer;
 import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
+import com.github.ilms49898723.fluigi.placement.overlap.OverlapFixer;
 import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
@@ -75,19 +76,9 @@ public class DeviceProcessor {
         for (BaseComponent component : mSymbolTable.getComponents()) {
             Point2DUtil.adjustComponent(component, mParameters);
         }
-        for (int i = 0; i < mSymbolTable.getComponents().size(); ++i) {
-            for (int j = 0; j < mSymbolTable.getComponents().size(); ++j) {
-                if (i == j) {
-                    continue;
-                }
-                if (Point2DUtil.isOverlapped(
-                        mSymbolTable.getComponents().get(i),
-                        mSymbolTable.getComponents().get(j),
-                        mParameters)) {
-                    System.err.println("WHYYY");
-                }
-            }
-        }
+
+        BasePlacer overlapFixer = new OverlapFixer(mSymbolTable, mDeviceGraph, mParameters);
+        overlapFixer.placement();
 
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
