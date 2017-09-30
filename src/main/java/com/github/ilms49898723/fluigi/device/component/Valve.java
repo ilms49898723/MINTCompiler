@@ -8,13 +8,12 @@ import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Valve extends BaseComponent {
-    private String mChannelId;
-
     public Valve(String identifier, ComponentLayer layer, int width, int length, String channelId) {
         super(identifier, layer, ComponentType.VALVE);
-        mChannelId = channelId;
         setWidth(width);
         setHeight(length);
         setPoints();
@@ -28,6 +27,22 @@ public class Valve extends BaseComponent {
     @Override
     public boolean supportSwapPort() {
         return true;
+    }
+
+    @Override
+    public List<Point2DPair> getPortPoints() {
+        List<Point2DPair> result = new ArrayList<>();
+        for (int portId : mPortChannelWidth.keySet()) {
+            if (mPortChannelWidth.get(portId) != -1) {
+                result.add(Point2DUtil.getPortPoints(
+                        getPort(portId),
+                        getPosition(),
+                        mPortDirection.get(portId),
+                        mPortChannelWidth.get(portId)
+                ));
+            }
+        }
+        return result;
     }
 
     @Override

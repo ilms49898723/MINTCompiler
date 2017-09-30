@@ -8,6 +8,8 @@ import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Port extends BaseComponent {
     private int mRadius;
@@ -32,6 +34,22 @@ public class Port extends BaseComponent {
     @Override
     public boolean supportSwapPort() {
         return true;
+    }
+
+    @Override
+    public List<Point2DPair> getPortPoints() {
+        List<Point2DPair> result = new ArrayList<>();
+        for (int portId : mPortChannelWidth.keySet()) {
+            if (mPortChannelWidth.get(portId) != -1) {
+                result.add(Point2DUtil.getPortPoints(
+                        getPort(portId),
+                        getPosition(),
+                        mPortDirection.get(portId),
+                        mPortChannelWidth.get(portId)
+                ));
+            }
+        }
+        return result;
     }
 
     @Override

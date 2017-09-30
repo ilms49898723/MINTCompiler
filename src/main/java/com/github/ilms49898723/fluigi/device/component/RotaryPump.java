@@ -6,6 +6,8 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RotaryPump extends BaseComponent{
 	private double mRadius;
@@ -32,6 +34,11 @@ public class RotaryPump extends BaseComponent{
 	@Override
 	public boolean supportSwapPort() {
 		return false;
+	}
+
+	@Override
+	public List<Point2DPair> getPortPoints() {
+		return new ArrayList<>();
 	}
 
 	@Override

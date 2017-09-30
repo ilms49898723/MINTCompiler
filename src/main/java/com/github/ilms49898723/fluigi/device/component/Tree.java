@@ -39,6 +39,11 @@ public class Tree extends BaseComponent {
     }
 
     @Override
+    public List<Point2DPair> getPortPoints() {
+        return new ArrayList<>();
+    }
+
+    @Override
     public void draw(Graphics2D g) {
         Point2DUtil.drawPoints(mPoints, mColors, getPosition(), g);
     }

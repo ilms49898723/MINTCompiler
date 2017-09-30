@@ -98,6 +98,30 @@ public class Point2DUtil {
         g.fillRect((int) pa.getX(), (int) pa.getY(), (int) size.getX(), (int) size.getY());
     }
 
+    public static Point2DPair getPortPoints(Point2D portPosition, Point2D devicePosition, PortDirection direction, int channelWidth) {
+        Point2D pa = Point2D.ZERO;
+        Point2D pb = Point2D.ZERO;
+        switch (direction) {
+            case TOP:
+                pa = portPosition.subtract(channelWidth / 2, 0.0);
+                pb = devicePosition.add(channelWidth / 2, 0.0);
+                break;
+            case BOTTOM:
+                pa = devicePosition.subtract(channelWidth / 2, 0.0);
+                pb = portPosition.add(channelWidth / 2, 0.0);
+                break;
+            case LEFT:
+                pa = portPosition.subtract(0.0, channelWidth / 2);
+                pb = devicePosition.add(0.0, channelWidth / 2);
+                break;
+            case RIGHT:
+                pa = devicePosition.subtract(0.0, channelWidth / 2);
+                pb = portPosition.add(0.0, channelWidth / 2);
+                break;
+        }
+        return new Point2DPair(pa, pb);
+    }
+
     public static boolean isOverlapped(BaseComponent a, BaseComponent b, Parameters parameters) {
         return calculateOverlap(a, b, parameters).equals(Point2D.ZERO);
     }

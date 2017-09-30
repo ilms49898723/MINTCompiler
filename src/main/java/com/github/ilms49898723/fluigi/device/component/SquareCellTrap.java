@@ -8,6 +8,8 @@ import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import javafx.geometry.Point2D;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SquareCellTrap extends BaseComponent {
     private int mChamberWidth;
@@ -30,6 +32,11 @@ public class SquareCellTrap extends BaseComponent {
     @Override
     public boolean supportSwapPort() {
         return true;
+    }
+
+    @Override
+    public List<Point2DPair> getPortPoints() {
+        return new ArrayList<>();
     }
 
     @Override

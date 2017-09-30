@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Channel extends BaseComponent {
     private int mChannelWidth;
@@ -41,6 +42,11 @@ public class Channel extends BaseComponent {
     @Override
     public boolean supportSwapPort() {
         return false;
+    }
+
+    @Override
+    public List<Point2DPair> getPortPoints() {
+        return new ArrayList<>();
     }
 
     @Override

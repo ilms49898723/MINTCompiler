@@ -141,7 +141,7 @@ public abstract class BaseComponent {
     public int getNumPorts() {
         return mPorts.size();
     }
-    
+
     public PortDirection getPortDirection(int id) {
     	return mPortDirection.get(id);
     }
@@ -151,6 +151,7 @@ public abstract class BaseComponent {
         for (Point2DPair pair : mPoints) {
             result.add(pair.addAll(getPosition()));
         }
+        result.addAll(getPortPoints());
         return result;
     }
 
@@ -209,6 +210,8 @@ public abstract class BaseComponent {
     public abstract boolean supportRotate();
 
     public abstract boolean supportSwapPort();
+
+    public abstract List<Point2DPair> getPortPoints();
 
     public abstract void draw(Graphics2D g);
 
