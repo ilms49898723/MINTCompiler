@@ -93,14 +93,23 @@ public class ForceDirectedPlacer extends BasePlacer{
 			if (overlapComponents.isEmpty()) {
 				mSymbolTable.get(id).setPosition(newPosition);
 			} else {
+				boolean isValid = true;
 				for (int i = 0 ; i < overlapComponents.size() ; i++) {
 					if(mLocked.containsKey(overlapComponents.get(i))) {
-						Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
-						if(p == null) return false;
-						mSymbolTable.get(id).setPosition(p);
-					} else {
+						isValid = false;
+						break;
+					}
+				}
+				
+				if(isValid) {
+					mSymbolTable.get(id).setPosition(newPosition);
+					for(int i = 0 ; i < overlapComponents.size(); i++) {
 						fixSingleComponentPosition(overlapComponents.get(i));
 					}
+				} else {
+					Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
+					if(p == null) return false;
+					mSymbolTable.get(id).setPosition(p);
 				}
 			}
 		} else { mLocked.put(id, 1); }
