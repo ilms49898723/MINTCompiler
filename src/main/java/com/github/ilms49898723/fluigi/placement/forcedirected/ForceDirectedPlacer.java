@@ -38,7 +38,7 @@ public class ForceDirectedPlacer extends BasePlacer{
 	private boolean forceDirected() {
 		for (BaseComponent c : mSymbolTable.getComponents()) {
 			String id = c.getIdentifier();
-			if(mLocked.get(id) == 1) continue;
+			if(mLocked.containsKey(id)) continue;
 			fixSingleComponentPosition(id);
 		}
 		
@@ -50,7 +50,8 @@ public class ForceDirectedPlacer extends BasePlacer{
 		List<BaseComponent> connectedComponents = new ArrayList<>();
 		
 		//Find connected components
-		for(int i = 1 ; i <= mSymbolTable.get(id).getPorts().size() ; i++){
+		
+		for(int i = 1 ; i <= mSymbolTable.get(id).getNumPorts() ; i++){
 			if(!mSymbolTable.get(id).hasPort(i)) continue;
 			
 			DeviceComponent srcPort = new DeviceComponent(id, i);

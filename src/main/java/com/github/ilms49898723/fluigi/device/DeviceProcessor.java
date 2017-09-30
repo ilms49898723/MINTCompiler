@@ -67,7 +67,8 @@ public class DeviceProcessor {
         }
 
         BasePlacer iterativePlacer = new ForceDirectedPlacer(mSymbolTable, mDeviceGraph, mParameters);
-
+        iterativePlacer.placement();
+        
         BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         propagator.placement();
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
