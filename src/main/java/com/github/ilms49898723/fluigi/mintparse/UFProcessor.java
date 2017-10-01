@@ -221,58 +221,58 @@ public class UFProcessor extends UFBaseListener {
 
     @Override
     public void exitTreeStat(UFParser.TreeStatContext ctx) {
-    	String treeIdentifier = ctx.ufname().ID().getText();
-    	int inNum = 0;
-    	int outNum = 0;
-    	int spacing = 0;
-    	int channelWidth = 0;
-    	if (ctx.n1 != null) {
-    		inNum = Integer.parseInt(ctx.n1.getText());
-    	}
-    	if (ctx.n2 != null) {
-    		outNum = Integer.parseInt(ctx.n2.getText());
-    	}
-    	for (UFParser.TreeStatParamContext par : ctx.treeStatParams().treeStatParam()) {
-    		if (par.spacingParam() != null) {
-    			spacing = Integer.parseInt(par.spacingParam().spacing.getText());
-    		}
-    		if (par.flowChannelWidthParam() != null) {
-    			channelWidth = Integer.parseInt(par.flowChannelWidthParam().flow_channel_width.getText());
-    		}
-    	}
+        String treeIdentifier = ctx.ufname().ID().getText();
+        int inNum = 0;
+        int outNum = 0;
+        int spacing = 0;
+        int channelWidth = 0;
+        if (ctx.n1 != null) {
+            inNum = Integer.parseInt(ctx.n1.getText());
+        }
+        if (ctx.n2 != null) {
+            outNum = Integer.parseInt(ctx.n2.getText());
+        }
+        for (UFParser.TreeStatParamContext par : ctx.treeStatParams().treeStatParam()) {
+            if (par.spacingParam() != null) {
+                spacing = Integer.parseInt(par.spacingParam().spacing.getText());
+            }
+            if (par.flowChannelWidthParam() != null) {
+                channelWidth = Integer.parseInt(par.flowChannelWidthParam().flow_channel_width.getText());
+            }
+        }
 
-    	Tree tree = new Tree(treeIdentifier, mCurrentLayer, inNum, outNum, spacing, channelWidth);
-    	if(!mSymbolTable.put(treeIdentifier, tree)) {
-    		ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
-    		setInvalid();
-    	}
-    	for (int i = 1 ; i <= inNum + outNum ; i++) {
-    		mDeviceGraph.addVertex(treeIdentifier, i);
-    	}
+        Tree tree = new Tree(treeIdentifier, mCurrentLayer, inNum, outNum, spacing, channelWidth);
+        if (!mSymbolTable.put(treeIdentifier, tree)) {
+            ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+            setInvalid();
+        }
+        for (int i = 1; i <= inNum + outNum; i++) {
+            mDeviceGraph.addVertex(treeIdentifier, i);
+        }
     }
 
     @Override
     public void exitRotaryStat(UFParser.RotaryStatContext ctx) {
-    	String rotaryIdentifier = ctx.ufname().ID().getText();
-    	int radius = 0;
-    	int flowChannelWidth = 0;
-    	for (UFParser.RotaryStatParamContext par : ctx.rotaryStatParams().rotaryStatParam()) {
-    		if(par.radiusParam() != null) {
-    			radius = Integer.parseInt(par.radiusParam().radius.getText());
-    		}
-    		if(par.flowChannelWidthParam() != null) {
-    			flowChannelWidth = Integer.parseInt(par.flowChannelWidthParam().flow_channel_width.getText());
-    		}
-    	}
+        String rotaryIdentifier = ctx.ufname().ID().getText();
+        int radius = 0;
+        int flowChannelWidth = 0;
+        for (UFParser.RotaryStatParamContext par : ctx.rotaryStatParams().rotaryStatParam()) {
+            if (par.radiusParam() != null) {
+                radius = Integer.parseInt(par.radiusParam().radius.getText());
+            }
+            if (par.flowChannelWidthParam() != null) {
+                flowChannelWidth = Integer.parseInt(par.flowChannelWidthParam().flow_channel_width.getText());
+            }
+        }
 
-    	RotaryPump rotarypump = new RotaryPump(rotaryIdentifier, mCurrentLayer, radius, flowChannelWidth);
-    	if(!mSymbolTable.put(rotaryIdentifier, rotarypump)) {
-    		ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
-    		setInvalid();
-    	}
-    	for (int i = 1 ; i <= 2 ; i++) {
-    		mDeviceGraph.addVertex(rotaryIdentifier, i);
-    	}
+        RotaryPump rotarypump = new RotaryPump(rotaryIdentifier, mCurrentLayer, radius, flowChannelWidth);
+        if (!mSymbolTable.put(rotaryIdentifier, rotarypump)) {
+            ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
+            setInvalid();
+        }
+        for (int i = 1; i <= 2; i++) {
+            mDeviceGraph.addVertex(rotaryIdentifier, i);
+        }
     }
 
     @Override

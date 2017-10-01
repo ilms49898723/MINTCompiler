@@ -17,8 +17,8 @@ public class DummyPlacer extends BasePlacer {
         Random random = new Random();
         for (String identifier : mSymbolTable.keySet()) {
             BaseComponent component = mSymbolTable.get(identifier);
-            int x = random.nextInt((int) mParameters.getMaxDeviceWidth() - 50);
-            int y = random.nextInt((int) mParameters.getMaxDeviceHeight() - 50);
+            int x = random.nextInt(mParameters.getMaxDeviceWidth() - 50);
+            int y = random.nextInt(mParameters.getMaxDeviceHeight() - 50);
             component.setPositionX(x);
             component.setPositionY(y);
         }

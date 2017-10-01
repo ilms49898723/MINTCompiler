@@ -143,7 +143,7 @@ public abstract class BaseComponent {
     }
 
     public PortDirection getPortDirection(int id) {
-    	return mPortDirection.get(id);
+        return mPortDirection.get(id);
     }
 
     public List<Point2DPair> getPoints() {

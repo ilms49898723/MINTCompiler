@@ -6,8 +6,8 @@ public enum ComponentType {
     CHANNEL,
     LONG_CELLTRAP,
     SQUARE_CELLTRAP,
-    MIXER, 
-    VALVE, 
-    TREE, 
+    MIXER,
+    VALVE,
+    TREE,
     ROTARY_PUMP
 }

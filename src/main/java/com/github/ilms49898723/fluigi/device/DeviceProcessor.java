@@ -130,7 +130,7 @@ public class DeviceProcessor {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D png = (Graphics2D) image.getGraphics();
         png.setColor(Color.WHITE);
-        png.fillRect(0, 0,width, height);
+        png.fillRect(0, 0, width, height);
         drawComponent(png);
         File outputFile = new File(mOutputFilename + ".png");
         try {

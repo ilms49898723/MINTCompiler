@@ -102,6 +102,6 @@ public class OverlapFixer extends BasePlacer {
         int w = component.getWidth();
         int h = component.getHeight();
         return (x - w / 2 - spacing >= 0 && x + w / 2 + spacing < maxWidth) &&
-               (y - h / 2 - spacing >= 0 && y + h / 2 + spacing < maxHeight);
+                (y - h / 2 - spacing >= 0 && y + h / 2 + spacing < maxHeight);
     }
 }

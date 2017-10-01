@@ -61,7 +61,7 @@ public class LongCellTrap extends BaseComponent {
         Point2D channelEnd = new Point2D((mNumChambers + 2) * mChamberWidth + (mNumChambers - 1) * mChamberSpacing, mChannelWidth);
         mPoints.add(new Point2DPair(channelStart, channelEnd));
         mColors.add(Color.BLUE);
-        Point2D midPoint = new Point2D((channelStart.getX() + channelEnd.getX())/ 2, (channelStart.getY() + channelEnd.getY()) / 2);
+        Point2D midPoint = new Point2D((channelStart.getX() + channelEnd.getX()) / 2, (channelStart.getY() + channelEnd.getY()) / 2);
         Point2D portA = channelStart.add(0.0, mChannelWidth / 2);
         Point2D portB = channelEnd.add(0.0, -mChannelWidth / 2);
         portA = portA.subtract(midPoint);
