@@ -85,8 +85,10 @@ public class DeviceProcessor {
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
 
+        System.out.println("Info: Saving result...");
         outputPng();
-        outputSvg();
+
+        System.out.println("Finished.");
     }
 
     private boolean parseMint() {

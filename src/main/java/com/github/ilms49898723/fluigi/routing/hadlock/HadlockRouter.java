@@ -130,8 +130,6 @@ public class HadlockRouter extends BaseRouter {
 
     @Override
     public boolean routing() {
-        System.out.println("Info: #: channels related to a valve");
-        System.out.println("      $: optimized channels");
         initializeMap(true);
         routingPreMark();
         List<Set<DeviceEdge>> channelLists = new ArrayList<>();
@@ -165,7 +163,10 @@ public class HadlockRouter extends BaseRouter {
             Channel chn = (Channel) mSymbolTable.get(channel.getChannel());
             boolean routeResult = routeChannel(source, target, chn);
             if (!routeResult) {
-                Point2DUtil.outputPng("Route_" + counter, mSymbolTable, mParameters);
+                Point2D portA = mSymbolTable.get(source.getIdentifier()).getPort(source.getPortNumber());
+                Point2D portB = mSymbolTable.get(target.getIdentifier()).getPort(target.getPortNumber());
+                int radius = chn.getChannelWidth() * 2;
+                Point2DUtil.outputPng("Route_" + counter, mSymbolTable, mParameters, radius, portA, portB);
                 System.err.println("Routing failed on channel " + chn.getIdentifier());
                 System.err.println("Try re-ordering and re-routing.");
                 channels.remove(i);

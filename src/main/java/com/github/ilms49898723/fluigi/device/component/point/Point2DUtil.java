@@ -196,7 +196,28 @@ public class Point2DUtil {
         }
     }
 
-    public static void drawComponent(SymbolTable symbolTable, Graphics2D g) {
+    public static void outputPng(String filename, SymbolTable symbolTable, Parameters parameters, int radius, Point2D... points) {
+        int width = parameters.getMaxDeviceWidth();
+        int height = parameters.getMaxDeviceHeight();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D png = (Graphics2D) image.getGraphics();
+        png.setColor(Color.WHITE);
+        png.fillRect(0, 0, width, height);
+        png.setColor(Color.WHITE);
+        png.fillRect(0, 0, width, height);
+        drawComponent(symbolTable, png);
+        for (Point2D pt : points) {
+            drawPoint(pt, Color.BLACK, Point2D.ZERO, radius, png);
+        }
+        File outputFile = new File(filename + ".png");
+        try {
+            ImageIO.write(image, "png", outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+        public static void drawComponent(SymbolTable symbolTable, Graphics2D g) {
         for (BaseComponent component : symbolTable.getComponents(ComponentLayer.FLOW)) {
             component.draw(g);
         }
