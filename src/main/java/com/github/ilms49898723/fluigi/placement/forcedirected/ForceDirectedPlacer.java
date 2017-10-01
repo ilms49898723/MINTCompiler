@@ -67,7 +67,7 @@ public class ForceDirectedPlacer extends BasePlacer {
             }
 
             int weight = 0;
-            for (int j = 1; j <= connectedComponents.get(i).getPorts().size(); j++) {
+            for (int j = 1; j <= connectedComponents.get(i).getNumPorts(); j++) {
                 if (!connectedComponents.get(i).hasPort(j)) {
                     continue;
                 }

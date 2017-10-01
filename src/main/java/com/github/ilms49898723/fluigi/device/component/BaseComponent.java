@@ -134,12 +134,26 @@ public abstract class BaseComponent {
         return mPorts.get(id).add(getPosition());
     }
 
-    public Map<Integer, Point2D> getPorts() {
-        return mPorts;
-    }
-
     public int getNumPorts() {
         return mPorts.size();
+    }
+
+    public int getNumPortsUsed() {
+        int result = 0;
+        for (int value : mPortChannelWidth.values()) {
+            result += (value != -1) ? 1 : 0;
+        }
+        return result;
+    }
+
+    public List<Integer> getPortsUsed() {
+        List<Integer> result = new ArrayList<>();
+        for (int portId : mPortChannelWidth.keySet()) {
+            if (mPortChannelWidth.get(portId) != -1) {
+                result.add(portId);
+            }
+        }
+        return result;
     }
 
     public PortDirection getPortDirection(int id) {
@@ -177,6 +191,10 @@ public abstract class BaseComponent {
             Point2DUtil.rotateDevice(mPoints, mPorts, mPortDirection);
             rotateWidthHeight();
         }
+    }
+
+    private Map<Integer, Point2D> getPorts() {
+        return mPorts;
     }
 
     private void rotateWidthHeight() {

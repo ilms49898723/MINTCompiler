@@ -42,7 +42,7 @@ public class MinDistancePlacer extends BasePlacer {
         Map<Integer, List<Point2D>> connectedPorts = new HashMap<>();
 
         //Get connected components
-        for (int i = 1; i <= mSymbolTable.get(id).getPorts().size(); i++) {
+        for (int i = 1; i <= mSymbolTable.get(id).getNumPorts(); i++) {
             if (!mSymbolTable.get(id).hasPort(i)) {
                 continue;
             }
@@ -107,7 +107,7 @@ public class MinDistancePlacer extends BasePlacer {
         Point2D newPosition = new Point2D(0, 0);
 
         double costX = 0, costY = 0;
-        for (int i = 1; i <= mSymbolTable.get(id).getPorts().size(); i++) {
+        for (int i = 1; i <= mSymbolTable.get(id).getNumPorts(); i++) {
             if (!mSymbolTable.get(id).hasPort(i)) {
                 continue;
             }

@@ -1,11 +1,17 @@
 package com.github.ilms49898723.fluigi.device.component.point;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
+import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -170,5 +176,38 @@ public class Point2DUtil {
     public static int manhattanDistance(Point2D a, Point2D b) {
         Point2D delta = a.subtract(b);
         return ((int) Math.abs(delta.getX())) + ((int) Math.abs(delta.getY()));
+    }
+
+    public static void outputPng(String filename, SymbolTable symbolTable, Parameters parameters) {
+        int width = parameters.getMaxDeviceWidth();
+        int height = parameters.getMaxDeviceHeight();
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D png = (Graphics2D) image.getGraphics();
+        png.setColor(Color.WHITE);
+        png.fillRect(0, 0, width, height);
+        png.setColor(Color.WHITE);
+        png.fillRect(0, 0, width, height);
+        drawComponent(symbolTable, png);
+        File outputFile = new File(filename + ".png");
+        try {
+            ImageIO.write(image, "png", outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void drawComponent(SymbolTable symbolTable, Graphics2D g) {
+        for (BaseComponent component : symbolTable.getComponents(ComponentLayer.FLOW)) {
+            component.draw(g);
+        }
+        for (BaseComponent component : symbolTable.getChannels(ComponentLayer.FLOW)) {
+            component.draw(g);
+        }
+        for (BaseComponent component : symbolTable.getComponents(ComponentLayer.CONTROL)) {
+            component.draw(g);
+        }
+        for (BaseComponent component : symbolTable.getChannels(ComponentLayer.CONTROL)) {
+            component.draw(g);
+        }
     }
 }

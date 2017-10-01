@@ -4,21 +4,15 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleGraph;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DeviceGraph {
     private Graph<DeviceComponent, DeviceEdge> mDeviceGraph;
-    private List<DeviceEdge> mEdges;
-    private List<DeviceEdge> mFlowEdges;
-    private List<DeviceEdge> mControlEdges;
+    private Map<DeviceEdge, ComponentLayer> mEdgesLayer;
 
     public DeviceGraph() {
         mDeviceGraph = new SimpleGraph<>(DeviceEdge.class);
-        mEdges = new ArrayList<>();
-        mFlowEdges = new ArrayList<>();
-        mControlEdges = new ArrayList<>();
+        mEdgesLayer = new HashMap<>();
     }
 
     public boolean addVertex(String identifier, int portNumber) {
@@ -29,25 +23,32 @@ public class DeviceGraph {
         DeviceComponent source = new DeviceComponent(fromId, fromPort);
         DeviceComponent target = new DeviceComponent(toId, toPort);
         DeviceEdge edge = new DeviceEdge(source, target, channelId);
-        mEdges.add(edge);
-        if (layer == ComponentLayer.FLOW) {
-            mFlowEdges.add(edge);
-        } else {
-            mControlEdges.add(edge);
-        }
+        mEdgesLayer.put(edge, layer);
         return mDeviceGraph.addEdge(source, target, edge);
     }
 
-    public List<DeviceEdge> getAllEdges() {
-        return mEdges;
+    public Set<DeviceEdge> getAllEdges() {
+        return mDeviceGraph.edgeSet();
     }
 
-    public List<DeviceEdge> getAllFlowEdges() {
-        return mFlowEdges;
+    public Set<DeviceEdge> getAllFlowEdges() {
+        Set<DeviceEdge> result = new HashSet<>();
+        for (DeviceEdge edge : mDeviceGraph.edgeSet()) {
+            if (mEdgesLayer.get(edge) == ComponentLayer.FLOW) {
+                result.add(edge);
+            }
+        }
+        return result;
     }
 
-    public List<DeviceEdge> getAllControlEdges() {
-        return mControlEdges;
+    public Set<DeviceEdge> getAllControlEdges() {
+        Set<DeviceEdge> result = new HashSet<>();
+        for (DeviceEdge edge : mDeviceGraph.edgeSet()) {
+            if (mEdgesLayer.get(edge) == ComponentLayer.CONTROL) {
+                result.add(edge);
+            }
+        }
+        return result;
     }
 
     public Set<DeviceComponent> vertexSet() {
@@ -70,6 +71,12 @@ public class DeviceGraph {
         return mDeviceGraph.getEdgeTarget(edge);
     }
 
+    public DeviceComponent getEdgeTarget(DeviceEdge edge, DeviceComponent source) {
+        DeviceComponent a = edge.getSource();
+        DeviceComponent b = edge.getTarget();
+        return (a.equals(source)) ? b : a;
+    }
+
     public DeviceEdge getEdge(String channelIdentifier) {
         for (DeviceEdge edge : mDeviceGraph.edgeSet()) {
             if (edge.getChannel().equals(channelIdentifier)) {
@@ -83,30 +90,24 @@ public class DeviceGraph {
         return mDeviceGraph.getEdge(source, target);
     }
 
+    public void removeVertex(String vertexId) {
+        List<DeviceComponent> toRemove = new ArrayList<>();
+        for (DeviceComponent v : mDeviceGraph.vertexSet()) {
+            if (v.getIdentifier().equals(vertexId)) {
+                toRemove.add(v);
+            }
+        }
+        for (DeviceComponent v : toRemove) {
+            mDeviceGraph.removeVertex(v);
+        }
+    }
+
     public void removeVertex(DeviceComponent vertex) {
         mDeviceGraph.removeVertex(vertex);
     }
 
     public void removeEdge(DeviceEdge edge) {
         mDeviceGraph.removeEdge(edge);
-        for (int i = 0; i < mEdges.size(); ++i) {
-            if (mEdges.get(i).equals(edge)) {
-                mEdges.remove(i);
-                break;
-            }
-        }
-        for (int i = 0; i < mFlowEdges.size(); ++i) {
-            if (mFlowEdges.get(i).equals(edge)) {
-                mFlowEdges.remove(i);
-                break;
-            }
-        }
-        for (int i = 0; i < mControlEdges.size(); ++i) {
-            if (mControlEdges.get(i).equals(edge)) {
-                mControlEdges.remove(i);
-                break;
-            }
-        }
     }
 
     public void removeEdge(DeviceComponent source, DeviceComponent target) {
@@ -118,7 +119,7 @@ public class DeviceGraph {
     }
 
     public void dump() {
-        for (DeviceEdge edge : mEdges) {
+        for (DeviceEdge edge : mDeviceGraph.edgeSet()) {
             System.out.println(edge);
         }
     }

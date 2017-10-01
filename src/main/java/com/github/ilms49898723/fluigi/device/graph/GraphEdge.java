@@ -59,4 +59,12 @@ public class GraphEdge implements Comparable<GraphEdge> {
         result = 31 * result + getWeight();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "GraphEdge{" +
+                "mVertexA='" + mVertexA + '\'' +
+                ", mVertexB='" + mVertexB + '\'' +
+                '}';
+    }
 }

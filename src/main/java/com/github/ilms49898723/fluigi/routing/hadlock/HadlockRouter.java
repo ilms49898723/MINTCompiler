@@ -3,6 +3,7 @@ package com.github.ilms49898723.fluigi.routing.hadlock;
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.Channel;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DPair;
+import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
@@ -129,16 +130,19 @@ public class HadlockRouter extends BaseRouter {
 
     @Override
     public boolean routing() {
+        System.out.println("Info: #: channels related to a valve");
+        System.out.println("      $: optimized channels");
         initializeMap(true);
         routingPreMark();
-        List<List<DeviceEdge>> channelLists = new ArrayList<>();
+        List<Set<DeviceEdge>> channelLists = new ArrayList<>();
         channelLists.add(mDeviceGraph.getAllFlowEdges());
         channelLists.add(mDeviceGraph.getAllControlEdges());
         int routingCounter = 0;
-        for (List<DeviceEdge> channelList : channelLists) {
+        for (Set<DeviceEdge> channelSet : channelLists) {
+            List<DeviceEdge> channelList = new ArrayList<>(channelSet);
             boolean result;
             do {
-                result = routeChannels(channelList);
+                result = routeChannels(channelList, routingCounter);
                 ++routingCounter;
             } while (!result && routingCounter < MAX_ITERATION);
             if (!result) {
@@ -153,15 +157,15 @@ public class HadlockRouter extends BaseRouter {
         return true;
     }
 
-    private boolean routeChannels(List<DeviceEdge> channels) {
+    private boolean routeChannels(List<DeviceEdge> channels, int counter) {
         for (int i = 0; i < channels.size(); ++i) {
             DeviceEdge channel = channels.get(i);
             DeviceComponent source = mDeviceGraph.getEdgeSource(channel);
             DeviceComponent target = mDeviceGraph.getEdgeTarget(channel);
             Channel chn = (Channel) mSymbolTable.get(channel.getChannel());
-            System.out.println("Routing channel " + chn.getIdentifier());
             boolean routeResult = routeChannel(source, target, chn);
             if (!routeResult) {
+                Point2DUtil.outputPng("Route_" + counter, mSymbolTable, mParameters);
                 System.err.println("Routing failed on channel " + chn.getIdentifier());
                 System.err.println("Try re-ordering and re-routing.");
                 channels.remove(i);
@@ -226,7 +230,6 @@ public class HadlockRouter extends BaseRouter {
         GridPoint end = new GridPoint((int) endPt.getX(), (int) endPt.getY(), 0, 0);
         cleanPort(start, channel.getChannelWidth());
         cleanPort(end, channel.getChannelWidth());
-        System.out.println(isValidGrid(start, source, target, channel.getChannelWidth()) + " " + isValidGrid(end, source, target, channel.getChannelWidth()));
         queue.add(start);
         GridPoint current = start;
         mTraceMap[start.mX][start.mY] = -1;

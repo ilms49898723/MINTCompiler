@@ -3,12 +3,11 @@ package com.github.ilms49898723.fluigi.device;
 import com.github.ilms49898723.fluigi.antlr.UFLexer;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.device.component.Channel;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
-import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
-import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
-import com.github.ilms49898723.fluigi.device.graph.GraphEdge;
-import com.github.ilms49898723.fluigi.device.graph.GraphUtil;
+import com.github.ilms49898723.fluigi.device.graph.*;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
@@ -35,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class DeviceProcessor {
     private static final int MAX_ITERATION = 10;
@@ -44,7 +44,6 @@ public class DeviceProcessor {
     private Parameters mParameters;
     private SymbolTable mSymbolTable;
     private DeviceGraph mDeviceGraph;
-    private UFProcessor mProcessor;
 
     public DeviceProcessor(String inputFile, String outputFile, Parameters parameters) {
         mInputFilename = inputFile;
@@ -55,17 +54,19 @@ public class DeviceProcessor {
     }
 
     public void start() {
-        parseMint();
-        if (!mProcessor.isValid()) {
+        System.out.println("Info: Parsing MINT...");
+        boolean parseResult = parseMint();
+        if (!parseResult) {
             System.exit(1);
         }
-        prePlacementCleanUp();
+
+        System.out.println("Info: Optimizing and check MINT...");
+        unusedComponentCleanup();
+        mintOptimize();
+
+        System.out.println("Info: Placement...");
         BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
-
-        for (BaseComponent component : mSymbolTable.getComponents()) {
-            Point2DUtil.adjustComponent(component, mParameters);
-        }
 
         BasePlacer iterativePlacer = new ForceDirectedPlacer(mSymbolTable, mDeviceGraph, mParameters);
         iterativePlacer.placement();
@@ -80,6 +81,7 @@ public class DeviceProcessor {
         BasePlacer overlapFixer = new OverlapFixer(mSymbolTable, mDeviceGraph, mParameters);
         overlapFixer.placement();
 
+        System.out.println("Info: Routing...");
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
 
@@ -87,21 +89,23 @@ public class DeviceProcessor {
         outputSvg();
     }
 
-    private void parseMint() {
+    private boolean parseMint() {
         try {
             UFLexer lexer = new UFLexer(CharStreams.fromFileName(mInputFilename));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             UFParser parser = new UFParser(tokens);
             UFParser.UfContext context = parser.uf();
             ParseTreeWalker walker = new ParseTreeWalker();
-            mProcessor = new UFProcessor(mInputFilename, mParameters, mSymbolTable, mDeviceGraph);
-            walker.walk(mProcessor, context);
+            UFProcessor processor = new UFProcessor(mInputFilename, mParameters, mSymbolTable, mDeviceGraph);
+            walker.walk(processor, context);
+            return processor.isValid();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    private void prePlacementCleanUp() {
+    private void unusedComponentCleanup() {
         Graph<String, GraphEdge> graph = GraphUtil.constructGraph(mDeviceGraph.getGraph());
         List<String> toRemove = new ArrayList<>();
         List<DeviceComponent> toRemoveVertex = new ArrayList<>();
@@ -121,6 +125,47 @@ public class DeviceProcessor {
         }
         for (DeviceComponent vertex : toRemoveVertex) {
             mDeviceGraph.removeVertex(vertex);
+        }
+    }
+
+    private void mintOptimize() {
+        List<String> nodeIds = new ArrayList<>();
+        for (String identifier : mSymbolTable.keySet()) {
+            if (mSymbolTable.get(identifier).getType() == ComponentType.NODE) {
+                BaseComponent component = mSymbolTable.get(identifier);
+                if (component.getNumPortsUsed() == 2) {
+                    nodeIds.add(identifier);
+                }
+            }
+        }
+        for (String nodeId : nodeIds) {
+            BaseComponent component = mSymbolTable.get(nodeId);
+            List<Integer> portsUsed = component.getPortsUsed();
+            DeviceComponent nodePortA = new DeviceComponent(nodeId, portsUsed.get(0));
+            DeviceComponent nodePortB = new DeviceComponent(nodeId, portsUsed.get(1));
+            Set<DeviceEdge> edgesA = mDeviceGraph.edgesOf(nodePortA);
+            Set<DeviceEdge> edgesB = mDeviceGraph.edgesOf(nodePortB);
+            DeviceEdge edgeA = new ArrayList<>(edgesA).get(0);
+            DeviceEdge edgeB = new ArrayList<>(edgesB).get(0);
+            if (mSymbolTable.get(edgeA.getChannel()).getWidth() !=
+                    mSymbolTable.get(edgeB.getChannel()).getWidth()) {
+                continue;
+            }
+            System.out.println("Optimization: Node " + nodeId + ": ignored.");
+            System.out.println("      Only 2 ports are used and both channels connected to it have the same width.");
+            String channelId = edgeA.getChannel() + "~" + edgeB.getChannel() + "$";
+            int channelWidth = mSymbolTable.get(edgeA.getChannel()).getWidth();
+            Channel channel = new Channel(channelId, mSymbolTable.get(edgeA.getChannel()).getLayer(), channelWidth);
+            DeviceComponent src = mDeviceGraph.getEdgeTarget(edgeA, nodePortA);
+            DeviceComponent dst = mDeviceGraph.getEdgeTarget(edgeB, nodePortB);
+            mSymbolTable.remove(nodeId);
+            mSymbolTable.remove(edgeA.getChannel());
+            mSymbolTable.remove(edgeB.getChannel());
+            mDeviceGraph.removeVertex(nodeId);
+            mSymbolTable.put(channelId, channel);
+            mDeviceGraph.addEdge(src.getIdentifier(), src.getPortNumber(),
+                    dst.getIdentifier(), dst.getPortNumber(),
+                    channelId, channel.getLayer());
         }
     }
 
@@ -154,18 +199,18 @@ public class DeviceProcessor {
         }
     }
 
-    private void drawComponent(Graphics2D png) {
+    private void drawComponent(Graphics2D g) {
         for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.FLOW)) {
-            component.draw(png);
+            component.draw(g);
         }
         for (BaseComponent component : mSymbolTable.getChannels(ComponentLayer.FLOW)) {
-            component.draw(png);
+            component.draw(g);
         }
         for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.CONTROL)) {
-            component.draw(png);
+            component.draw(g);
         }
         for (BaseComponent component : mSymbolTable.getChannels(ComponentLayer.CONTROL)) {
-            component.draw(png);
+            component.draw(g);
         }
     }
 }
