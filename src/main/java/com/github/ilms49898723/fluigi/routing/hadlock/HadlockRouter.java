@@ -179,7 +179,7 @@ public class HadlockRouter extends BaseRouter {
         return true;
     }
 
-    private boolean controlPlacement() {
+    private void controlPlacement() {
         System.out.println("Info: Control layer placement...");
 
         BasePlacer placer = new ValvePlacer(mSymbolTable, mDeviceGraph, mParameters);
@@ -187,12 +187,13 @@ public class HadlockRouter extends BaseRouter {
 
         TerminalPropagator propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         List<BaseComponent> propagateTargets = new ArrayList<>();
+        List<BaseComponent> propagateTargetsWithoutValves = new ArrayList<>();
         propagateTargets.addAll(mSymbolTable.getValves());
         propagateTargets.addAll(mSymbolTable.getComponents(ComponentLayer.CONTROL));
-        propagator.rotatePropagation(propagateTargets);
+        propagateTargetsWithoutValves.addAll(mSymbolTable.getComponents(ComponentLayer.CONTROL));
+        propagateTargetsWithoutValves.removeAll(mSymbolTable.getValves());
+        propagator.rotatePropagation(propagateTargetsWithoutValves);
         propagator.swapPortPropagation(propagateTargets);
-
-        return true;
     }
 
     private boolean routeChannels(List<DeviceEdge> channels, int counter) {
