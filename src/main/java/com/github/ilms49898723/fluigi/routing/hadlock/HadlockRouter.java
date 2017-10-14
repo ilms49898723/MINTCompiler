@@ -8,6 +8,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
+import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.controllayer.ValvePlacer;
@@ -97,9 +98,24 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private static final int MAX_ITERATION = 3;
-    private static final int LAYER_COST = 10;
-    private static final int BEND_COST = 250;
+    private static final int LAYER_COST = 50;
+    private static final int BEND_COST = 200;
     private static final int sMoves[][] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+    private static int dirToMove(PortDirection dir) {
+        switch (dir) {
+            case TOP:
+                return 3;
+            case BOTTOM:
+                return 2;
+            case LEFT:
+                return 1;
+            case RIGHT:
+                return 0;
+            default:
+                return -1;
+        }
+    }
 
     private static int backMove(int moveId) {
         switch (moveId) {
@@ -117,12 +133,16 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private int[][] mTraceMap;
+    private int[][] mMapCosts;
+    private int[][] mMapDetour;
     private GridStatus[][] mMapStatus;
     private Map<DeviceComponent, Point2D> mPortsPosition;
 
     public HadlockRouter(SymbolTable symbolTable, DeviceGraph deviceGraph, Parameters parameters) {
         super(symbolTable, deviceGraph, parameters);
         mTraceMap = new int[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
+        mMapCosts = new int[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
+        mMapDetour = new int[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
         mMapStatus = new GridStatus[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
         mPortsPosition = new HashMap<>();
         for (DeviceComponent port : mDeviceGraph.vertexSet()) {
@@ -224,6 +244,8 @@ public class HadlockRouter extends BaseRouter {
         for (int i = 0; i < mTraceMap.length; ++i) {
             for (int j = 0; j < mTraceMap[i].length; ++j) {
                 mTraceMap[i][j] = -1;
+                mMapCosts[i][j] = Integer.MAX_VALUE;
+                mMapDetour[i][j] = Integer.MAX_VALUE;
                 if (force) {
                     mMapStatus[i][j] = GridStatus.EMPTY;
                 } else {
@@ -274,26 +296,39 @@ public class HadlockRouter extends BaseRouter {
         cleanPort(end, channel.getChannelWidth());
         queue.add(start);
         GridPoint current = start;
-        mTraceMap[start.mX][start.mY] = -1;
+        mTraceMap[start.mX][start.mY] = backMove(dirToMove(src.getPortDirection(srcPort)));
         while (!current.equalsPosition(end) && !queue.isEmpty()) {
             current = queue.poll();
+            if (mMapStatus[current.mX][current.mY] == GridStatus.OCCUPIED) {
+                continue;
+            }
+            mMapStatus[current.mX][current.mY] = GridStatus.OCCUPIED;
             int backOfCurrent = mTraceMap[current.mX][current.mY];
             for (int i = 0; i < 4; ++i) {
                 GridPoint next = current.add(sMoves[i][0], sMoves[i][1]);
                 if (!isValidGrid(next, source, target, channel.getChannelWidth())) {
                     continue;
                 }
+                if (next.equalsPosition(end) && i != backMove(dirToMove(dst.getPortDirection(dstPort)))) {
+                    continue;
+                }
                 if (next.manhattanDistance(end) >= current.manhattanDistance(end)) {
-                    next.mDetourCost = current.mDetourCost + 1;
+                    next.mDetourCost = current.mDetourCost + (next.manhattanDistance(end) - current.manhattanDistance(end) + 1);
                 } else {
                     next.mDetourCost = current.mDetourCost;
                 }
                 next.mDetourCost += (backMove(i) == backOfCurrent ? 0 : BEND_COST);
                 next.mPathCost = current.mPathCost + 1;
+                next.mPathCost += (backMove(i) == backOfCurrent ? 0 : BEND_COST);
                 next.mPathCost += (mMapStatus[next.mX][next.mY] == GridStatus.LAYER) ? LAYER_COST : 0;
-                mMapStatus[next.mX][next.mY] = GridStatus.OCCUPIED;
-                mTraceMap[next.mX][next.mY] = backMove(i);
-                queue.add(next);
+                if (next.mDetourCost < mMapDetour[next.mX][next.mY] ||
+                        (next.mDetourCost == mMapDetour[next.mX][next.mY] &&
+                         next.mPathCost < mMapCosts[next.mX][next.mY])) {
+                    mMapDetour[next.mX][next.mY] = next.mDetourCost;
+                    mMapCosts[next.mX][next.mY] = next.mPathCost;
+                    mTraceMap[next.mX][next.mY] = backMove(i);
+                    queue.add(next);
+                }
             }
         }
         return current.equalsPosition(end) && traceBack(end, start, channel);

@@ -84,19 +84,19 @@ public class Point2DUtil {
         switch (direction) {
             case TOP:
                 pa = portPosition.subtract(channelWidth / 2, 0.0);
-                pb = devicePosition.add(channelWidth / 2, 0.0);
+                pb = devicePosition.add(channelWidth - channelWidth / 2, 0.0);
                 break;
             case BOTTOM:
                 pa = devicePosition.subtract(channelWidth / 2, 0.0);
-                pb = portPosition.add(channelWidth / 2, 0.0);
+                pb = portPosition.add(channelWidth - channelWidth / 2, 0.0);
                 break;
             case LEFT:
                 pa = portPosition.subtract(0.0, channelWidth / 2);
-                pb = devicePosition.add(0.0, channelWidth / 2);
+                pb = devicePosition.add(0.0, channelWidth - channelWidth / 2);
                 break;
             case RIGHT:
                 pa = devicePosition.subtract(0.0, channelWidth / 2);
-                pb = portPosition.add(0.0, channelWidth / 2);
+                pb = portPosition.add(0.0, channelWidth - channelWidth / 2);
                 break;
         }
         Point2D size = pb.subtract(pa);

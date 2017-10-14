@@ -72,6 +72,18 @@ public class Channel extends BaseComponent {
         return ((int) a.getY()) == ((int) b.getY());
     }
 
+    public int countBends() {
+        int counter = 0;
+        for (int i = 0; i < mPoints.size() - 2; ++i) {
+            Point2D a = mPoints.get(i).getPointA();
+            Point2D b = mPoints.get(i + 2).getPointA();
+            if (Math.abs(a.getX() - b.getX()) > 1e-2 &&
+                    Math.abs(a.getY() - b.getY()) > 1e-2)
+                ++counter;
+        }
+        return counter;
+    }
+
     private boolean isValidPosition(int midIdx, int threshold) {
         int ht = threshold / 2 + 1;
         if (midIdx - ht < 0 || midIdx + ht >= mPoints.size()) {
