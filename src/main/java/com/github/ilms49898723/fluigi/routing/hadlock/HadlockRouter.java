@@ -312,13 +312,15 @@ public class HadlockRouter extends BaseRouter {
                 if (next.equalsPosition(end) && i != backMove(dirToMove(dst.getPortDirection(dstPort)))) {
                     continue;
                 }
+                int detourManhattanDelta = 0;
                 if (next.manhattanDistance(end) >= current.manhattanDistance(end)) {
                     next.mDetourCost = current.mDetourCost + (next.manhattanDistance(end) - current.manhattanDistance(end) + 1);
+                    detourManhattanDelta = (next.manhattanDistance(end) - current.manhattanDistance(end) + 1);
                 } else {
                     next.mDetourCost = current.mDetourCost;
                 }
                 next.mDetourCost += (backMove(i) == backOfCurrent ? 0 : BEND_COST);
-                next.mPathCost = current.mPathCost + 1;
+                next.mPathCost = current.mPathCost + detourManhattanDelta + 1;
                 next.mPathCost += (backMove(i) == backOfCurrent ? 0 : BEND_COST);
                 next.mPathCost += (mMapStatus[next.mX][next.mY] == GridStatus.LAYER) ? LAYER_COST : 0;
                 if (next.mDetourCost < mMapDetour[next.mX][next.mY] ||

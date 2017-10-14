@@ -74,10 +74,10 @@ public class Tree extends BaseComponent {
 
         for (int i = 0; i < numChannel; i++) {
             Point2D port = new Point2D(mPoints.get(i).getPointA().getX() + mChannelWidth / 2, mPoints.get(i).getPointA().getY());
-            addPort(i + 1, port, PortDirection.BOTTOM);
+            addPort(i + 1, port, PortDirection.TOP);
         }
         Point2D finalPort = new Point2D((mPoints.get(mPoints.size() - 1).getPointB()).getX() - mChannelWidth / 2, (mPoints.get(mPoints.size() - 1).getPointB()).getY());
-        addPort(numChannel + 1, finalPort, PortDirection.TOP);
+        addPort(numChannel + 1, finalPort, PortDirection.BOTTOM);
 
         for (int i = 0; i < mPoints.size(); i++) {
             mColors.add(Color.BLUE);
