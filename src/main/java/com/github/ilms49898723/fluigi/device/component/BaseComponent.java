@@ -175,8 +175,12 @@ public abstract class BaseComponent {
         return result;
     }
 
+    public boolean supportSwapPort(int portId) {
+        return mSwappablePorts.contains(portId);
+    }
+
     public void swapPort(int portA, int portB, int channelSpacing) {
-        if (supportSwapPort()) {
+        if (supportSwapPort(portA) && supportSwapPort(portB)) {
             if (portA == portB) {
                 return;
             }
@@ -237,8 +241,6 @@ public abstract class BaseComponent {
     }
 
     public abstract boolean supportRotate();
-
-    public abstract boolean supportSwapPort();
 
     public abstract List<Point2DPair> getPortPoints();
 

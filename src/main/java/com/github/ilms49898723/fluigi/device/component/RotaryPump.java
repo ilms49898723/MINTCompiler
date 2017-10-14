@@ -32,11 +32,6 @@ public class RotaryPump extends BaseComponent {
     }
 
     @Override
-    public boolean supportSwapPort() {
-        return false;
-    }
-
-    @Override
     public List<Point2DPair> getPortPoints() {
         return new ArrayList<>();
     }

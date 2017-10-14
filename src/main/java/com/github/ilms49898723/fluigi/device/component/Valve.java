@@ -38,11 +38,6 @@ public class Valve extends BaseComponent {
     }
 
     @Override
-    public boolean supportSwapPort() {
-        return true;
-    }
-
-    @Override
     public List<Point2DPair> getPortPoints() {
         List<Point2DPair> result = new ArrayList<>();
         for (int portId : mPortChannelWidth.keySet()) {

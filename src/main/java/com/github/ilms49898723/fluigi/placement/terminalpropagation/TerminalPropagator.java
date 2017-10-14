@@ -76,12 +76,12 @@ public class TerminalPropagator extends BasePlacer {
             int newDstPort = dstPort;
             List<Integer> srcCandidates = new ArrayList<>();
             List<Integer> dstCandidates = new ArrayList<>();
-            if (src.supportSwapPort()) {
+            if (src.supportSwapPort(srcPort)) {
                 srcCandidates.addAll(src.getSwappablePorts());
             } else {
                 srcCandidates.add(srcPort);
             }
-            if (dst.supportSwapPort()) {
+            if (dst.supportSwapPort(dstPort)) {
                 dstCandidates.addAll(dst.getSwappablePorts());
             } else {
                 dstCandidates.add(dstPort);
@@ -100,10 +100,10 @@ public class TerminalPropagator extends BasePlacer {
                     dst.swapPort(dstPort, dstPortSwap, mParameters.getChannelSpacing());
                 }
             }
-            if (src.supportSwapPort()) {
+            if (src.supportSwapPort(srcPort)) {
                 src.swapPort(srcPort, newSrcPort, mParameters.getChannelSpacing());
             }
-            if (dst.supportSwapPort()) {
+            if (dst.supportSwapPort(dstPort)) {
                 dst.swapPort(dstPort, newDstPort, mParameters.getChannelSpacing());
             }
         }

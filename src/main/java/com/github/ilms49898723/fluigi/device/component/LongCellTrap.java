@@ -36,11 +36,6 @@ public class LongCellTrap extends BaseComponent {
     }
 
     @Override
-    public boolean supportSwapPort() {
-        return true;
-    }
-
-    @Override
     public List<Point2DPair> getPortPoints() {
         return new ArrayList<>();
     }
