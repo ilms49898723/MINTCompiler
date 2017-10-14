@@ -9,7 +9,9 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
+import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.placement.controllayer.ValvePlacer;
+import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
 import javafx.geometry.Point2D;
@@ -94,7 +96,7 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
-    private static final int MAX_ITERATION = 10;
+    private static final int MAX_ITERATION = 3;
     private static final int LAYER_COST = 10;
     private static final int BEND_COST = 250;
     private static final int sMoves[][] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
@@ -156,6 +158,7 @@ public class HadlockRouter extends BaseRouter {
         controlPlacement();
         System.out.println("Info: Control layer routing...");
         initializeMap(false);
+        routingPreMark(ComponentLayer.FLOW);
         routingPreMark(ComponentLayer.CONTROL);
         routingCounter = 0;
         channelList = new ArrayList<>(mDeviceGraph.getAllControlEdges());
@@ -178,8 +181,17 @@ public class HadlockRouter extends BaseRouter {
 
     private boolean controlPlacement() {
         System.out.println("Info: Control layer placement...");
-        ValvePlacer placer = new ValvePlacer(mSymbolTable, mDeviceGraph, mParameters);
+
+        BasePlacer placer = new ValvePlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
+
+        TerminalPropagator propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
+        List<BaseComponent> propagateTargets = new ArrayList<>();
+        propagateTargets.addAll(mSymbolTable.getValves());
+        propagateTargets.addAll(mSymbolTable.getComponents(ComponentLayer.CONTROL));
+        propagator.rotatePropagation(propagateTargets);
+        propagator.swapPortPropagation(propagateTargets);
+
         return true;
     }
 

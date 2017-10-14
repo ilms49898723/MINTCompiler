@@ -175,7 +175,7 @@ public abstract class BaseComponent {
         return result;
     }
 
-    public void swapPort(int portA, int portB) {
+    public void swapPort(int portA, int portB, int channelSpacing) {
         if (supportSwapPort()) {
             if (portA == portB) {
                 return;
@@ -184,14 +184,12 @@ public abstract class BaseComponent {
             Point2D posB = mPorts.get(portB);
             PortDirection dirA = mPortDirection.get(portA);
             PortDirection dirB = mPortDirection.get(portB);
-            int widthA = mPortChannelWidth.get(portA);
-            int widthB = mPortChannelWidth.get(portB);
             mPorts.put(portA, posB);
             mPorts.put(portB, posA);
             mPortDirection.put(portA, dirB);
             mPortDirection.put(portB, dirA);
-            mPortChannelWidth.put(portA, widthB);
-            mPortChannelWidth.put(portB, widthA);
+            portProcess(portA, mPortChannelWidth.get(portA), channelSpacing);
+            portProcess(portB, mPortChannelWidth.get(portB), channelSpacing);
         }
     }
 
@@ -214,8 +212,12 @@ public abstract class BaseComponent {
     }
 
     private void portProcess(int id, int width, int channelSpacing) {
+        if (width == -1) {
+            mPorts.put(id, Point2D.ZERO);
+            return;
+        }
         if (mType == ComponentType.PORT || mType == ComponentType.NODE || mType == ComponentType.VALVE) {
-            Point2D portPosition = mPorts.get(id);
+            Point2D portPosition = Point2D.ZERO;
             int delta = width / 2 + channelSpacing;
             switch (mPortDirection.get(id)) {
                 case TOP:

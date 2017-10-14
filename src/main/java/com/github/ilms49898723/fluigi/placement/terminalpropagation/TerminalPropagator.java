@@ -5,9 +5,13 @@ import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TerminalPropagator extends BasePlacer {
     public TerminalPropagator(SymbolTable symbolTable, DeviceGraph deviceGraph, Parameters parameters) {
@@ -25,8 +29,12 @@ public class TerminalPropagator extends BasePlacer {
         return true;
     }
 
-    private void rotatePropagation() {
-        for (BaseComponent component : mSymbolTable.getComponents()) {
+    public void rotatePropagation() {
+        rotatePropagation(mSymbolTable.getComponents(ComponentLayer.FLOW));
+    }
+
+    public void rotatePropagation(List<BaseComponent> components) {
+        for (BaseComponent component : components) {
             if (component.supportRotate()) {
                 int[] costs = new int[4];
                 costs[0] = getCost(component);
@@ -50,12 +58,54 @@ public class TerminalPropagator extends BasePlacer {
         }
     }
 
-    private void swapPortPropagation() {
+    public void swapPortPropagation() {
+        swapPortPropagation(mSymbolTable.getComponents(ComponentLayer.FLOW));
+    }
+
+    public void swapPortPropagation(List<BaseComponent> components) {
         for (DeviceEdge edge : mDeviceGraph.edgeSet()) {
             BaseComponent src = mSymbolTable.get(edge.getSource().getIdentifier());
             BaseComponent dst = mSymbolTable.get(edge.getTarget().getIdentifier());
+            if (!components.contains(src) || !components.contains(dst)) {
+                continue;
+            }
             int srcPort = edge.getSource().getPortNumber();
             int dstPort = edge.getTarget().getPortNumber();
+            int minCost = getCost(src, dst);
+            int newSrcPort = srcPort;
+            int newDstPort = dstPort;
+            List<Integer> srcCandidates = new ArrayList<>();
+            List<Integer> dstCandidates = new ArrayList<>();
+            if (src.supportSwapPort()) {
+                srcCandidates.addAll(src.getSwappablePorts());
+            } else {
+                srcCandidates.add(srcPort);
+            }
+            if (dst.supportSwapPort()) {
+                dstCandidates.addAll(dst.getSwappablePorts());
+            } else {
+                dstCandidates.add(dstPort);
+            }
+            for (int srcPortSwap : srcCandidates) {
+                for (int dstPortSwap : dstCandidates) {
+                    src.swapPort(srcPort, srcPortSwap, mParameters.getChannelSpacing());
+                    dst.swapPort(dstPort, dstPortSwap, mParameters.getChannelSpacing());
+                    int cost = getCost(src, dst);
+                    if (cost < minCost) {
+                        minCost = cost;
+                        newSrcPort = srcPortSwap;
+                        newDstPort = dstPortSwap;
+                    }
+                    src.swapPort(srcPort, srcPortSwap, mParameters.getChannelSpacing());
+                    dst.swapPort(dstPort, dstPortSwap, mParameters.getChannelSpacing());
+                }
+            }
+            if (src.supportSwapPort()) {
+                src.swapPort(srcPort, newSrcPort, mParameters.getChannelSpacing());
+            }
+            if (dst.supportSwapPort()) {
+                dst.swapPort(dstPort, newDstPort, mParameters.getChannelSpacing());
+            }
         }
     }
 
@@ -70,5 +120,9 @@ public class TerminalPropagator extends BasePlacer {
             }
         }
         return cost;
+    }
+
+    private int getCost(BaseComponent vertexA, BaseComponent vertexB) {
+        return getCost(vertexA) + getCost(vertexB);
     }
 }
