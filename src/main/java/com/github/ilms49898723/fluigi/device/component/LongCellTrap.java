@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class LongCellTrap extends BaseComponent {
@@ -25,6 +26,7 @@ public class LongCellTrap extends BaseComponent {
         mChamberLength = chamberLength;
         mChamberSpacing = chamberSpacing;
         mChannelWidth = channelWidth;
+        mSwappablePorts.addAll(Arrays.asList(1, 2));
         setPoints();
     }
 

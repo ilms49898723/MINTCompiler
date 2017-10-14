@@ -37,7 +37,6 @@ public class Channel extends BaseComponent {
     public List<Integer> getValvePositions(int threshold, int step) {
         List<Integer> result = new ArrayList<>();
         int numPoints = (mPoints.size() - threshold) / 2 + 1;
-        System.out.println(numPoints);
         int pivot = mPoints.size() / 2;
         for (int i = 0; i < numPoints; ++i) {
             boolean found = false;
@@ -64,13 +63,13 @@ public class Channel extends BaseComponent {
     public boolean isVerticalChannelAt(int index) {
         Point2D a = mPoints.get(index - 1).getPointA();
         Point2D b = mPoints.get(index + 1).getPointB();
-        return Math.abs((int) a.getX() - ((int) b.getX())) < 2;
+        return ((int) a.getX()) == ((int) b.getX());
     }
 
     public boolean isHorizontalChannelAt(int index) {
         Point2D a = mPoints.get(index - 1).getPointA();
         Point2D b = mPoints.get(index + 1).getPointB();
-        return Math.abs((int) a.getY() - ((int) b.getY())) < 2;
+        return ((int) a.getY()) == ((int) b.getY());
     }
 
     private boolean isValidPosition(int midIdx, int threshold) {

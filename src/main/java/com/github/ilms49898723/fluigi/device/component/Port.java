@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Port extends BaseComponent {
@@ -17,6 +18,7 @@ public class Port extends BaseComponent {
     public Port(String identifier, ComponentLayer layer, int radius) {
         super(identifier, layer, ComponentType.PORT);
         mRadius = radius;
+        mSwappablePorts.addAll(Arrays.asList(1, 2, 3, 4));
         setPoints();
         setWidth(2 * radius);
         setHeight(2 * radius);

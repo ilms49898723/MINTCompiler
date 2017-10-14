@@ -25,6 +25,9 @@ public class Tree extends BaseComponent {
         mSpacing = spacing;
         mChannelWidth = channelWidth;
         mChannelLength = mChannelWidth * 10;
+        for (int i = 1; i <= Math.max(mInChannelNum, mOutChannelNum); ++i) {
+            mSwappablePorts.add(i);
+        }
         setPoints();
     }
 

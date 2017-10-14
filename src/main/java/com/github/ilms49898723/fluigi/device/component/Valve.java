@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Valve extends BaseComponent {
@@ -17,6 +18,7 @@ public class Valve extends BaseComponent {
     public Valve(String identifier, ComponentLayer layer, int width, int length, String channelId) {
         super(identifier, layer, ComponentType.VALVE);
         mChannelId = channelId;
+        mSwappablePorts.addAll(Arrays.asList(1, 2));
         setWidth(width);
         setHeight(length);
         setPoints();
@@ -82,5 +84,29 @@ public class Valve extends BaseComponent {
         Point2D portT = new Point2D(0.0, -getHeight() / 2);
         addPort(1, portB, PortDirection.BOTTOM);
         addPort(2, portT, PortDirection.TOP);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        Valve valve = (Valve) o;
+
+        return getChannelId() != null ? getChannelId().equals(valve.getChannelId()) : valve.getChannelId() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (getChannelId() != null ? getChannelId().hashCode() : 0);
+        return result;
     }
 }

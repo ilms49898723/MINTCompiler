@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Mixer extends BaseComponent {
@@ -23,6 +24,7 @@ public class Mixer extends BaseComponent {
         mBendSpacing = bendSpacing;
         mBendLength = bendLength;
         mChannelWidth = channelWidth;
+        mSwappablePorts.addAll(Arrays.asList(1, 2));
         setPoints();
     }
 

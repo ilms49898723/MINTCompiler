@@ -23,6 +23,7 @@ public abstract class BaseComponent {
 
     protected List<Point2DPair> mPoints;
     protected List<Color> mColors;
+    protected List<Integer> mSwappablePorts;
     protected Map<Integer, Point2D> mPorts;
     protected Map<Integer, PortDirection> mPortDirection;
     protected Map<Integer, Integer> mPortChannelWidth;
@@ -34,6 +35,7 @@ public abstract class BaseComponent {
         mPosition = new Point2D(0.0, 0.0);
         mPoints = new ArrayList<>();
         mColors = new ArrayList<>();
+        mSwappablePorts = new ArrayList<>();
         mPorts = new HashMap<>();
         mPortDirection = new HashMap<>();
         mPortChannelWidth = new HashMap<>();
@@ -160,6 +162,10 @@ public abstract class BaseComponent {
         return mPortDirection.get(id);
     }
 
+    public List<Integer> getSwappablePorts() {
+        return mSwappablePorts;
+    }
+
     public List<Point2DPair> getPoints() {
         List<Point2DPair> result = new ArrayList<>();
         for (Point2DPair pair : mPoints) {
@@ -171,6 +177,9 @@ public abstract class BaseComponent {
 
     public void swapPort(int portA, int portB) {
         if (supportSwapPort()) {
+            if (portA == portB) {
+                return;
+            }
             Point2D posA = mPorts.get(portA);
             Point2D posB = mPorts.get(portB);
             PortDirection dirA = mPortDirection.get(portA);

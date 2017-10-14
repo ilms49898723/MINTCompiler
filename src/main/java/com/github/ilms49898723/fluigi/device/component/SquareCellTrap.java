@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SquareCellTrap extends BaseComponent {
@@ -21,6 +22,7 @@ public class SquareCellTrap extends BaseComponent {
         mChamberWidth = chamberWidth;
         mChamberLength = chamberLength;
         mChannelWidth = channelWidth;
+        mSwappablePorts.addAll(Arrays.asList(1, 2, 3, 4));
         setPoints(new Point2D(0.0, 0.0));
     }
 
