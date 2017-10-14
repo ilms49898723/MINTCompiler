@@ -8,11 +8,13 @@ public class SymbolTable {
     private Map<String, BaseComponent> mSymbols;
     private List<BaseComponent> mComponents;
     private List<BaseComponent> mChannels;
+    private List<BaseComponent> mValves;
 
     public SymbolTable() {
         mSymbols = new HashMap<>();
         mComponents = new ArrayList<>();
         mChannels = new ArrayList<>();
+        mValves = new ArrayList<>();
     }
 
     public boolean put(String identifier, BaseComponent component) {
@@ -20,10 +22,12 @@ public class SymbolTable {
             return false;
         } else {
             mSymbols.put(identifier, component);
-            if (component.getType() != ComponentType.CHANNEL) {
-                mComponents.add(component);
-            } else {
+            if (component.getType() == ComponentType.CHANNEL) {
                 mChannels.add(component);
+            } else if (component.getType() == ComponentType.VALVE) {
+                mValves.add(component);
+            } else {
+                mComponents.add(component);
             }
             return true;
         }
@@ -43,6 +47,12 @@ public class SymbolTable {
         for (int i = 0; i < mChannels.size(); ++i) {
             if (mChannels.get(i).getIdentifier().equals(identifier)) {
                 mChannels.remove(i);
+                break;
+            }
+        }
+        for (int i = 0; i < mValves.size(); ++i) {
+            if (mValves.get(i).getIdentifier().equals(identifier)) {
+                mValves.remove(i);
                 break;
             }
         }
@@ -87,6 +97,10 @@ public class SymbolTable {
             }
         }
         return result;
+    }
+
+    public List<BaseComponent> getValves() {
+        return mValves;
     }
 
     public int size() {
