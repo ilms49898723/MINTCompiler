@@ -9,7 +9,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
-import com.github.ilms49898723.fluigi.placement.valveplacer.ValvePlacer;
+import com.github.ilms49898723.fluigi.placement.controllayer.ValvePlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
 import javafx.geometry.Point2D;
@@ -131,8 +131,9 @@ public class HadlockRouter extends BaseRouter {
 
     @Override
     public boolean routing() {
+        System.out.println("Info: Flow layer routing...");
         initializeMap(true);
-        routingPreMark();
+        routingPreMark(ComponentLayer.FLOW);
         int routingCounter;
         List<DeviceEdge> channelList;
         boolean result;
@@ -140,27 +141,45 @@ public class HadlockRouter extends BaseRouter {
         channelList = new ArrayList<>(mDeviceGraph.getAllFlowEdges());
         do {
             result = routeChannels(channelList, routingCounter);
+            if (!result) {
+                failedCleanUp(channelList);
+                initializeMap(false);
+                routingPreMark(ComponentLayer.FLOW);
+            }
             ++routingCounter;
         } while (!result && routingCounter < MAX_ITERATION);
         if (!result) {
-            System.err.println("Routing failed.");
+            System.err.println("Error: Routing failed.");
             return false;
         }
         afterRouteLayer();
-        ValvePlacer placer = new ValvePlacer(mSymbolTable, mDeviceGraph, mParameters);
-        placer.placement();
+        controlPlacement();
+        System.out.println("Info: Control layer routing...");
         initializeMap(false);
-        routingPreMark();
+        routingPreMark(ComponentLayer.CONTROL);
         routingCounter = 0;
         channelList = new ArrayList<>(mDeviceGraph.getAllControlEdges());
         do {
             result = routeChannels(channelList, routingCounter);
+            if (!result) {
+                failedCleanUp(channelList);
+                initializeMap(false);
+                routingPreMark(ComponentLayer.FLOW);
+                routingPreMark(ComponentLayer.CONTROL);
+            }
             ++routingCounter;
         } while (!result && routingCounter < MAX_ITERATION);
         if (!result) {
-            System.err.println("Routing failed.");
+            System.err.println("Error: Routing failed.");
             return false;
         }
+        return true;
+    }
+
+    private boolean controlPlacement() {
+        System.out.println("Info: Control layer placement...");
+        ValvePlacer placer = new ValvePlacer(mSymbolTable, mDeviceGraph, mParameters);
+        placer.placement();
         return true;
     }
 
@@ -176,11 +195,11 @@ public class HadlockRouter extends BaseRouter {
                 Point2D portB = mSymbolTable.get(target.getIdentifier()).getPort(target.getPortNumber());
                 int radius = chn.getChannelWidth() * 2;
                 Point2DUtil.outputPng("Route_" + counter, mSymbolTable, mParameters, radius, portA, portB);
-                System.err.println("Routing failed on channel " + chn.getIdentifier());
-                System.err.println("Try re-ordering and re-routing.");
+                System.err.println("Error: Routing failed on channel " + chn.getIdentifier() + ".");
+                System.err.println("       Layout written in file 'Route_" + counter + ".png'.");
+                System.err.println("       Try re-ordering and re-routing.");
                 channels.remove(i);
                 channels.add(0, channel);
-                failedCleanUp(channels);
                 return false;
             }
             afterRouteChannel();
@@ -203,8 +222,8 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
-    private void routingPreMark() {
-        for (BaseComponent component : mSymbolTable.getComponents()) {
+    private void routingPreMark(ComponentLayer layer) {
+        for (BaseComponent component : mSymbolTable.getComponents(layer)) {
             markComponent(component);
         }
     }
@@ -269,6 +288,9 @@ public class HadlockRouter extends BaseRouter {
 
     private boolean traceBack(GridPoint start, GridPoint end, Channel channel) {
         GridPoint current = start;
+        Point2D leftTopS = new Point2D(current.mX - channel.getChannelWidth() / 2, current.mY - channel.getChannelWidth() / 2);
+        Point2D rightBottomS = leftTopS.add(channel.getChannelWidth(), channel.getChannelWidth());
+        channel.addPoint(new Point2DPair(leftTopS, rightBottomS), (channel.getLayer() == ComponentLayer.FLOW) ? Color.BLUE : Color.RED);
         while (!current.equalsPosition(end)) {
             int backId = mTraceMap[current.mX][current.mY];
             int dX = sMoves[backId][0];
@@ -350,8 +372,6 @@ public class HadlockRouter extends BaseRouter {
     }
 
     private void failedCleanUp(List<DeviceEdge> channels) {
-        initializeMap(false);
-        routingPreMark();
         List<BaseComponent> channelComponents = new ArrayList<>();
         for (DeviceEdge edge : channels) {
             channelComponents.add(mSymbolTable.get(edge.getChannel()));

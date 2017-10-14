@@ -1,4 +1,4 @@
-package com.github.ilms49898723.fluigi.placement.valveplacer;
+package com.github.ilms49898723.fluigi.placement.controllayer;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.Channel;

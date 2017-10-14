@@ -9,13 +9,11 @@ public class SymbolTable {
     private Map<String, BaseComponent> mSymbols;
     private List<BaseComponent> mComponents;
     private List<BaseComponent> mChannels;
-    private List<BaseComponent> mValves;
 
     public SymbolTable() {
         mSymbols = new HashMap<>();
         mComponents = new ArrayList<>();
         mChannels = new ArrayList<>();
-        mValves = new ArrayList<>();
     }
 
     public boolean put(String identifier, BaseComponent component) {
@@ -25,8 +23,6 @@ public class SymbolTable {
             mSymbols.put(identifier, component);
             if (component.getType() == ComponentType.CHANNEL) {
                 mChannels.add(component);
-            } else if (component.getType() == ComponentType.VALVE) {
-                mValves.add(component);
             } else {
                 mComponents.add(component);
             }
@@ -38,7 +34,7 @@ public class SymbolTable {
         return mSymbols.getOrDefault(identifier, null);
     }
 
-    public BaseComponent remove(String identifier) {
+    public void remove(String identifier) {
         for (int i = 0; i < mComponents.size(); ++i) {
             if (mComponents.get(i).getIdentifier().equals(identifier)) {
                 mComponents.remove(i);
@@ -51,13 +47,7 @@ public class SymbolTable {
                 break;
             }
         }
-        for (int i = 0; i < mValves.size(); ++i) {
-            if (mValves.get(i).getIdentifier().equals(identifier)) {
-                mValves.remove(i);
-                break;
-            }
-        }
-        return mSymbols.remove(identifier);
+        mSymbols.remove(identifier);
     }
 
     public boolean containsKey(String identifier) {
@@ -66,10 +56,6 @@ public class SymbolTable {
 
     public Set<String> keySet() {
         return mSymbols.keySet();
-    }
-
-    public Collection<BaseComponent> values() {
-        return mSymbols.values();
     }
 
     public List<BaseComponent> getComponents() {
@@ -101,11 +87,17 @@ public class SymbolTable {
     }
 
     public List<BaseComponent> getValves() {
-        return mValves;
+        List<BaseComponent> components = new ArrayList<>();
+        for (BaseComponent component : mComponents) {
+            if (component.getType() == ComponentType.VALVE) {
+                components.add(component);
+            }
+        }
+        return components;
     }
 
     public void replaceValveChannel(String original, String replace) {
-        for (BaseComponent component : mValves) {
+        for (BaseComponent component : getValves()) {
             Valve valve = (Valve) component;
             if (valve.getChannelId().equals(original)) {
                 valve.setChannelId(replace);
@@ -115,9 +107,5 @@ public class SymbolTable {
 
     public int size() {
         return mSymbols.size();
-    }
-
-    public int componentSize() {
-        return mComponents.size();
     }
 }

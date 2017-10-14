@@ -54,6 +54,8 @@ public class DeviceProcessor {
     }
 
     public void start() {
+        initialCleanup();
+
         System.out.println("Info: Parsing MINT...");
         boolean parseResult = parseMint();
         if (!parseResult) {
@@ -64,7 +66,7 @@ public class DeviceProcessor {
         unusedComponentCleanup();
         mintOptimize();
 
-        System.out.println("Info: Placement...");
+        System.out.println("Info: Flow layer placement...");
         BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
 
@@ -81,14 +83,24 @@ public class DeviceProcessor {
         BasePlacer overlapFixer = new OverlapFixer(mSymbolTable, mDeviceGraph, mParameters);
         overlapFixer.placement();
 
-        System.out.println("Info: Routing...");
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
 
         System.out.println("Info: Saving result...");
         outputPng();
 
-        System.out.println("Finished.");
+        System.out.println("Info: Finished.");
+    }
+
+    private void initialCleanup() {
+        for (int i = 0; i <= 9; ++i) {
+            File file = new File("Route_" + i + ".png");
+            if (file.exists() && file.isFile()) {
+                if (!file.delete()) {
+                    System.err.println("Error: Cannot delete file 'Route_" + i + ".png'.");
+                }
+            }
+        }
     }
 
     private boolean parseMint() {
