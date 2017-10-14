@@ -156,6 +156,8 @@ public class DeviceProcessor {
             System.out.println("Optimization: Node " + nodeId + ": ignored.");
             System.out.println("      Only 2 ports are used and both channels connected to it have the same width.");
             String channelId = edgeA.getChannel() + "~" + edgeB.getChannel() + "$";
+            mSymbolTable.replaceValveChannel(edgeA.getChannel(), channelId);
+            mSymbolTable.replaceValveChannel(edgeB.getChannel(), channelId);
             int channelWidth = mSymbolTable.get(edgeA.getChannel()).getWidth();
             Channel channel = new Channel(channelId, mSymbolTable.get(edgeA.getChannel()).getLayer(), channelWidth);
             DeviceComponent src = mDeviceGraph.getEdgeTarget(edgeA, nodePortA);
@@ -209,6 +211,9 @@ public class DeviceProcessor {
             component.draw(g);
         }
         for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.CONTROL)) {
+            component.draw(g);
+        }
+        for (BaseComponent component : mSymbolTable.getValves()) {
             component.draw(g);
         }
         for (BaseComponent component : mSymbolTable.getChannels(ComponentLayer.CONTROL)) {

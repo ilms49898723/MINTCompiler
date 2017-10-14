@@ -1,6 +1,7 @@
 package com.github.ilms49898723.fluigi.device.symbol;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.device.component.Valve;
 
 import java.util.*;
 
@@ -101,6 +102,15 @@ public class SymbolTable {
 
     public List<BaseComponent> getValves() {
         return mValves;
+    }
+
+    public void replaceValveChannel(String original, String replace) {
+        for (BaseComponent component : mValves) {
+            Valve valve = (Valve) component;
+            if (valve.getChannelId().equals(original)) {
+                valve.setChannelId(replace);
+            }
+        }
     }
 
     public int size() {

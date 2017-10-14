@@ -9,6 +9,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
+import com.github.ilms49898723.fluigi.placement.valveplacer.ValvePlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
 import javafx.geometry.Point2D;
@@ -95,7 +96,7 @@ public class HadlockRouter extends BaseRouter {
 
     private static final int MAX_ITERATION = 10;
     private static final int LAYER_COST = 10;
-    private static final int BEND_COST = 10;
+    private static final int BEND_COST = 250;
     private static final int sMoves[][] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     private static int backMove(int moveId) {
@@ -132,25 +133,33 @@ public class HadlockRouter extends BaseRouter {
     public boolean routing() {
         initializeMap(true);
         routingPreMark();
-        List<Set<DeviceEdge>> channelLists = new ArrayList<>();
-        channelLists.add(mDeviceGraph.getAllFlowEdges());
-        channelLists.add(mDeviceGraph.getAllControlEdges());
-        int routingCounter = 0;
-        for (Set<DeviceEdge> channelSet : channelLists) {
-            List<DeviceEdge> channelList = new ArrayList<>(channelSet);
-            boolean result;
-            do {
-                result = routeChannels(channelList, routingCounter);
-                ++routingCounter;
-            } while (!result && routingCounter < MAX_ITERATION);
-            if (!result) {
-                System.err.println("Routing failed.");
-                return false;
-            }
-            afterRouteLayer();
-            initializeMap(false);
-            routingPreMark();
-            routingCounter = 0;
+        int routingCounter;
+        List<DeviceEdge> channelList;
+        boolean result;
+        routingCounter = 0;
+        channelList = new ArrayList<>(mDeviceGraph.getAllFlowEdges());
+        do {
+            result = routeChannels(channelList, routingCounter);
+            ++routingCounter;
+        } while (!result && routingCounter < MAX_ITERATION);
+        if (!result) {
+            System.err.println("Routing failed.");
+            return false;
+        }
+        afterRouteLayer();
+        ValvePlacer placer = new ValvePlacer(mSymbolTable, mDeviceGraph, mParameters);
+        placer.placement();
+        initializeMap(false);
+        routingPreMark();
+        routingCounter = 0;
+        channelList = new ArrayList<>(mDeviceGraph.getAllControlEdges());
+        do {
+            result = routeChannels(channelList, routingCounter);
+            ++routingCounter;
+        } while (!result && routingCounter < MAX_ITERATION);
+        if (!result) {
+            System.err.println("Routing failed.");
+            return false;
         }
         return true;
     }

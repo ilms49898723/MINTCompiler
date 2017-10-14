@@ -3,8 +3,6 @@ package com.github.ilms49898723.fluigi.mintparse;
 import com.github.ilms49898723.fluigi.antlr.UFBaseListener;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
 import com.github.ilms49898723.fluigi.device.component.*;
-import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
-import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
@@ -283,6 +281,7 @@ public class UFProcessor extends UFBaseListener {
             ErrorHandler.printError(mFilename, ctx.channel, ErrorMessages.E_UNDEFINED_IDENTIFIER);
             setInvalid();
         }
+        int channelWidth = ((Channel) mSymbolTable.get(channelIdentifier)).getChannelWidth();
         int w = 0;
         int l = 0;
         if (ctx.widthParam() != null) {
@@ -296,25 +295,9 @@ public class UFProcessor extends UFBaseListener {
             ErrorHandler.printError(mFilename, ctx.ufname().ID(), ErrorMessages.E_DUPLICATED_IDENTIFIER);
             setInvalid();
         }
-        DeviceEdge edge = mDeviceGraph.getEdge(channelIdentifier);
-        DeviceComponent source = mDeviceGraph.getEdgeSource(edge);
-        DeviceComponent target = mDeviceGraph.getEdgeTarget(edge);
-        String originalEdgeId = edge.getChannel();
-        Channel originalEdge = (Channel) mSymbolTable.remove(originalEdgeId);
-        mDeviceGraph.removeEdge(edge);
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 2; ++i) {
             mDeviceGraph.addVertex(valveIdentifier, i + 1);
         }
-        String channelId1 = originalEdgeId + "#ch1";
-        String channelId2 = originalEdgeId + "#ch2";
-        BaseComponent newChannel1 = new Channel(channelId1, ComponentLayer.FLOW, originalEdge.getChannelWidth());
-        BaseComponent newChannel2 = new Channel(channelId2, ComponentLayer.FLOW, originalEdge.getChannelWidth());
-        mSymbolTable.put(channelId1, newChannel1);
-        mSymbolTable.put(channelId2, newChannel2);
-        mDeviceGraph.addEdge(source.getIdentifier(), source.getPortNumber(), valveIdentifier, 3, channelId1, ComponentLayer.FLOW);
-        mDeviceGraph.addEdge(valveIdentifier, 4, target.getIdentifier(), target.getPortNumber(), channelId2, ComponentLayer.FLOW);
-        valve.setPortChannelWidth(3, originalEdge.getChannelWidth(), mParameters.getChannelSpacing());
-        valve.setPortChannelWidth(4, originalEdge.getChannelWidth(), mParameters.getChannelSpacing());
     }
 
     @Override

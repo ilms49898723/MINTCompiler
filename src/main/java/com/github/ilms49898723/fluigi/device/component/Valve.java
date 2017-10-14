@@ -12,11 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Valve extends BaseComponent {
+    private String mChannelId;
+
     public Valve(String identifier, ComponentLayer layer, int width, int length, String channelId) {
         super(identifier, layer, ComponentType.VALVE);
+        mChannelId = channelId;
         setWidth(width);
         setHeight(length);
         setPoints();
+    }
+
+    public void setChannelId(String channelId) {
+        mChannelId = channelId;
+    }
+
+    public String getChannelId() {
+        return mChannelId;
     }
 
     @Override
@@ -55,7 +66,7 @@ public class Valve extends BaseComponent {
                         mPortDirection.get(portId),
                         mPortChannelWidth.get(portId),
                         g,
-                        (portId == 3 || portId == 4) ? Color.BLUE : Color.RED
+                        Color.RED
                 );
             }
         }
@@ -67,13 +78,9 @@ public class Valve extends BaseComponent {
         Point2D pb = new Point2D(getWidth() / 2, getHeight() / 2);
         mPoints.add(new Point2DPair(pa, pb));
         mColors.add(Color.RED);
-        Point2D portL = new Point2D(-getWidth() / 2, 0.0);
-        Point2D portR = new Point2D(getWidth() / 2, 0.0);
         Point2D portB = new Point2D(0.0, getHeight() / 2);
         Point2D portT = new Point2D(0.0, -getHeight() / 2);
         addPort(1, portB, PortDirection.BOTTOM);
         addPort(2, portT, PortDirection.TOP);
-        addPort(3, portL, PortDirection.LEFT);
-        addPort(4, portR, PortDirection.RIGHT);
     }
 }

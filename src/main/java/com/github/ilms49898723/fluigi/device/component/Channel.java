@@ -34,6 +34,67 @@ public class Channel extends BaseComponent {
         mColors = new ArrayList<>();
     }
 
+    public List<Integer> getValvePositions(int threshold, int step) {
+        List<Integer> result = new ArrayList<>();
+        int numPoints = (mPoints.size() - threshold) / 2 + 1;
+        System.out.println(numPoints);
+        int pivot = mPoints.size() / 2;
+        for (int i = 0; i < numPoints; ++i) {
+            boolean found = false;
+            if (isValidPosition(pivot + i, threshold)) {
+                result.add(pivot + i);
+                found = true;
+            }
+            if (isValidPosition(pivot - i, threshold)) {
+                result.add(pivot - i);
+                found = true;
+            }
+            if (found) {
+                i += step;
+            } else {
+                ++i;
+            }
+            if (result.size() >= 20) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    public boolean isVerticalChannelAt(int index) {
+        Point2D a = mPoints.get(index - 1).getPointA();
+        Point2D b = mPoints.get(index + 1).getPointB();
+        return Math.abs((int) a.getX() - ((int) b.getX())) < 2;
+    }
+
+    public boolean isHorizontalChannelAt(int index) {
+        Point2D a = mPoints.get(index - 1).getPointA();
+        Point2D b = mPoints.get(index + 1).getPointB();
+        return Math.abs((int) a.getY() - ((int) b.getY())) < 2;
+    }
+
+    private boolean isValidPosition(int midIdx, int threshold) {
+        int ht = threshold / 2 + 1;
+        if (midIdx - ht < 0 || midIdx + ht >= mPoints.size()) {
+            return false;
+        }
+        int pivot = midIdx - ht;
+        for (int i = 0; i < threshold - 3; ++i) {
+            if (!isContinuous(mPoints.get(pivot + i).getPointA(), mPoints.get(pivot + i + 2).getPointA())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isContinuous(Point2D a, Point2D b) {
+        int xa = (int) a.getX();
+        int xb = (int) b.getX();
+        int ya = (int) a.getY();
+        int yb = (int) b.getY();
+        return (xa == xb || ya == yb);
+    }
+
     @Override
     public boolean supportRotate() {
         return false;
