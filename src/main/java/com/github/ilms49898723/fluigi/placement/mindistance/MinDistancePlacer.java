@@ -28,6 +28,9 @@ public class MinDistancePlacer extends BasePlacer {
 
     private boolean minDistance() {
         for (BaseComponent c : mSymbolTable.getComponents()) {
+        	if (mLocked.containsKey(c.getIdentifier())) {
+                continue;
+            }
             if (!fixComponentPosition(c.getIdentifier())) {
                 return false;
             }
