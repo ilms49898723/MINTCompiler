@@ -42,6 +42,7 @@ public class MinDistancePlacer extends BasePlacer {
         Map<Integer, List<Point2D>> connectedPorts = new HashMap<>();
 
         //Get connected components
+        int numOfCC = 0;
         for (int i = 1; i <= mSymbolTable.get(id).getNumPorts(); i++) {
             if (!mSymbolTable.get(id).hasPort(i)) {
                 continue;
@@ -60,6 +61,7 @@ public class MinDistancePlacer extends BasePlacer {
                     Point2D desPort = mSymbolTable.get(target.getIdentifier()).getPort(target.getPortNumber());
                     result2.add(new Point2D(mSymbolTable.get(target.getIdentifier()).getPositionX() + desPort.getX(),
                             mSymbolTable.get(target.getIdentifier()).getPositionY() + desPort.getY()));
+                    numOfCC += 1;
                 }
             }
 
@@ -67,34 +69,62 @@ public class MinDistancePlacer extends BasePlacer {
             connectedPorts.put(i, result2);
         }
 
-        //Find new position which distance is minimum
-        newPosition = getMinimumDistancePoint(id, connectedPorts);
-        mLocked.put(id, 1);
+        if(numOfCC != 1) {
+        	//Find new position which distance is minimum
+            newPosition = getMinimumDistancePoint(id, connectedPorts);
+            mLocked.put(id, 1);
 
-        List<String> overlapComponents = getOverlapComponents(id, newPosition);
-        if (overlapComponents.isEmpty()) {
-            mSymbolTable.get(id).setPosition(newPosition);
-        } else {
-            boolean isValid = true;
-            for (int i = 0; i < overlapComponents.size(); i++) {
-                if (mLocked.containsKey(overlapComponents.get(i))) {
-                    isValid = false;
-                    break;
-                }
-            }
-
-            if (isValid) {
+            List<String> overlapComponents = getOverlapComponents(id, newPosition);
+            if (overlapComponents.isEmpty()) {
                 mSymbolTable.get(id).setPosition(newPosition);
-                for (int i = 0; i < overlapComponents.size(); i++) {
-                    fixComponentPosition(overlapComponents.get(i));
-                }
             } else {
-                Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
-                if (p == null) {
-                    return false;
+                boolean isValid = true;
+                for (int i = 0; i < overlapComponents.size(); i++) {
+                    if (mLocked.containsKey(overlapComponents.get(i))) {
+                        isValid = false;
+                        break;
+                    }
                 }
-                mSymbolTable.get(id).setPosition(p);
+
+                if (isValid) {
+                    mSymbolTable.get(id).setPosition(newPosition);
+                    for (int i = 0; i < overlapComponents.size(); i++) {
+                        fixComponentPosition(overlapComponents.get(i));
+                    }
+                } else {
+                    Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
+                    if (p == null) {
+                        return false;
+                    }
+                    mSymbolTable.get(id).setPosition(p);
+                }
             }
+        } else {
+        	//Fix the position by x/y of connected port
+        	for(int i = 1; i <= mSymbolTable.get(id).getNumPorts(); i++) {
+        		if (!mSymbolTable.get(id).hasPort(i)) {
+                    continue;
+                }
+        		
+        		if(connectedPorts.get(i).size() != 0) {
+        			switch(mSymbolTable.get(id).getPortDirection(i)) {
+        			case LEFT:
+        				mSymbolTable.get(id).setPosition(new Point2D(connectedPorts.get(i).get(0).getX(), mSymbolTable.get(id).getPositionY()));
+                        break;
+                    case RIGHT:
+                    	mSymbolTable.get(id).setPosition(new Point2D(connectedPorts.get(i).get(0).getX(), mSymbolTable.get(id).getPositionY()));
+                        break;
+                    case TOP:
+                    	mSymbolTable.get(id).setPosition(new Point2D(mSymbolTable.get(id).getPositionX(), connectedPorts.get(i).get(0).getY()));
+                        break;
+                    case BOTTOM:
+                    	mSymbolTable.get(id).setPosition(new Point2D(mSymbolTable.get(id).getPositionX(), connectedPorts.get(i).get(0).getY()));
+                        break;
+        			}
+        			break;
+        		}
+        	}
+        	mLocked.put(id, 1);
         }
 
         return true;
@@ -119,17 +149,17 @@ public class MinDistancePlacer extends BasePlacer {
         
         Point2D result = new Point2D(x, y);
 
-        /*double costX = 0, costY = 0;
+        double costX = 0, costY = 0;
         for (int i = 1; i <= mSymbolTable.get(id).getNumPorts(); i++) {
             if (!mSymbolTable.get(id).hasPort(i)) {
                 continue;
             }
 
-            Point2D srcPort = new Point2D(newPosition.getX() + mSymbolTable.get(id).getPort(i).getX(), newPosition.getY() + mSymbolTable.get(id).getPort(i).getY());
+            Point2D srcPort = new Point2D(result.getX() + mSymbolTable.get(id).getPort(i).getX(), result.getY() + mSymbolTable.get(id).getPort(i).getY());
             Point2D cost = calculateCost(srcPort, mSymbolTable.get(id).getPortDirection(i), connectedPorts.get(i));
             costX += cost.getX();
             costY += cost.getY();
-        }*/
+        }
 
 
         return result;
