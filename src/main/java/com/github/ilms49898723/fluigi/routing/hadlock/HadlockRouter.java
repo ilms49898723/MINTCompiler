@@ -156,11 +156,13 @@ public class HadlockRouter extends BaseRouter {
         System.out.println("Info: Flow layer routing...");
         initializeMap(true);
         routingPreMark(ComponentLayer.FLOW);
+        RoutingOrder order = new RoutingOrder(mSymbolTable);
         int routingCounter;
         List<DeviceEdge> channelList;
         boolean result;
         routingCounter = 0;
         channelList = new ArrayList<>(mDeviceGraph.getAllFlowEdges());
+        channelList = order.getRoutingOrder(channelList);
         do {
             result = routeChannels(channelList, routingCounter);
             if (!result) {
@@ -182,6 +184,7 @@ public class HadlockRouter extends BaseRouter {
         routingPreMark(ComponentLayer.CONTROL);
         routingCounter = 0;
         channelList = new ArrayList<>(mDeviceGraph.getAllControlEdges());
+        channelList = order.getRoutingOrder(channelList);
         do {
             result = routeChannels(channelList, routingCounter);
             if (!result) {
@@ -307,9 +310,6 @@ public class HadlockRouter extends BaseRouter {
             for (int i = 0; i < 4; ++i) {
                 GridPoint next = current.add(sMoves[i][0], sMoves[i][1]);
                 if (!isValidGrid(next, source, target, channel.getChannelWidth())) {
-                    continue;
-                }
-                if (next.equalsPosition(end) && i != backMove(dirToMove(dst.getPortDirection(dstPort)))) {
                     continue;
                 }
                 int detourManhattanDelta = 0;
