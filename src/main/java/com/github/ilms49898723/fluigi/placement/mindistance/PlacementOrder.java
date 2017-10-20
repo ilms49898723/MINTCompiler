@@ -1,9 +1,6 @@
 package com.github.ilms49898723.fluigi.placement.mindistance;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
@@ -11,27 +8,30 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
+import com.github.ilms49898723.fluigi.maputil.MapUtil;
+import com.google.common.collect.Multiset.Entry;
 
 public class PlacementOrder {
 	
-	int[][] connectedMatrix;
+	List<BaseComponent> mComponents;
+	int[][] mConnectedMatrix;
 	int n;
 	
 	public PlacementOrder(SymbolTable symbolTable, DeviceGraph deviceGraph) {
-		List<BaseComponent> components = symbolTable.getComponents(ComponentLayer.CONTROL);
-		n = components.size();
-		connectedMatrix = new int [n][n];
+		mComponents = symbolTable.getComponents(ComponentLayer.CONTROL);
+		n = mComponents.size();
+		mConnectedMatrix = new int [n][n];
 		
 		for(int i = 0 ; i < n ; i++) {
 			for(int j = 0 ; j < n ; j++) {
-				connectedMatrix[i][j] = 0;
+				mConnectedMatrix[i][j] = 0;
 			}
 		}
 		
 		for (int i = 0 ; i < n ; i++) {
-			String id = components.get(i).getIdentifier();
-			for (int j = 1 ; j <= components.get(i).getNumPorts() ; j++) {
-				if (!components.get(i).hasPort(j)) continue;
+			String id = mComponents.get(i).getIdentifier();
+			for (int j = 1 ; j <= mComponents.get(i).getNumPorts() ; j++) {
+				if (!mComponents.get(i).hasPort(j)) continue;
 				
 				DeviceComponent src = new DeviceComponent(id, j);
 				Set<DeviceEdge> connectedEdges = deviceGraph.edgesOf(src);
@@ -42,15 +42,15 @@ public class PlacementOrder {
 	                    
 	                    target = (deviceGraph.getEdgeSource(itr) != src) ? deviceGraph.getEdgeSource(itr) : deviceGraph.getEdgeTarget(itr);
 	                    for(int k = 0 ; k < n ; k++) {
-	                    	if(components.get(k).getIdentifier() == target.getIdentifier()) {
+	                    	if(mComponents.get(k).getIdentifier() == target.getIdentifier()) {
 	                    		targetIdx = k;
 	                    		break;
 	                    	}
 	                    }
 	                    
 	                    if(targetIdx != i) {
-	                    	connectedMatrix[i][targetIdx] = 1;
-	                    	connectedMatrix[targetIdx][i] = 1;
+	                    	mConnectedMatrix[i][targetIdx] = 1;
+	                    	mConnectedMatrix[targetIdx][i] = 1;
 	                    }
 	                }
 				}
@@ -59,18 +59,42 @@ public class PlacementOrder {
 		}
 	}
 
-	public List<Integer> getStaticOrder() {
-		
+	public List<String> getStaticOrder() {
+		Map<String, Integer> connectedNum = new HashMap<>();
 		for (int i = 0 ; i < n ; i++) {
+			int num = 0;
 			for (int j = 0 ; j < n ; j++) {
-				
+				if(mConnectedMatrix[i][j] == 1) num++;
 			}
+			connectedNum.put(mComponents.get(i).getIdentifier(), num);
 		}
-		return new ArrayList<Integer>();
+		
+		Map<String, Integer> sortedMap = MapUtil.sortByValue(connectedNum);
+		ArrayList<String> result = new ArrayList<>();
+		for (String itr : sortedMap.keySet()) {
+			result.add(itr);
+		}
+		
+		return result;
 	}
 	
-	public List<Integer> getDynamicOrder(Map<String, Integer> locked) {
-		return new ArrayList<Integer>();
+	public List<String> getDynamicOrder(Map<String, Integer> locked) {
+		Map<String, Integer> connectedNum = new HashMap<>();
+		for (int i = 0 ; i < n ; i++) {
+			int num = 0;
+			for (int j = 0 ; j < n ; j++) {
+				if(mConnectedMatrix[i][j] == 1 && locked.containsKey(mComponents.get(j).getIdentifier())) num++;
+			}
+			connectedNum.put(mComponents.get(i).getIdentifier(), num);
+		}
+		
+		Map<String, Integer> sortedMap = MapUtil.sortByValue(connectedNum);
+		ArrayList<String> result = new ArrayList<>();
+		for (String itr : sortedMap.keySet()) {
+			result.add(itr);
+		}
+		
+		return result;
 	}
 	
 }
