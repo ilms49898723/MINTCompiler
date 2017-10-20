@@ -9,7 +9,6 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.maputil.MapUtil;
-import com.google.common.collect.Multiset.Entry;
 
 public class PlacementOrder {
 	

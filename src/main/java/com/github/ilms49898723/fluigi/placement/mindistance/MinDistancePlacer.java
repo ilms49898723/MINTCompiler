@@ -135,54 +135,26 @@ public class MinDistancePlacer extends BasePlacer {
     }
 
     private Point2D getMinimumDistancePoint(String id, Map<Integer, List<Point2D>> connectedPorts) {
-    	
     	Point2D result = calculateMinimumDistancePoint(id, connectedPorts);
-
-    	double costX = 0, costY = 0;
-        for (int k = 1; k <= mSymbolTable.get(id).getNumPorts(); k++) {
-            if (!mSymbolTable.get(id).hasPort(k)) {
-                continue;
-            }
-
-            Point2D srcPort = new Point2D(result.getX() + mSymbolTable.get(id).getPort(k).getX(), result.getY() + mSymbolTable.get(id).getPort(k).getY());
-            Point2D cost = calculateCost(srcPort, mSymbolTable.get(id).getPortDirection(k), connectedPorts.get(k));
-            costX += cost.getX();
-            costY += cost.getY();
-        }
-        double minCost = costX + costY;
+        double minCost = calculateAllCost(id, connectedPorts, result);
     	
-    	if(mSymbolTable.get(id).supportRotate()) {
-    		List<Integer> swappablePorts = mSymbolTable.get(id).getSwappablePorts();
-    		
-    		for (int i = 0 ; i < swappablePorts.size() ; i++) {
-    			for (int j = i+1 ; j < swappablePorts.size() ; j++) {
-    				
-    				mSymbolTable.get(id).swapPort(swappablePorts.get(i), swappablePorts.get(j), mParameters.getChannelSpacing());
-    				
-    				Point2D tmpPt = calculateMinimumDistancePoint(id, connectedPorts);
-    				costX = 0;
-    				costY = 0;
-    		        for (int k = 1; k <= mSymbolTable.get(id).getNumPorts(); k++) {
-    		            if (!mSymbolTable.get(id).hasPort(k)) {
-    		                continue;
-    		            }
-
-    		            Point2D srcPort = new Point2D(tmpPt.getX() + mSymbolTable.get(id).getPort(k).getX(), tmpPt.getY() + mSymbolTable.get(id).getPort(k).getY());
-    		            Point2D cost = calculateCost(srcPort, mSymbolTable.get(id).getPortDirection(k), connectedPorts.get(k));
-    		            costX += cost.getX();
-    		            costY += cost.getY();
-    		        }
-    		        
-    		        if(costX+costY < minCost) {
-    		        	minCost = costX+costY;
-    		        	result = tmpPt;
-    		        }
-    		        
-    				mSymbolTable.get(id).swapPort(swappablePorts.get(j), swappablePorts.get(i), mParameters.getChannelSpacing());
-    			}
+    	List<Integer> swappablePorts = mSymbolTable.get(id).getSwappablePorts();
+    	
+    	for (int i = 0 ; i < swappablePorts.size() ; i++) {
+    		for (int j = i+1 ; j < swappablePorts.size() ; j++) {
+    			
+    			mSymbolTable.get(id).swapPort(swappablePorts.get(i), swappablePorts.get(j), mParameters.getChannelSpacing());
+    			
+    			Point2D tmpPt = calculateMinimumDistancePoint(id, connectedPorts);
+    			double tmpCost = calculateAllCost(id, connectedPorts, tmpPt);    		        
+    		    if(tmpCost < minCost) {
+    		        minCost = tmpCost;
+    		        result = tmpPt;
+    		    }
+    		    
+    			mSymbolTable.get(id).swapPort(swappablePorts.get(j), swappablePorts.get(i), mParameters.getChannelSpacing());
     		}
     	}
-
     	return result;
     }
     
@@ -203,6 +175,21 @@ public class MinDistancePlacer extends BasePlacer {
         y /= total;
         
         return new Point2D(x, y);
+    }
+    
+    private double calculateAllCost(String id, Map<Integer, List<Point2D>> connectedPorts, Point2D position) {
+    	double costX = 0, costY = 0;
+        for (int k = 1; k <= mSymbolTable.get(id).getNumPorts(); k++) {
+            if (!mSymbolTable.get(id).hasPort(k)) {
+                continue;
+            }
+
+            Point2D srcPort = new Point2D(position.getX() + mSymbolTable.get(id).getPort(k).getX(), position.getY() + mSymbolTable.get(id).getPort(k).getY());
+            Point2D cost = calculateCost(srcPort, mSymbolTable.get(id).getPortDirection(k), connectedPorts.get(k));
+            costX += cost.getX();
+            costY += cost.getY();
+        }
+        return costX + costY;
     }
 
     private Point2D calculateCost(Point2D src, PortDirection dir, List<Point2D> connectedPorts) {
