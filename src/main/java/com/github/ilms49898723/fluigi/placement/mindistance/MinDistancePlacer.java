@@ -4,6 +4,7 @@ import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
@@ -27,7 +28,7 @@ public class MinDistancePlacer extends BasePlacer {
     }
 
     private boolean minDistance() {
-        for (BaseComponent c : mSymbolTable.getComponents()) {
+        for (BaseComponent c : mSymbolTable.getComponents(ComponentLayer.CONTROL)) {
         	if (mLocked.containsKey(c.getIdentifier())) {
                 continue;
             }
