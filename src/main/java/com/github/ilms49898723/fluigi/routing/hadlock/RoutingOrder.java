@@ -77,8 +77,6 @@ public class RoutingOrder {
         }
         edgeInfo.sort(EdgeInfo::compareTo);
         for (EdgeInfo info : edgeInfo) {
-            System.out.println(info.mEdge);
-            System.out.println(info.mCost);
             result.add(info.mEdge);
         }
         return result;

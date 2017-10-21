@@ -266,6 +266,12 @@ public class HadlockRouter extends BaseRouter {
         }
     }
 
+    private void routingMarkChannel(ComponentLayer layer) {
+        for (BaseComponent component : mSymbolTable.getChannels(layer)) {
+            markComponent(component);
+        }
+    }
+
     private void markComponent(BaseComponent component) {
         List<Point2DPair> points = component.getPoints();
         for (Point2DPair pointPair : points) {
@@ -277,9 +283,7 @@ public class HadlockRouter extends BaseRouter {
             int h = (int) pB.subtract(pA).getY();
             for (int i = 0; i < w; ++i) {
                 for (int j = 0; j < h; ++j) {
-                    if (mMapStatus[x + i][y + j] != GridStatus.LAYER) {
-                        mMapStatus[x + i][y + j] = GridStatus.VISITED;
-                    }
+                    mMapStatus[x + i][y + j] = GridStatus.VISITED;
                 }
             }
         }
