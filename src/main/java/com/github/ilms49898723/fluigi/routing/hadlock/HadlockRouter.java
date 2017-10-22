@@ -8,6 +8,7 @@ import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
@@ -144,17 +145,13 @@ public class HadlockRouter extends BaseRouter {
         mMapCosts = new int[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
         mMapDetour = new int[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
         mMapStatus = new GridStatus[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
-        mPortsPosition = new HashMap<>();
-        for (DeviceComponent port : mDeviceGraph.vertexSet()) {
-            Point2D position = mSymbolTable.get(port.getIdentifier()).getPort(port.getPortNumber());
-            mPortsPosition.put(port, position);
-        }
     }
 
     @Override
     public boolean routing() {
         System.out.println("Info: Flow layer routing...");
         initializeMap(true);
+        initializePortPosition(ComponentLayer.FLOW);
         routingPreMark(ComponentLayer.FLOW);
         RoutingOrder order = new RoutingOrder(mSymbolTable);
         int routingCounter;
@@ -180,6 +177,7 @@ public class HadlockRouter extends BaseRouter {
         controlPlacement();
         System.out.println("Info: Control layer routing...");
         initializeMap(false);
+        initializePortPosition(ComponentLayer.CONTROL);
         //routingPreMark(ComponentLayer.FLOW);
         routingPreMark(ComponentLayer.CONTROL);
         routingCounter = 0;
@@ -255,6 +253,25 @@ public class HadlockRouter extends BaseRouter {
                     if (mMapStatus[i][j] != GridStatus.LAYER) {
                         mMapStatus[i][j] = GridStatus.EMPTY;
                     }
+                }
+            }
+        }
+    }
+
+    private void initializePortPosition(ComponentLayer layer) {
+        mPortsPosition = new HashMap<>();
+        for (DeviceComponent port : mDeviceGraph.vertexSet()) {
+            if (mSymbolTable.get(port.getIdentifier()).getLayer() == layer) {
+                Point2D position = mSymbolTable.get(port.getIdentifier()).getPort(port.getPortNumber());
+                mPortsPosition.put(port, position);
+            }
+        }
+        if (layer == ComponentLayer.CONTROL) {
+            for (DeviceComponent port : mDeviceGraph.vertexSet()) {
+                if (mSymbolTable.get(port.getIdentifier()).getLayer() == ComponentLayer.FLOW
+                        && mSymbolTable.get(port.getIdentifier()).getType() == ComponentType.PORT) {
+                    Point2D position = mSymbolTable.get(port.getIdentifier()).getPort(port.getPortNumber());
+                    mPortsPosition.put(port, position);
                 }
             }
         }

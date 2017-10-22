@@ -29,7 +29,7 @@ public class TerminalPropagator extends BasePlacer {
         return true;
     }
 
-    public void rotatePropagation() {
+    private void rotatePropagation() {
         rotatePropagation(mSymbolTable.getComponents(ComponentLayer.FLOW));
     }
 
@@ -58,7 +58,7 @@ public class TerminalPropagator extends BasePlacer {
         }
     }
 
-    public void swapPortPropagation() {
+    private void swapPortPropagation() {
         swapPortPropagation(mSymbolTable.getComponents(ComponentLayer.FLOW));
     }
 
