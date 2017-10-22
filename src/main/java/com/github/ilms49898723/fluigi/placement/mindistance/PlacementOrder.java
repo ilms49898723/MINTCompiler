@@ -17,7 +17,7 @@ public class PlacementOrder {
 	int n;
 	
 	public PlacementOrder(SymbolTable symbolTable, DeviceGraph deviceGraph) {
-		mComponents = symbolTable.getComponents(ComponentLayer.CONTROL);
+		mComponents = symbolTable.getComponents(ComponentLayer.FLOW);
 		n = mComponents.size();
 		mConnectedMatrix = new int [n][n];
 		
@@ -39,9 +39,9 @@ public class PlacementOrder {
 	                    DeviceComponent target;
 	                    int targetIdx = i;
 	                    
-	                    target = (deviceGraph.getEdgeSource(itr) != src) ? deviceGraph.getEdgeSource(itr) : deviceGraph.getEdgeTarget(itr);
+	                    target = (!(deviceGraph.getEdgeSource(itr).equals(src))) ? deviceGraph.getEdgeSource(itr) : deviceGraph.getEdgeTarget(itr);
 	                    for(int k = 0 ; k < n ; k++) {
-	                    	if(mComponents.get(k).getIdentifier() == target.getIdentifier()) {
+	                    	if(mComponents.get(k).getIdentifier().equals(target.getIdentifier())) {
 	                    		targetIdx = k;
 	                    		break;
 	                    	}
@@ -73,6 +73,7 @@ public class PlacementOrder {
 		for (String itr : sortedMap.keySet()) {
 			result.add(itr);
 		}
+		Collections.reverse(result);
 		
 		return result;
 	}
@@ -92,6 +93,7 @@ public class PlacementOrder {
 		for (String itr : sortedMap.keySet()) {
 			result.add(itr);
 		}
+		Collections.reverse(result);
 		
 		return result;
 	}

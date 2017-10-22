@@ -180,7 +180,7 @@ public class HadlockRouter extends BaseRouter {
         controlPlacement();
         System.out.println("Info: Control layer routing...");
         initializeMap(false);
-        routingPreMark(ComponentLayer.FLOW);
+        //routingPreMark(ComponentLayer.FLOW);
         routingPreMark(ComponentLayer.CONTROL);
         routingCounter = 0;
         channelList = new ArrayList<>(mDeviceGraph.getAllControlEdges());

@@ -13,8 +13,8 @@ import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
-import com.github.ilms49898723.fluigi.placement.forcedirected.ForceDirectedPlacer;
 import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
+import com.github.ilms49898723.fluigi.placement.mindistance.MinDistancePlacer;
 import com.github.ilms49898723.fluigi.placement.overlap.OverlapFixer;
 import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
@@ -69,16 +69,22 @@ public class DeviceProcessor {
         System.out.println("Info: Flow layer placement...");
         BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
+        
+        for(int i = 0 ; i < 10 ; i++) {
+        	System.out.println("---------Iteration " + i + "----------");
+        	BasePlacer iterativePlacer = new MinDistancePlacer(mSymbolTable, mDeviceGraph, mParameters);
+            iterativePlacer.placement();
 
-        BasePlacer iterativePlacer = new ForceDirectedPlacer(mSymbolTable, mDeviceGraph, mParameters);
-        iterativePlacer.placement();
-
-        BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
-        propagator.placement();
+            BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
+            propagator.placement();
+        }
 
         for (BaseComponent component : mSymbolTable.getComponents()) {
             Point2DUtil.adjustComponent(component, mParameters);
         }
+        
+        BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
+        propagator.placement();
 
         BasePlacer overlapFixer = new OverlapFixer(mSymbolTable, mDeviceGraph, mParameters);
         overlapFixer.placement();
