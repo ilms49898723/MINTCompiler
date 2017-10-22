@@ -41,6 +41,7 @@ public class DeviceProcessor {
 
     private String mInputFilename;
     private String mOutputFilename;
+    private String mDeviceName;
     private Parameters mParameters;
     private SymbolTable mSymbolTable;
     private DeviceGraph mDeviceGraph;
@@ -87,7 +88,18 @@ public class DeviceProcessor {
         router.routing();
 
         System.out.println("Info: Saving result...");
-        outputPng();
+        
+        File dir = new File(mOutputFilename);
+        if (!dir.exists()) {
+        	dir.mkdirs();
+        }
+        
+        String cellOutputName = mOutputFilename + "/" + mDeviceName + "_device_cell";
+        String flowOutputName = mOutputFilename + "/" + mDeviceName + "_device_flow";
+        String controlOutputName = mOutputFilename + "/" + mDeviceName + "_device_control";
+        
+        outputPng(cellOutputName, flowOutputName, controlOutputName);
+        outputSvg(cellOutputName, flowOutputName, controlOutputName);
 
         System.out.println("Info: Finished.");
     }
@@ -112,6 +124,7 @@ public class DeviceProcessor {
             ParseTreeWalker walker = new ParseTreeWalker();
             UFProcessor processor = new UFProcessor(mInputFilename, mParameters, mSymbolTable, mDeviceGraph);
             walker.walk(processor, context);
+            mDeviceName = processor.getDeviceName();
             return processor.isValid();
         } catch (IOException e) {
             e.printStackTrace();
@@ -185,33 +198,85 @@ public class DeviceProcessor {
         }
     }
 
-    private void outputPng() {
+    private void outputPng(String cell, String flow, String control) {
         int width = mParameters.getMaxDeviceWidth();
         int height = mParameters.getMaxDeviceHeight();
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D png = (Graphics2D) image.getGraphics();
-        png.setColor(Color.WHITE);
-        png.fillRect(0, 0, width, height);
-        drawComponent(png);
-        File outputFile = new File(mOutputFilename + ".png");
-        try {
-            ImageIO.write(image, "png", outputFile);
-        } catch (IOException e) {
-            e.printStackTrace();
+        {
+	        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	        Graphics2D png = (Graphics2D) image.getGraphics();
+	        png.setColor(Color.WHITE);
+	        png.fillRect(0, 0, width, height);
+	        drawComponent(png);
+	        File outputFile = new File(cell + ".png");
+	        try {
+	            ImageIO.write(image, "png", outputFile);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+        }
+        {
+        	BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D png = (Graphics2D) image.getGraphics();
+            png.setColor(Color.WHITE);
+            png.fillRect(0, 0, width, height);
+            drawComponentFlow(png);
+            File outputFile = new File(flow + ".png");
+            try {
+                ImageIO.write(image, "png", outputFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        {
+        	BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D png = (Graphics2D) image.getGraphics();
+            png.setColor(Color.WHITE);
+            png.fillRect(0, 0, width, height);
+            drawComponentControl(png);
+            File outputFile = new File(control + ".png");
+            try {
+                ImageIO.write(image, "png", outputFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void outputSvg() {
+    private void outputSvg(String cell, String flow, String control) {
         int width = mParameters.getMaxDeviceWidth();
         int height = mParameters.getMaxDeviceHeight();
-        SVGGraphics2D svg = new SVGGraphics2D(width, height);
-        svg.setColor(Color.WHITE);
-        svg.fillRect(0, 0, width, height);
-        drawComponent(svg);
-        try {
-            SVGUtils.writeToSVG(new File(mOutputFilename + ".svg"), svg.getSVGElement());
-        } catch (IOException e) {
-            e.printStackTrace();
+        {
+	        SVGGraphics2D svg = new SVGGraphics2D(width, height);
+	        svg.setColor(Color.WHITE);
+	        svg.fillRect(0, 0, width, height);
+	        drawComponent(svg);
+	        try {
+	            SVGUtils.writeToSVG(new File(cell + ".svg"), svg.getSVGElement());
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+        }
+        {
+        	SVGGraphics2D svg = new SVGGraphics2D(width, height);
+	        svg.setColor(Color.WHITE);
+	        svg.fillRect(0, 0, width, height);
+	        drawComponentFlow(svg);
+	        try {
+	            SVGUtils.writeToSVG(new File(flow + ".svg"), svg.getSVGElement());
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+        }
+        {
+        	SVGGraphics2D svg = new SVGGraphics2D(width, height);
+	        svg.setColor(Color.WHITE);
+	        svg.fillRect(0, 0, width, height);
+	        drawComponentControl(svg);
+	        try {
+	            SVGUtils.writeToSVG(new File(control + ".svg"), svg.getSVGElement());
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
         }
     }
 
@@ -232,4 +297,26 @@ public class DeviceProcessor {
             component.draw(g);
         }
     }
+    
+    private void drawComponentFlow(Graphics2D g) {
+        for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.FLOW)) {
+            component.draw(g);
+        }
+        for (BaseComponent component : mSymbolTable.getChannels(ComponentLayer.FLOW)) {
+            component.draw(g);
+        }
+    }
+    
+    private void drawComponentControl(Graphics2D g) {
+        for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.CONTROL)) {
+            component.draw(g);
+        }
+        for (BaseComponent component : mSymbolTable.getValves()) {
+            component.draw(g);
+        }
+        for (BaseComponent component : mSymbolTable.getChannels(ComponentLayer.CONTROL)) {
+            component.draw(g);
+        }
+    }
+    
 }
