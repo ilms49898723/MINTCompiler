@@ -59,6 +59,7 @@ public class MinDistancePlacer extends BasePlacer {
         Point2D newPosition = Point2D.ZERO;//The new position
         Map<Integer, List<BaseComponent>> connectedComponents = new HashMap<>();
         Map<Integer, List<Point2D>> connectedPorts = new HashMap<>();
+        Map<Integer, List<Integer>> connectedPortsId = new HashMap<>();
 
         //Get connected components
         int numOfCC = 0;
@@ -70,6 +71,7 @@ public class MinDistancePlacer extends BasePlacer {
             DeviceComponent src = new DeviceComponent(id, i);
             List<BaseComponent> result1 = new ArrayList<>();
             List<Point2D> result2 = new ArrayList<>();
+            List<Integer> result3 = new ArrayList<>();
             Set<DeviceEdge> connectedEdges = mDeviceGraph.edgesOf(src);
 
             if (!connectedEdges.isEmpty()) {
@@ -79,6 +81,7 @@ public class MinDistancePlacer extends BasePlacer {
                     result1.add(mSymbolTable.get(target.getIdentifier()));
                     Point2D desPort = mSymbolTable.get(target.getIdentifier()).getPort(target.getPortNumber());
                     result2.add(new Point2D(desPort.getX(), desPort.getY()));
+                    result3.add(target.getPortNumber());
                     numOfCC++;
                     System.out.println(target.toString());
                 }
@@ -86,6 +89,7 @@ public class MinDistancePlacer extends BasePlacer {
 
             connectedComponents.put(i, result1);
             connectedPorts.put(i, result2);
+            connectedPortsId.put(i, result3);
         }
         
         System.out.println("old position: " + mSymbolTable.get(id).getPosition().toString());
@@ -103,19 +107,19 @@ public class MinDistancePlacer extends BasePlacer {
                 }
         		
         		if(connectedPorts.get(i).size() != 0) {
-        			switch(mSymbolTable.get(id).getPortDirection(i)) {
-        			case TOP:
-        				newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), mSymbolTable.get(id).getPositionY());
-                        break;
-                    case BOTTOM:
-                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), mSymbolTable.get(id).getPositionY());
-                        break;
-                    case LEFT:
-                    	newPosition = new Point2D(mSymbolTable.get(id).getPositionX(), connectedPorts.get(i).get(0).getY());
-                        break;
-                    case RIGHT:
-                    	newPosition = new Point2D(mSymbolTable.get(id).getPositionX(), connectedPorts.get(i).get(0).getY());
-                        break;
+        			switch(connectedComponents.get(i).get(0).getPortDirection(connectedPortsId.get(i).get(0))) {
+	        			case TOP:
+	        				newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() - mParameters.getComponentSpacing());
+	                        break;
+	                    case BOTTOM:
+	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() + mParameters.getComponentSpacing());
+	                        break;
+	                    case LEFT:
+	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX() - mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
+	                        break;
+	                    case RIGHT:
+	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX() + mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
+	                        break;
         			}
         			break;
         		}
