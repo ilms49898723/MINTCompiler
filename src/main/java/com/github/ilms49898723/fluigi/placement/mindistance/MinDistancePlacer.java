@@ -109,16 +109,16 @@ public class MinDistancePlacer extends BasePlacer {
         		if(connectedPorts.get(i).size() != 0) {
         			switch(connectedComponents.get(i).get(0).getPortDirection(connectedPortsId.get(i).get(0))) {
 	        			case TOP:
-	        				newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() - mParameters.getComponentSpacing());
+	        				newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() - 2*mParameters.getComponentSpacing());
 	                        break;
 	                    case BOTTOM:
-	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() + mParameters.getComponentSpacing());
+	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() + 2*mParameters.getComponentSpacing());
 	                        break;
 	                    case LEFT:
-	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX() - mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
+	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX() - 2*mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
 	                        break;
 	                    case RIGHT:
-	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX() + mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
+	                    	newPosition = new Point2D(connectedPorts.get(i).get(0).getX() + 2*mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
 	                        break;
         			}
         			break;
@@ -136,6 +136,15 @@ public class MinDistancePlacer extends BasePlacer {
     private Point2D getMinimumDistancePoint(String id, Map<Integer, List<Point2D>> connectedPorts) {
     	Point2D result = calculateMinimumDistancePoint(id, connectedPorts);
         double minCost = calculateAllCost(id, connectedPorts, result);
+        
+        tryToRotate(id, connectedPorts, result, minCost);
+        result = tryToSwap(id, connectedPorts, result, minCost);
+        return result;
+    }
+    
+    private Point2D tryToSwap(String id, Map<Integer, List<Point2D>> connectedPorts, Point2D localPt, double localMin) {
+    	Point2D result = localPt;
+        double minCost = localMin;
     	
     	List<Integer> swappablePorts = mSymbolTable.get(id).getSwappablePorts();
     	int swap_i = -1, swap_j = -1;
@@ -160,6 +169,30 @@ public class MinDistancePlacer extends BasePlacer {
     	
     	if(swap_i != -1 && swap_j != -1) mSymbolTable.get(id).swapPort(swappablePorts.get(swap_i), swappablePorts.get(swap_j), mParameters.getChannelSpacing());
     	return result;
+    }
+    
+    private void tryToRotate(String id, Map<Integer, List<Point2D>> connectedPorts, Point2D localPt, double localMin) {
+    	BaseComponent c = mSymbolTable.get(id);
+    	if (c.supportRotate()) {
+            double[] costs = new double[4];
+            costs[0] = localMin;
+            c.rotate();
+            costs[1] = calculateAllCost(id, connectedPorts, localPt);
+            c.rotate();
+            costs[2] = calculateAllCost(id, connectedPorts, localPt);
+            c.rotate();
+            costs[3] = calculateAllCost(id, connectedPorts, localPt);
+            c.rotate();
+            int times = 0;
+            for (int i = 1; i < 4; ++i) {
+                if (costs[i] < costs[times]) {
+                    times = i;
+                }
+            }
+            for (int i = 0; i < times; ++i) {
+                c.rotate();
+            }
+        }
     }
     
     private Point2D calculateMinimumDistancePoint(String id, Map<Integer, List<Point2D>> connectedPorts) {
