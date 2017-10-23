@@ -158,17 +158,22 @@ public class Point2DUtil {
         int deviceHeight = parameters.getMaxDeviceHeight();
         int x = component.getPositionX();
         int y = component.getPositionY();
-        if (x - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing() < 0) {
-            x = component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing();
+        int orix = x;
+        int oriy = y;
+        if (x - component.getWidth() / 2 - parameters.getComponentSpacing() < 0) {
+            x = component.getWidth() / 2 + parameters.getComponentSpacing();
         }
-        if (x + component.getWidth() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing() >= deviceWidth) {
-            x = deviceWidth - 1 - component.getWidth() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing();
+        if (x + component.getWidth() / 2 + parameters.getComponentSpacing() >= deviceWidth) {
+            x = deviceWidth - 1 - component.getWidth() / 2 - parameters.getComponentSpacing();
         }
-        if (y - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing() < 0) {
-            y = component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing();
+        if (y - component.getHeight() / 2 - parameters.getComponentSpacing() < 0) {
+            y = component.getHeight() / 2 + parameters.getComponentSpacing();
         }
-        if (y + component.getHeight() / 2 + parameters.getComponentSpacing() + parameters.getRoutingSpacing() + parameters.getChannelSpacing() >= deviceHeight) {
-            y = deviceHeight - 1 - component.getHeight() / 2 - parameters.getComponentSpacing() - parameters.getRoutingSpacing() - parameters.getChannelSpacing();
+        if (y + component.getHeight() / 2 + parameters.getComponentSpacing() >= deviceHeight) {
+            y = deviceHeight - 1 - component.getHeight() / 2 - parameters.getComponentSpacing();
+        }
+        if (orix != x || oriy != y) {
+            System.out.println("Info: Adjust component position " + component.getIdentifier());
         }
         component.setPosition(new Point2D(x, y));
     }

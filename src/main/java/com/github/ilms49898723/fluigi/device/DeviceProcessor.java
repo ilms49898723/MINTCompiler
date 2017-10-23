@@ -70,7 +70,7 @@ public class DeviceProcessor {
         System.out.println("Info: Flow layer placement...");
         BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
-        
+
         for(int i = 0 ; i < 10 ; i++) {
         	System.out.println("---------Iteration " + i + "----------");
         	BasePlacer iterativePlacer = new MinDistancePlacer(mSymbolTable, mDeviceGraph, mParameters);
@@ -83,7 +83,7 @@ public class DeviceProcessor {
         for (BaseComponent component : mSymbolTable.getComponents()) {
             Point2DUtil.adjustComponent(component, mParameters);
         }
-        
+
         BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         propagator.placement();
 
@@ -94,16 +94,19 @@ public class DeviceProcessor {
         router.routing();
 
         System.out.println("Info: Saving result...");
-        
+
         File dir = new File(mOutputFilename);
         if (!dir.exists()) {
-        	dir.mkdirs();
+        	if (!dir.mkdirs()) {
+                System.err.println("Error: Cannot create directory " + mOutputFilename);
+                System.exit(1);
+            }
         }
-        
+
         String cellOutputName = mOutputFilename + "/" + mDeviceName + "_device_cell";
         String flowOutputName = mOutputFilename + "/" + mDeviceName + "_device_flow";
         String controlOutputName = mOutputFilename + "/" + mDeviceName + "_device_control";
-        
+
         outputPng(cellOutputName, flowOutputName, controlOutputName);
         outputSvg(cellOutputName, flowOutputName, controlOutputName);
 
@@ -303,7 +306,7 @@ public class DeviceProcessor {
             component.draw(g);
         }
     }
-    
+
     private void drawComponentFlow(Graphics2D g) {
         for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.FLOW)) {
             component.draw(g);
@@ -312,7 +315,7 @@ public class DeviceProcessor {
             component.draw(g);
         }
     }
-    
+
     private void drawComponentControl(Graphics2D g) {
         for (BaseComponent component : mSymbolTable.getComponents(ComponentLayer.CONTROL)) {
             component.draw(g);
@@ -324,5 +327,5 @@ public class DeviceProcessor {
             component.draw(g);
         }
     }
-    
+
 }

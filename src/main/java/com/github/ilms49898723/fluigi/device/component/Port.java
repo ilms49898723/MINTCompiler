@@ -55,7 +55,7 @@ public class Port extends BaseComponent {
         int y = (int) getPosition().getY();
         int r = mRadius;
         g.setPaint((getLayer() == ComponentLayer.FLOW) ? Color.BLUE : Color.RED);
-        g.fillOval(x - r / 2, y - r / 2, r, r);
+        g.fillOval(x - r, y - r, r * 2, r * 2);
         for (int portId : mPortChannelWidth.keySet()) {
             if (mPortChannelWidth.get(portId) != -1) {
                 Point2DUtil.drawPort(
