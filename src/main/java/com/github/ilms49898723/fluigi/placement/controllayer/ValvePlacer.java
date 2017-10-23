@@ -33,7 +33,8 @@ public class ValvePlacer extends BasePlacer {
     }
 
     private boolean placeValve(Valve valve, Channel channel) {
-        List<Integer> result = channel.getValvePositions(valve.getWidth() * 2, 20);
+        int threshold = valve.getWidth() + 2 * channel.getChannelWidth();
+        List<Integer> result = channel.getValvePositions(threshold, 20);
         Point2D a = channel.getPoints().get(result.get(0)).getPointA();
         Point2D b = channel.getPoints().get(result.get(0)).getPointB();
         valve.setPosition(a.midpoint(b));
