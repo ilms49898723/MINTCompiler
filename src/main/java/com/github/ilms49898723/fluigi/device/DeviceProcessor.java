@@ -72,7 +72,7 @@ public class DeviceProcessor {
         BasePlacer placer = new GraphPartitionPlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
 
-        for(int i = 0 ; i < 10 ; i++) {
+        for(int i = 0 ; i < MAX_ITERATION ; i++) {
         	System.out.println("---------Iteration " + i + "----------");
         	BasePlacer iterativePlacer = new MinDistancePlacer(mSymbolTable, mDeviceGraph, mParameters);
             iterativePlacer.placement();
@@ -80,8 +80,8 @@ public class DeviceProcessor {
             TransformationPlacer transformationPlacer = new TransformationPlacer(mSymbolTable, mDeviceGraph, mParameters);
             transformationPlacer.placement(ComponentLayer.FLOW);
 
-            BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
-            propagator.placement();
+            //BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
+            //propagator.placement();
         }
 
         PositionChecker checker = new PositionChecker(mSymbolTable, mDeviceGraph, mParameters);

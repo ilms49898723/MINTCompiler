@@ -83,7 +83,6 @@ public class MinDistancePlacer extends BasePlacer {
                     result2.add(new Point2D(desPort.getX(), desPort.getY()));
                     result3.add(target.getPortNumber());
                     numOfCC++;
-                    System.out.println(target.toString());
                 }
             }
 
@@ -288,7 +287,7 @@ public class MinDistancePlacer extends BasePlacer {
             double distanceX = Math.abs(mSymbolTable.get(targetId).getPositionX() - newPt.getX());
             double distanceY = Math.abs(mSymbolTable.get(targetId).getPositionY() - newPt.getY());
 
-            if (distanceX <= (w1 + w2) / 2 && distanceY <= (h1 + h2) / 2) {
+            if (distanceX <= ((w1+w2)/2 + mParameters.getComponentSpacing()) && distanceY <= ((h1+h2)/2 + mParameters.getComponentSpacing())) {
                 result.add(targetId);
                 System.out.println("OVERLAP:"+targetId);
             }
