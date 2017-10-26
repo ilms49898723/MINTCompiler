@@ -8,7 +8,7 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
-import com.github.ilms49898723.fluigi.placement.overlap.OverlapFixer;
+import com.github.ilms49898723.fluigi.placement.drc.OverlapFixer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 

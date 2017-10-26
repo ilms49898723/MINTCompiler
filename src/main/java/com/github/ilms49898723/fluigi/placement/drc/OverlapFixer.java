@@ -1,4 +1,4 @@
-package com.github.ilms49898723.fluigi.placement.overlap;
+package com.github.ilms49898723.fluigi.placement.drc;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;

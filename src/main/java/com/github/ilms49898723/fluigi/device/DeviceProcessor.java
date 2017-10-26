@@ -4,7 +4,6 @@ import com.github.ilms49898723.fluigi.antlr.UFLexer;
 import com.github.ilms49898723.fluigi.antlr.UFParser;
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.component.Channel;
-import com.github.ilms49898723.fluigi.device.component.point.Point2DUtil;
 import com.github.ilms49898723.fluigi.device.graph.*;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
@@ -13,9 +12,10 @@ import com.github.ilms49898723.fluigi.errorhandler.ErrorHandler;
 import com.github.ilms49898723.fluigi.errorhandler.ErrorMessages;
 import com.github.ilms49898723.fluigi.mintparse.UFProcessor;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
+import com.github.ilms49898723.fluigi.placement.drc.OverlapFixer;
+import com.github.ilms49898723.fluigi.placement.drc.PositionChecker;
 import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPlacer;
 import com.github.ilms49898723.fluigi.placement.mindistance.MinDistancePlacer;
-import com.github.ilms49898723.fluigi.placement.overlap.OverlapFixer;
 import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
 import com.github.ilms49898723.fluigi.placement.transformation.TransformationPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
@@ -84,9 +84,8 @@ public class DeviceProcessor {
             propagator.placement();
         }
 
-        for (BaseComponent component : mSymbolTable.getComponents()) {
-            Point2DUtil.adjustComponent(component, mParameters);
-        }
+        PositionChecker checker = new PositionChecker(mSymbolTable, mDeviceGraph, mParameters);
+        checker.placement();
 
         BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         propagator.placement();
