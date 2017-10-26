@@ -17,6 +17,7 @@ import com.github.ilms49898723.fluigi.placement.graphpartition.GraphPartitionPla
 import com.github.ilms49898723.fluigi.placement.mindistance.MinDistancePlacer;
 import com.github.ilms49898723.fluigi.placement.overlap.OverlapFixer;
 import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
+import com.github.ilms49898723.fluigi.placement.transformation.TransformationPlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import com.github.ilms49898723.fluigi.routing.BaseRouter;
 import com.github.ilms49898723.fluigi.routing.hadlock.HadlockRouter;
@@ -76,6 +77,9 @@ public class DeviceProcessor {
         	BasePlacer iterativePlacer = new MinDistancePlacer(mSymbolTable, mDeviceGraph, mParameters);
             iterativePlacer.placement();
 
+            TransformationPlacer transformationPlacer = new TransformationPlacer(mSymbolTable, mDeviceGraph, mParameters);
+            transformationPlacer.placement(ComponentLayer.FLOW);
+
             BasePlacer propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
             propagator.placement();
         }
@@ -89,6 +93,9 @@ public class DeviceProcessor {
 
         BasePlacer overlapFixer = new OverlapFixer(mSymbolTable, mDeviceGraph, mParameters);
         overlapFixer.placement();
+
+        TransformationPlacer transformationPlacer = new TransformationPlacer(mSymbolTable, mDeviceGraph, mParameters);
+        transformationPlacer.placement(ComponentLayer.FLOW);
 
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
