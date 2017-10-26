@@ -170,7 +170,7 @@ public class HadlockRouter extends BaseRouter {
             ++routingCounter;
         } while (!result && routingCounter < MAX_ITERATION);
         if (!result) {
-            System.err.println("Error: Routing failed.");
+            System.out.println("Error: Routing failed.");
             return false;
         }
         afterRouteLayer();
@@ -407,7 +407,7 @@ public class HadlockRouter extends BaseRouter {
                 return false;
             }
         }
-        return (mMapStatus[x][y] == GridStatus.EMPTY || mMapStatus[x][y] == GridStatus.LAYER);
+        return (mMapStatus[x][y] == GridStatus.EMPTY || mMapStatus[x][y] == GridStatus.LAYER || mMapStatus[x][y] == GridStatus.OCCUPIED);
     }
 
     private void cleanPort(GridPoint pt, int channelWidth) {
