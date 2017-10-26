@@ -194,7 +194,7 @@ public class HadlockRouter extends BaseRouter {
             ++routingCounter;
         } while (!result && routingCounter < MAX_ITERATION);
         if (!result) {
-            System.err.println("Error: Routing failed.");
+            System.out.println("Error: Routing failed.");
             return false;
         }
         return true;
@@ -229,9 +229,9 @@ public class HadlockRouter extends BaseRouter {
                 Point2D portB = mSymbolTable.get(target.getIdentifier()).getPort(target.getPortNumber());
                 int radius = chn.getChannelWidth() * 2;
                 Point2DUtil.outputPng("Route_" + counter, mSymbolTable, mParameters, radius, portA, portB);
-                System.err.println("Error: Routing failed on channel " + chn.getIdentifier() + ".");
-                System.err.println("       Layout written in file 'Route_" + counter + ".png'.");
-                System.err.println("       Try re-ordering and re-routing.");
+                System.out.println("Error: Routing failed on channel " + chn.getIdentifier() + ".");
+                System.out.println("       Layout written in file 'Route_" + counter + ".png'.");
+                System.out.println("       Try re-ordering and re-routing.");
                 channels.remove(i);
                 channels.add(0, channel);
                 return false;

@@ -216,11 +216,11 @@ public abstract class BaseComponent {
     }
 
     private void portProcess(int id, int width, int channelSpacing) {
-        if (width == -1) {
-            mPorts.put(id, Point2D.ZERO);
-            return;
-        }
         if (mType == ComponentType.PORT || mType == ComponentType.NODE || mType == ComponentType.VALVE) {
+            if (width == -1) {
+                mPorts.put(id, Point2D.ZERO);
+                return;
+            }
             Point2D portPosition = Point2D.ZERO;
             int delta = width / 2 + channelSpacing;
             switch (mPortDirection.get(id)) {

@@ -55,14 +55,10 @@ public class SquareCellTrap extends BaseComponent {
         mPoints.add(new Point2DPair(channelBStart, channelBEnd));
         mColors.add(Color.BLUE);
         Point2D midPoint = chamberStart.midpoint(chamberEnd);
-        Point2D portA = midPoint.add(mChannelWidth / 2 + mChamberWidth + mChannelWidth, 0.0);
-        Point2D portB = midPoint.add(-(mChannelWidth / 2 + mChamberWidth + mChannelWidth), 0.0);
-        Point2D portC = midPoint.add(0.0, mChannelWidth / 2 + mChamberWidth + mChannelWidth);
-        Point2D portD = midPoint.add(0.0, -(mChannelWidth / 2 + mChamberWidth + mChannelWidth));
-        portA = portA.subtract(midPoint);
-        portB = portB.subtract(midPoint);
-        portC = portC.subtract(midPoint);
-        portD = portD.subtract(midPoint);
+        Point2D portA = new Point2D(mChannelWidth / 2 + mChamberWidth + mChannelWidth, 0.0);
+        Point2D portB = new Point2D(-(mChannelWidth / 2 + mChamberWidth + mChannelWidth), 0.0);
+        Point2D portC = new Point2D(0.0, mChannelWidth / 2 + mChamberWidth + mChannelWidth);
+        Point2D portD = new Point2D(0.0, -(mChannelWidth / 2 + mChamberWidth + mChannelWidth));
         addPort(1, portA, PortDirection.RIGHT);
         addPort(2, portB, PortDirection.LEFT);
         addPort(3, portC, PortDirection.BOTTOM);
