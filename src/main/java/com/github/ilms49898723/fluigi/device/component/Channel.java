@@ -61,14 +61,18 @@ public class Channel extends BaseComponent {
     }
 
     public boolean isVerticalChannelAt(int index) {
-        Point2D a = mPoints.get(index - 1).getPointA();
-        Point2D b = mPoints.get(index + 1).getPointA();
+        int checkA = Math.max(0, index - 1);
+        int checkB = Math.min(index + 1, mPoints.size() - 1);
+        Point2D a = mPoints.get(checkA).getPointA();
+        Point2D b = mPoints.get(checkB).getPointA();
         return ((int) a.getX()) == ((int) b.getX());
     }
 
     public boolean isHorizontalChannelAt(int index) {
-        Point2D a = mPoints.get(index - 1).getPointA();
-        Point2D b = mPoints.get(index + 1).getPointA();
+        int checkA = Math.max(0, index - 1);
+        int checkB = Math.min(index + 1, mPoints.size() - 1);
+        Point2D a = mPoints.get(checkA).getPointA();
+        Point2D b = mPoints.get(checkB).getPointA();
         return ((int) a.getY()) == ((int) b.getY());
     }
 
