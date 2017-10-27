@@ -25,6 +25,7 @@ public abstract class BaseComponent {
     protected List<Color> mColors;
     protected List<Integer> mSwappablePorts;
     protected Map<Integer, Point2D> mPorts;
+    protected Map<Integer, Point2D> mPortsOriginal;
     protected Map<Integer, PortDirection> mPortDirection;
     protected Map<Integer, Integer> mPortChannelWidth;
 
@@ -37,6 +38,7 @@ public abstract class BaseComponent {
         mColors = new ArrayList<>();
         mSwappablePorts = new ArrayList<>();
         mPorts = new HashMap<>();
+        mPortsOriginal = new HashMap<>();
         mPortDirection = new HashMap<>();
         mPortChannelWidth = new HashMap<>();
     }
@@ -123,6 +125,7 @@ public abstract class BaseComponent {
 
     public void addPort(int id, Point2D port, PortDirection direction) {
         mPorts.put(id, port);
+        mPortsOriginal.put(id, port);
         mPortDirection.put(id, direction);
         mPortChannelWidth.put(id, -1);
     }
@@ -186,10 +189,14 @@ public abstract class BaseComponent {
             }
             Point2D posA = mPorts.get(portA);
             Point2D posB = mPorts.get(portB);
+            Point2D oriA = mPortsOriginal.get(portA);
+            Point2D oriB = mPortsOriginal.get(portB);
             PortDirection dirA = mPortDirection.get(portA);
             PortDirection dirB = mPortDirection.get(portB);
             mPorts.put(portA, posB);
             mPorts.put(portB, posA);
+            mPortsOriginal.put(portA, oriB);
+            mPortsOriginal.put(portB, oriA);
             mPortDirection.put(portA, dirB);
             mPortDirection.put(portB, dirA);
             portProcess(portA, mPortChannelWidth.get(portA), channelSpacing);
@@ -199,7 +206,7 @@ public abstract class BaseComponent {
 
     public void rotate() {
         if (supportRotate()) {
-            Point2DUtil.rotateDevice(mPoints, mPorts, mPortDirection);
+            Point2DUtil.rotateDevice(mPoints, mPorts, mPortsOriginal, mPortDirection);
             rotateWidthHeight();
         }
     }
@@ -217,11 +224,7 @@ public abstract class BaseComponent {
 
     private void portProcess(int id, int width, int channelSpacing) {
         if (mType == ComponentType.PORT || mType == ComponentType.NODE || mType == ComponentType.VALVE) {
-            if (width == -1) {
-                mPorts.put(id, Point2D.ZERO);
-                return;
-            }
-            Point2D portPosition = Point2D.ZERO;
+            Point2D portPosition = mPortsOriginal.get(id);
             int delta = width / 2 + channelSpacing;
             switch (mPortDirection.get(id)) {
                 case TOP:
