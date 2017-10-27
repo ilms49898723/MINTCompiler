@@ -4,6 +4,7 @@ import com.github.ilms49898723.fluigi.device.component.BaseComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
 import com.github.ilms49898723.fluigi.device.graph.GraphEdge;
 import com.github.ilms49898723.fluigi.device.graph.GraphUtil;
+import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
@@ -19,7 +20,7 @@ public class GraphPartitionPlacer extends BasePlacer {
 
     public GraphPartitionPlacer(SymbolTable symbolTable, DeviceGraph deviceGraph, Parameters parameters) {
         super(symbolTable, deviceGraph, parameters);
-        mGraph = GraphUtil.constructGraph(mDeviceGraph.getGraph());
+        mGraph = GraphUtil.constructGraph(mDeviceGraph.getGraph(), mSymbolTable, ComponentLayer.FLOW);
     }
 
     @Override
