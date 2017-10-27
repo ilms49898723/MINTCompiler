@@ -11,10 +11,12 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentLayer;
 import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
+import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ControlPortPlacer extends BasePlacer {
@@ -23,9 +25,11 @@ public class ControlPortPlacer extends BasePlacer {
     private int mTopLimit;
     private int mBottomLimit;
     private boolean[][] mDevice;
+    private TerminalPropagator mTerminalPropagator;
 
     public ControlPortPlacer(SymbolTable symbolTable, DeviceGraph deviceGraph, Parameters parameters) {
         super(symbolTable, deviceGraph, parameters);
+        mTerminalPropagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         mDevice = new boolean[mParameters.getMaxDeviceWidth()][mParameters.getMaxDeviceHeight()];
         for (int i = 0; i < mDevice.length; ++i) {
             for (int j = 0; j < mDevice[i].length; ++j) {
@@ -85,6 +89,7 @@ public class ControlPortPlacer extends BasePlacer {
                 for (int y = 0; y < mParameters.getMaxDeviceHeight(); ++y) {
                     if (isValidGrid(x, y, port.getRadius())) {
                         port.setPosition(new Point2D(x, y));
+                        mTerminalPropagator.swapPortPropagation(Collections.singletonList(port));
                         int cost = getCost(port);
                         if (cost < currentCost) {
                             currentCost = cost;
