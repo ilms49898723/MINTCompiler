@@ -49,33 +49,35 @@ public class ForceDirectedPlacer extends BasePlacer {
             Set<DeviceEdge> connectedEdges = mDeviceGraph.edgesOf(srcPort);
             for (DeviceEdge itr : connectedEdges) {
                 String toId;
-                toId = (!mDeviceGraph.getEdgeSource(itr).equals(srcPort)) ? mDeviceGraph.getEdgeSource(itr).getIdentifier() : mDeviceGraph.getEdgeTarget(itr).getIdentifier();
+                String vertexA = itr.getSource().getIdentifier();
+                String vertexB = itr.getTarget().getIdentifier();
+                toId = (srcPort.getIdentifier().equals(vertexA)) ? vertexB : vertexA;
                 connectedComponents.add(mSymbolTable.get(toId));
             }
         }
-        for (int i = 0; i < connectedComponents.size(); i++) {
-            if (mWeights.containsKey(connectedComponents.get(i).getIdentifier())) {
+        for (BaseComponent connectedComponent : connectedComponents) {
+            if (mWeights.containsKey(connectedComponent.getIdentifier())) {
                 continue;
             }
             int weight = 0;
-            for (int j = 1; j <= connectedComponents.get(i).getNumPorts(); j++) {
-                if (!connectedComponents.get(i).hasPort(j)) {
+            for (int j = 1; j <= connectedComponent.getNumPorts(); j++) {
+                if (!connectedComponent.hasPort(j)) {
                     continue;
                 }
 
-                DeviceComponent srcPort = new DeviceComponent(connectedComponents.get(i).getIdentifier(), j);
+                DeviceComponent srcPort = new DeviceComponent(connectedComponent.getIdentifier(), j);
                 if (mDeviceGraph.edgesOf(srcPort) != null) {
                     weight += 1;
                 }
             }
-            mWeights.put(connectedComponents.get(i).getIdentifier(), weight);
+            mWeights.put(connectedComponent.getIdentifier(), weight);
         }
         if (connectedComponents.size() != 1) {
             double s1 = 0, s2 = 0, r = 0;
-            for (int i = 0; i < connectedComponents.size(); i++) {
-                s1 += connectedComponents.get(i).getPositionX() * mWeights.get(connectedComponents.get(i).getIdentifier());
-                s2 += connectedComponents.get(i).getPositionY() * mWeights.get(connectedComponents.get(i).getIdentifier());
-                r += mWeights.get(connectedComponents.get(i).getIdentifier());
+            for (BaseComponent connectedComponent : connectedComponents) {
+                s1 += connectedComponent.getPositionX() * mWeights.get(connectedComponent.getIdentifier());
+                s2 += connectedComponent.getPositionY() * mWeights.get(connectedComponent.getIdentifier());
+                r += mWeights.get(connectedComponent.getIdentifier());
             }
             newPosition = new Point2D(s1 / r, s2 / r);
             mLocked.put(id, 1);
@@ -84,16 +86,16 @@ public class ForceDirectedPlacer extends BasePlacer {
                 mSymbolTable.get(id).setPosition(newPosition);
             } else {
                 boolean isValid = true;
-                for (int i = 0; i < overlapComponents.size(); i++) {
-                    if (mLocked.containsKey(overlapComponents.get(i))) {
+                for (String component : overlapComponents) {
+                    if (mLocked.containsKey(component)) {
                         isValid = false;
                         break;
                     }
                 }
                 if (isValid) {
                     mSymbolTable.get(id).setPosition(newPosition);
-                    for (int i = 0; i < overlapComponents.size(); i++) {
-                        fixSingleComponentPosition(overlapComponents.get(i));
+                    for (String overlapComponent : overlapComponents) {
+                        fixSingleComponentPosition(overlapComponent);
                     }
                 } else {
                     Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
