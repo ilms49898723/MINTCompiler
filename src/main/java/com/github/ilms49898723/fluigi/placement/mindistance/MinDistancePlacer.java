@@ -93,13 +93,13 @@ public class MinDistancePlacer extends BasePlacer {
             connectedPortsId.put(i, result3);
         }
 
-        System.out.println("old position: " + mSymbolTable.get(id).getPosition().toString());
+        //System.out.println("old position: " + mSymbolTable.get(id).getPosition().toString());
         if(numOfCC != 1) {
             //Find new position which distance is minimum
             newPosition = getMinimumDistancePoint(id, connectedPorts);
             mLocked.put(id, 1);
             if(!fixOverlap(id, newPosition)) return false;
-            System.out.println("new position: " + mSymbolTable.get(id).getPosition().toString());
+            //System.out.println("new position: " + mSymbolTable.get(id).getPosition().toString());
         } else {
             //Fix the position by x/y of connected port
             for(int i = 1; i <= mSymbolTable.get(id).getNumPorts(); i++) {
@@ -148,7 +148,7 @@ public class MinDistancePlacer extends BasePlacer {
             newPosition = tryToSwap(id, connectedPorts, newPosition, minCost, true);
             //System.out.println("tmp 2nd position: " + newPosition.toString());
             if(!fixOverlap(id, newPosition)) return false;
-            System.out.println("new position: " + mSymbolTable.get(id).getPosition().toString());
+            //System.out.println("new position: " + mSymbolTable.get(id).getPosition().toString());
         }
 
         return true;
