@@ -96,6 +96,21 @@ public class DeviceProcessor {
         TransformationPlacer transformationPlacer = new TransformationPlacer(mSymbolTable, mDeviceGraph, mParameters);
         transformationPlacer.placement(ComponentLayer.FLOW);
 
+        {
+            BufferedImage image = new BufferedImage(mParameters.getMaxDeviceWidth(), mParameters.getMaxDeviceHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D png = (Graphics2D) image.getGraphics();
+            png.setColor(Color.WHITE);
+            png.fillRect(0, 0, mParameters.getMaxDeviceWidth(), mParameters.getMaxDeviceHeight());
+            drawComponentFlow(png);
+            File outputFile = new File("DEBUG_FLOW" + ".png");
+            try {
+                ImageIO.write(image, "png", outputFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
         BaseRouter router = new HadlockRouter(mSymbolTable, mDeviceGraph, mParameters);
         router.routing();
 
