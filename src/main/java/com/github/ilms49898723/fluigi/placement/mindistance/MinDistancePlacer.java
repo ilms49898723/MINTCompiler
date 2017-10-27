@@ -1,6 +1,7 @@
 package com.github.ilms49898723.fluigi.placement.mindistance;
 
 import com.github.ilms49898723.fluigi.device.component.BaseComponent;
+import com.github.ilms49898723.fluigi.device.component.Valve;
 import com.github.ilms49898723.fluigi.device.graph.DeviceComponent;
 import com.github.ilms49898723.fluigi.device.graph.DeviceEdge;
 import com.github.ilms49898723.fluigi.device.graph.DeviceGraph;
@@ -108,6 +109,23 @@ public class MinDistancePlacer extends BasePlacer {
                 }
 
                 if(connectedPorts.get(i).size() != 0) {
+                	int cof = 2;
+                	double valvesWidth = 0;
+                	DeviceComponent src = new DeviceComponent(id, i);
+                    Set<DeviceEdge> connectedEdges = mDeviceGraph.edgesOf(src);
+                    List<BaseComponent> valves = mSymbolTable.getValves();
+                    for(int j = 0 ; j < valves.size() ; j++) {
+                    	for(DeviceEdge itr : connectedEdges) {
+                    		if(itr.getChannel() == ((Valve)valves.get(j)).getChannelId()) {
+                    			valvesWidth += valves.get(j).getWidth();
+                    		}
+                    	}
+                    }
+                    
+                    while(cof*mParameters.getComponentSpacing() <= valvesWidth+mParameters.getChannelSpacing()) {
+                    	cof++;
+                    }
+                    
                 	double keep = 0;
                 	switch(mSymbolTable.get(id).getPortDirection(i)) {
                 		case TOP:
@@ -125,16 +143,16 @@ public class MinDistancePlacer extends BasePlacer {
                 	}
                     switch(connectedComponents.get(i).get(0).getPortDirection(connectedPortsId.get(i).get(0))) {
                         case TOP:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() - 2*mParameters.getComponentSpacing() - keep);
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() - cof*mParameters.getComponentSpacing() - keep);
                             break;
                         case BOTTOM:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() + 2*mParameters.getComponentSpacing() + keep);
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() + cof*mParameters.getComponentSpacing() + keep);
                             break;
                         case LEFT:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() - 2*mParameters.getComponentSpacing() - keep, connectedPorts.get(i).get(0).getY());
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() - cof*mParameters.getComponentSpacing() - keep, connectedPorts.get(i).get(0).getY());
                             break;
                         case RIGHT:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() + 2*mParameters.getComponentSpacing() + keep, connectedPorts.get(i).get(0).getY());
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() + cof*mParameters.getComponentSpacing() + keep, connectedPorts.get(i).get(0).getY());
                             break;
                     }
                     break;
