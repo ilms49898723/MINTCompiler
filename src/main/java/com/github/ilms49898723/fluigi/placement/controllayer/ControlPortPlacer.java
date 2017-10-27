@@ -32,8 +32,8 @@ public class ControlPortPlacer extends BasePlacer {
                 mDevice[i][j] = false;
             }
         }
-        markArea();
         getBoundary();
+        markArea();
     }
 
     @Override
