@@ -30,7 +30,7 @@ public class Point2DUtil {
         return new Point2D(newX, newY);
     }
 
-    public static void rotateDevice(List<Point2DPair> points, Map<Integer, Point2D> ports, Map<Integer, PortDirection> directions) {
+    public static void rotateDevice(List<Point2DPair> points, Map<Integer, Point2D> ports, Map<Integer, Point2D> portsOriginal, Map<Integer, PortDirection> directions) {
         for (int i = 0; i < points.size(); ++i) {
             Point2D newPointA = Point2DUtil.rotate(points.get(i).getPointA());
             Point2D newPointB = Point2DUtil.rotate(points.get(i).getPointB());
@@ -41,6 +41,10 @@ public class Point2DUtil {
         for (int identifier : ports.keySet()) {
             Point2D pt = ports.get(identifier);
             ports.put(identifier, Point2DUtil.rotate(pt));
+        }
+        for (int identifier : portsOriginal.keySet()) {
+            Point2D pt = portsOriginal.get(identifier);
+            portsOriginal.put(identifier, Point2DUtil.rotate(pt));
         }
         for (int identifier : directions.keySet()) {
             PortDirection direction = directions.get(identifier);

@@ -283,6 +283,8 @@ public class HadlockRouter extends BaseRouter {
 
     private void routingPreMark(ComponentLayer layer) {
         for (BaseComponent component : mSymbolTable.getComponents(layer)) {
+            if (layer == ComponentLayer.CONTROL)
+            System.out.println("mark " + component.getIdentifier());
             markComponent(component);
         }
     }
@@ -411,7 +413,7 @@ public class HadlockRouter extends BaseRouter {
                 return false;
             }
         }
-        return (mMapStatus[x][y] == GridStatus.EMPTY || mMapStatus[x][y] == GridStatus.LAYER || mMapStatus[x][y] == GridStatus.OCCUPIED);
+        return (mMapStatus[x][y] == GridStatus.EMPTY || mMapStatus[x][y] == GridStatus.LAYER);
     }
 
     private void cleanPort(GridPoint pt, int channelWidth) {
