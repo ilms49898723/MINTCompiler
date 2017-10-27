@@ -13,7 +13,6 @@ import javafx.geometry.Point2D;
 import java.util.*;
 
 public class ForceDirectedPlacer extends BasePlacer {
-
     private Map<String, Integer> mLocked;
     private Map<String, Integer> mWeights;
 
@@ -36,36 +35,28 @@ public class ForceDirectedPlacer extends BasePlacer {
             }
             fixSingleComponentPosition(id);
         }
-
         return true;
     }
 
-    private boolean fixSingleComponentPosition(String id) {
-        Point2D newPosition = Point2D.ZERO;//The new position
+    private void fixSingleComponentPosition(String id) {
+        Point2D newPosition;
         List<BaseComponent> connectedComponents = new ArrayList<>();
-
-        //Find connected components
-
         for (int i = 1; i <= mSymbolTable.get(id).getNumPorts(); i++) {
             if (!mSymbolTable.get(id).hasPort(i)) {
                 continue;
             }
-
             DeviceComponent srcPort = new DeviceComponent(id, i);
             Set<DeviceEdge> connectedEdges = mDeviceGraph.edgesOf(srcPort);
             for (DeviceEdge itr : connectedEdges) {
                 String toId;
-                toId = (mDeviceGraph.getEdgeSource(itr) != srcPort) ? mDeviceGraph.getEdgeSource(itr).getIdentifier() : mDeviceGraph.getEdgeTarget(itr).getIdentifier();
+                toId = (!mDeviceGraph.getEdgeSource(itr).equals(srcPort)) ? mDeviceGraph.getEdgeSource(itr).getIdentifier() : mDeviceGraph.getEdgeTarget(itr).getIdentifier();
                 connectedComponents.add(mSymbolTable.get(toId));
             }
         }
-
-        //Set connected components weight
         for (int i = 0; i < connectedComponents.size(); i++) {
             if (mWeights.containsKey(connectedComponents.get(i).getIdentifier())) {
                 continue;
             }
-
             int weight = 0;
             for (int j = 1; j <= connectedComponents.get(i).getNumPorts(); j++) {
                 if (!connectedComponents.get(i).hasPort(j)) {
@@ -79,10 +70,7 @@ public class ForceDirectedPlacer extends BasePlacer {
             }
             mWeights.put(connectedComponents.get(i).getIdentifier(), weight);
         }
-
         if (connectedComponents.size() != 1) {
-
-            //calculate force and find zero-force location
             double s1 = 0, s2 = 0, r = 0;
             for (int i = 0; i < connectedComponents.size(); i++) {
                 s1 += connectedComponents.get(i).getPositionX() * mWeights.get(connectedComponents.get(i).getIdentifier());
@@ -91,7 +79,6 @@ public class ForceDirectedPlacer extends BasePlacer {
             }
             newPosition = new Point2D(s1 / r, s2 / r);
             mLocked.put(id, 1);
-
             List<String> overlapComponents = getOverlapComponents(id, newPosition);
             if (overlapComponents.isEmpty()) {
                 mSymbolTable.get(id).setPosition(newPosition);
@@ -103,7 +90,6 @@ public class ForceDirectedPlacer extends BasePlacer {
                         break;
                     }
                 }
-
                 if (isValid) {
                     mSymbolTable.get(id).setPosition(newPosition);
                     for (int i = 0; i < overlapComponents.size(); i++) {
@@ -112,7 +98,7 @@ public class ForceDirectedPlacer extends BasePlacer {
                 } else {
                     Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
                     if (p == null) {
-                        return false;
+                        return;
                     }
                     mSymbolTable.get(id).setPosition(p);
                 }
@@ -120,31 +106,24 @@ public class ForceDirectedPlacer extends BasePlacer {
         } else {
             mLocked.put(id, 1);
         }
-
-        return true;
     }
 
     private List<String> getOverlapComponents(String id, Point2D newPt) {
         List<String> result = new ArrayList<>();
         int w1 = mSymbolTable.get(id).getWidth();
         int h1 = mSymbolTable.get(id).getHeight();
-
         for (int i = 0; i < mSymbolTable.getComponents().size(); i++) {
             if (id.equals(mSymbolTable.getComponents().get(i).getIdentifier())) {
                 continue;
             }
-
             int w2 = mSymbolTable.getComponents().get(i).getWidth();
             int h2 = mSymbolTable.getComponents().get(i).getHeight();
             double distanceX = Math.abs(mSymbolTable.getComponents().get(i).getPositionX() - newPt.getX());
             double distanceY = Math.abs(mSymbolTable.getComponents().get(i).getPositionY() - newPt.getY());
-
             if (distanceX <= (w1 + w2) / 2 && distanceY <= (h1 + h2) / 2) {
                 result.add(mSymbolTable.getComponents().get(i).getIdentifier());
             }
         }
-
         return result;
     }
-
 }
