@@ -66,7 +66,7 @@ public class TerminalPropagator extends BasePlacer {
         for (DeviceEdge edge : mDeviceGraph.edgeSet()) {
             BaseComponent src = mSymbolTable.get(edge.getSource().getIdentifier());
             BaseComponent dst = mSymbolTable.get(edge.getTarget().getIdentifier());
-            if (!components.contains(src) || !components.contains(dst)) {
+            if (!(components.contains(src) || components.contains(dst))) {
                 continue;
             }
             int srcPort = edge.getSource().getPortNumber();
