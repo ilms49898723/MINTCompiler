@@ -12,6 +12,7 @@ import com.github.ilms49898723.fluigi.device.symbol.ComponentType;
 import com.github.ilms49898723.fluigi.device.symbol.PortDirection;
 import com.github.ilms49898723.fluigi.device.symbol.SymbolTable;
 import com.github.ilms49898723.fluigi.placement.BasePlacer;
+import com.github.ilms49898723.fluigi.placement.controllayer.ControlPortPlacer;
 import com.github.ilms49898723.fluigi.placement.controllayer.ValvePlacer;
 import com.github.ilms49898723.fluigi.placement.terminalpropagation.TerminalPropagator;
 import com.github.ilms49898723.fluigi.processor.parameter.Parameters;
@@ -205,6 +206,9 @@ public class HadlockRouter extends BaseRouter {
 
         BasePlacer placer = new ValvePlacer(mSymbolTable, mDeviceGraph, mParameters);
         placer.placement();
+
+        BasePlacer portPlacer = new ControlPortPlacer(mSymbolTable, mDeviceGraph, mParameters);
+        portPlacer.placement();
 
         TerminalPropagator propagator = new TerminalPropagator(mSymbolTable, mDeviceGraph, mParameters);
         List<BaseComponent> propagateTargets = new ArrayList<>();

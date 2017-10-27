@@ -24,7 +24,7 @@ public class Port extends BaseComponent {
         setHeight(2 * radius);
     }
 
-    public double getRadius() {
+    public int getRadius() {
         return mRadius;
     }
 
