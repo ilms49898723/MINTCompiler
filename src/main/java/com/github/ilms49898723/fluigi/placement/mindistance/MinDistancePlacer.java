@@ -55,7 +55,7 @@ public class MinDistancePlacer extends BasePlacer {
     }
 
     private boolean fixComponentPosition(String id) {
-        System.out.println(">>>>>>>>>>fix " + id + "<<<<<<<<<<<<");
+        //System.out.println(">>>>>>>>>>fix " + id + "<<<<<<<<<<<<");
         Point2D newPosition = Point2D.ZERO;//The new position
         Map<Integer, List<BaseComponent>> connectedComponents = new HashMap<>();
         Map<Integer, List<Point2D>> connectedPorts = new HashMap<>();
@@ -312,14 +312,14 @@ public class MinDistancePlacer extends BasePlacer {
 
             if (distanceX <= ((w1+w2)/2 + mParameters.getComponentSpacing()) && distanceY <= ((h1+h2)/2 + mParameters.getComponentSpacing())) {
                 result.add(targetId);
-                System.out.println("----------");
+                /*System.out.println("----------");
                 System.out.println("OVERLAP:"+targetId);
                 System.out.println(mSymbolTable.get(targetId).getPosition().toString());
                 System.out.println("Width: " + mSymbolTable.get(targetId).getWidth());
                 System.out.println("Height: " + mSymbolTable.get(targetId).getHeight());
                 System.out.println("Distance: " + distanceX + "," + distanceY);
                 System.out.println("Limit:" + ((w1+w2)/2 + mParameters.getComponentSpacing()) + ", " + ((h1+h2)/2 + mParameters.getComponentSpacing()));
-                System.out.println("----------");
+                System.out.println("----------");*/
             }
         }
 
@@ -330,7 +330,7 @@ public class MinDistancePlacer extends BasePlacer {
         List<String> overlapComponents = getOverlapComponents(id, newPosition);
         if (overlapComponents.isEmpty()) {
             mSymbolTable.get(id).setPosition(newPosition);
-            System.out.println("NO OVERLAP!!!!");
+            //System.out.println("NO OVERLAP!!!!");
         } else {
             boolean isValid = true;
             for (int i = 0; i < overlapComponents.size(); i++) {
