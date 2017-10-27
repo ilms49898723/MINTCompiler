@@ -55,7 +55,7 @@ public class MinDistancePlacer extends BasePlacer {
     }
 
     private boolean fixComponentPosition(String id) {
-        System.out.println(">>fix " + id);
+        System.out.println(">>>>>>>>>>fix " + id + "<<<<<<<<<<<<");
         Point2D newPosition = Point2D.ZERO;//The new position
         Map<Integer, List<BaseComponent>> connectedComponents = new HashMap<>();
         Map<Integer, List<Point2D>> connectedPorts = new HashMap<>();
@@ -81,6 +81,8 @@ public class MinDistancePlacer extends BasePlacer {
                     result1.add(mSymbolTable.get(target.getIdentifier()));
                     Point2D desPort = mSymbolTable.get(target.getIdentifier()).getPort(target.getPortNumber());
                     result2.add(new Point2D(desPort.getX(), desPort.getY()));
+                    //System.out.println("--" + target.getIdentifier());
+                    //System.out.println("--" + desPort.toString());
                     result3.add(target.getPortNumber());
                     numOfCC++;
                 }
@@ -106,25 +108,45 @@ public class MinDistancePlacer extends BasePlacer {
                 }
 
                 if(connectedPorts.get(i).size() != 0) {
+                	double keep = 0;
+                	switch(mSymbolTable.get(id).getPortDirection(i)) {
+                		case TOP:
+                			keep = mSymbolTable.get(id).getHeight()/2;
+                			break;
+                		case BOTTOM:
+                			keep = mSymbolTable.get(id).getHeight()/2;
+                			break;
+                		case LEFT: 
+                			keep = mSymbolTable.get(id).getWidth()/2;
+                			break;
+                		case RIGHT:
+                			keep = mSymbolTable.get(id).getWidth()/2;
+                			break;
+                	}
                     switch(connectedComponents.get(i).get(0).getPortDirection(connectedPortsId.get(i).get(0))) {
                         case TOP:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() - 2*mParameters.getComponentSpacing());
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() - 2*mParameters.getComponentSpacing() - keep);
                             break;
                         case BOTTOM:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() + 2*mParameters.getComponentSpacing());
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX(), connectedPorts.get(i).get(0).getY() + 2*mParameters.getComponentSpacing() + keep);
                             break;
                         case LEFT:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() - 2*mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() - 2*mParameters.getComponentSpacing() - keep, connectedPorts.get(i).get(0).getY());
                             break;
                         case RIGHT:
-                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() + 2*mParameters.getComponentSpacing(), connectedPorts.get(i).get(0).getY());
+                            newPosition = new Point2D(connectedPorts.get(i).get(0).getX() + 2*mParameters.getComponentSpacing() + keep, connectedPorts.get(i).get(0).getY());
                             break;
                     }
                     break;
                 }
             }
-            System.out.println("tmp position: " + newPosition.toString());
+            //System.out.println("tmp position: " + newPosition.toString());
             mLocked.put(id, 1);
+            
+            double minCost = calculateAllCost(id, connectedPorts, newPosition);
+            tryToRotate(id, connectedPorts, newPosition, minCost);
+            newPosition = tryToSwap(id, connectedPorts, newPosition, minCost, true);
+            //System.out.println("tmp 2nd position: " + newPosition.toString());
             if(!fixOverlap(id, newPosition)) return false;
             System.out.println("new position: " + mSymbolTable.get(id).getPosition().toString());
         }
@@ -137,11 +159,11 @@ public class MinDistancePlacer extends BasePlacer {
         double minCost = calculateAllCost(id, connectedPorts, result);
 
         tryToRotate(id, connectedPorts, result, minCost);
-        result = tryToSwap(id, connectedPorts, result, minCost);
+        result = tryToSwap(id, connectedPorts, result, minCost, false);
         return result;
     }
 
-    private Point2D tryToSwap(String id, Map<Integer, List<Point2D>> connectedPorts, Point2D localPt, double localMin) {
+    private Point2D tryToSwap(String id, Map<Integer, List<Point2D>> connectedPorts, Point2D localPt, double localMin, boolean isOneConnect) {
         Point2D result = localPt;
         double minCost = localMin;
 
@@ -152,8 +174,9 @@ public class MinDistancePlacer extends BasePlacer {
             for (int j = i+1 ; j < swappablePorts.size() ; j++) {
 
                 mSymbolTable.get(id).swapPort(swappablePorts.get(i), swappablePorts.get(j), mParameters.getChannelSpacing());
-
-                Point2D tmpPt = calculateMinimumDistancePoint(id, connectedPorts);
+                
+                Point2D tmpPt = localPt;
+                if(!isOneConnect) tmpPt = calculateMinimumDistancePoint(id, connectedPorts);
                 double tmpCost = calculateAllCost(id, connectedPorts, tmpPt);
                 if(tmpCost < minCost) {
                     minCost = tmpCost;
@@ -289,7 +312,14 @@ public class MinDistancePlacer extends BasePlacer {
 
             if (distanceX <= ((w1+w2)/2 + mParameters.getComponentSpacing()) && distanceY <= ((h1+h2)/2 + mParameters.getComponentSpacing())) {
                 result.add(targetId);
+                System.out.println("----------");
                 System.out.println("OVERLAP:"+targetId);
+                System.out.println(mSymbolTable.get(targetId).getPosition().toString());
+                System.out.println("Width: " + mSymbolTable.get(targetId).getWidth());
+                System.out.println("Height: " + mSymbolTable.get(targetId).getHeight());
+                System.out.println("Distance: " + distanceX + "," + distanceY);
+                System.out.println("Limit:" + ((w1+w2)/2 + mParameters.getComponentSpacing()) + ", " + ((h1+h2)/2 + mParameters.getComponentSpacing()));
+                System.out.println("----------");
             }
         }
 
