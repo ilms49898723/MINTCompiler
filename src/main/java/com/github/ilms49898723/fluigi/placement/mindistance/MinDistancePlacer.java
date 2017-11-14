@@ -121,11 +121,11 @@ public class MinDistancePlacer extends BasePlacer {
                     		}
                     	}
                     }
-                    
+
                     while(cof*mParameters.getComponentSpacing() <= valvesWidth+mParameters.getChannelSpacing()) {
                     	cof++;
                     }
-                    
+
                 	double keep = 0;
                 	switch(mSymbolTable.get(id).getPortDirection(i)) {
                 		case TOP:
@@ -134,7 +134,7 @@ public class MinDistancePlacer extends BasePlacer {
                 		case BOTTOM:
                 			keep = mSymbolTable.get(id).getHeight()/2;
                 			break;
-                		case LEFT: 
+                		case LEFT:
                 			keep = mSymbolTable.get(id).getWidth()/2;
                 			break;
                 		case RIGHT:
@@ -160,7 +160,7 @@ public class MinDistancePlacer extends BasePlacer {
             }
             //System.out.println("tmp position: " + newPosition.toString());
             mLocked.put(id, 1);
-            
+
             double minCost = calculateAllCost(id, connectedPorts, newPosition);
             tryToRotate(id, connectedPorts, newPosition, minCost);
             newPosition = tryToSwap(id, connectedPorts, newPosition, minCost, true);
@@ -192,7 +192,7 @@ public class MinDistancePlacer extends BasePlacer {
             for (int j = i+1 ; j < swappablePorts.size() ; j++) {
 
                 mSymbolTable.get(id).swapPort(swappablePorts.get(i), swappablePorts.get(j), mParameters.getChannelSpacing());
-                
+
                 Point2D tmpPt = localPt;
                 if(!isOneConnect) tmpPt = calculateMinimumDistancePoint(id, connectedPorts);
                 double tmpCost = calculateAllCost(id, connectedPorts, tmpPt);
@@ -366,7 +366,6 @@ public class MinDistancePlacer extends BasePlacer {
             } else {
                 Point2D p = OverlapFixer.findNewPosition(mSymbolTable.get(id), mSymbolTable, this.mParameters);
                 if (p == null) {
-                    System.out.println("return false");
                     return false;
                 }
                 mSymbolTable.get(id).setPosition(p);

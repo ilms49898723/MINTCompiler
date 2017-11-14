@@ -92,6 +92,9 @@ public class OverlapFixer extends BasePlacer {
         if (minDis != Integer.MAX_VALUE) {
             return result;
         } else {
+            System.err.println("Error: No space available.");
+            System.err.println("       Try to use a larger size in .ini file.");
+            System.exit(1);
             return null;
         }
     }
