@@ -73,7 +73,6 @@ public class DeviceProcessor {
         placer.placement();
 
         for(int i = 0 ; i < MAX_ITERATION ; i++) {
-        	System.out.println("---------Iteration " + i + "----------");
         	BasePlacer iterativePlacer = new MinDistancePlacer(mSymbolTable, mDeviceGraph, mParameters);
             iterativePlacer.placement();
 
