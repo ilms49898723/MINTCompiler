@@ -277,7 +277,7 @@ public class MinDistancePlacer extends BasePlacer {
             switch (dir) {
                 case LEFT:
                     if (x > 0) {
-                        disX += 2 * x;
+                        disX += 3 * x;
                     } else {
                         disX += -1 * x;
                     }
@@ -285,7 +285,7 @@ public class MinDistancePlacer extends BasePlacer {
                     break;
                 case RIGHT:
                     if (x < 0) {
-                        disX += -2 * x;
+                        disX += -3 * x;
                     } else {
                         disX += x;
                     }
@@ -293,7 +293,7 @@ public class MinDistancePlacer extends BasePlacer {
                     break;
                 case TOP:
                     if (y > 0) {
-                        disY += 2 * y;
+                        disY += 3 * y;
                     } else {
                         disY += -1 * y;
                     }
@@ -301,7 +301,7 @@ public class MinDistancePlacer extends BasePlacer {
                     break;
                 case BOTTOM:
                     if (y < 0) {
-                        disY += -2 * y;
+                        disY += -3 * y;
                     } else {
                         disY += y;
                     }
